@@ -1,0 +1,10 @@
+{
+  "@@locale": "pt_AO",
+  "appTitle": "ERP-Global",
+  "loginTitle": "Iniciar sessão",
+  "identifierLabel": "E-mail ou telefone",
+  "passwordLabel": "Palavra-passe",
+  "signInAction": "Entrar",
+  "loadingMessage": "A carregar…",
+  "retryAction": "Tentar novamente"
+}

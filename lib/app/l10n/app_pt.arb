@@ -1,0 +1,17 @@
+{
+  "@@locale": "pt",
+  "appTitle": "ERP-Global",
+  "@appTitle": {"description": "Nome da aplicação."},
+  "loginTitle": "Iniciar sessão",
+  "@loginTitle": {"description": "Título do ecrã de autenticação."},
+  "identifierLabel": "E-mail ou telefone",
+  "@identifierLabel": {"description": "Identificador da conta criada pela administração."},
+  "passwordLabel": "Palavra-passe",
+  "@passwordLabel": {"description": "Etiqueta do campo de palavra-passe."},
+  "signInAction": "Entrar",
+  "@signInAction": {"description": "Acção de iniciar sessão."},
+  "loadingMessage": "A carregar…",
+  "@loadingMessage": {"description": "Operação em curso."},
+  "retryAction": "Tentar novamente",
+  "@retryAction": {"description": "Acção de repetir uma operação."}
+}
