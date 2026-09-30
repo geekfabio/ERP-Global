@@ -6,10 +6,12 @@ import 'core/audit/audit_providers.dart';
 import 'core/audit/audit_service.dart';
 import 'core/modules/license_gate.dart';
 import 'core/network/api_client.dart';
+import 'core/notifications/notification_service.dart';
 import 'core/security/permission_providers.dart';
 import 'core/utils/pt_ao_formatters.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
 import 'features/auth/presentation/providers/auth_state.dart';
+import 'features/communication/presentation/providers/communication_providers.dart';
 import 'features/license/presentation/providers/license_providers.dart';
 import 'features/students/presentation/providers/student_providers.dart';
 
@@ -42,12 +44,17 @@ Future<void> main() async {
         licenseGateProvider.overrideWith(
           (ref) => ref.watch(licenseGateFromServiceProvider),
         ),
+        // Contrato de notificações do core → implementação do módulo communication.
+        notificationServiceProvider.overrideWith(
+          (ref) => ref.watch(communicationNotificationServiceProvider),
+        ),
         // Módulos com API mock; só têm efeito com `AppConfig.useMockApi`.
         mockApiModulesProvider.overrideWith(
           (ref) => [
             ref.watch(authMockHandlersProvider),
             ref.watch(studentsMockHandlersProvider),
             ref.watch(auditMockHandlersProvider),
+            ref.watch(communicationMockHandlersProvider),
           ],
         ),
       ],
