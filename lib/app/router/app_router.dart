@@ -6,6 +6,7 @@ import '../../core/animations/app_transitions.dart';
 import '../../core/animations/reduce_motion.dart';
 import '../../core/modules/module_catalog.dart';
 import '../../core/widgets/layout/app_shell.dart';
+import '../../features/auth/presentation/pages/login_page.dart';
 
 /// Única rota pública: `/login`. Não existe registo (ver docs/07-mock-api.md).
 /// Placeholder até às issues de auth (#19, #20).
@@ -19,7 +20,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => fadeThroughPage(
           state: state,
           reduceMotion: ref.read(reduceMotionProvider),
-          child: const Scaffold(body: Center(child: Text('ERP-Global'))),
+          child: const LoginPage(),
         ),
       ),
       // Rotas autenticadas partilham o shell; os módulos registam-se aqui (#22).
