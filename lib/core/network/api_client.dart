@@ -188,10 +188,17 @@ class _LogInterceptor extends Interceptor {
   }
 }
 
-/// Registo partilhado de handlers mock; os módulos adicionam-se aqui.
-final mockApiRegistryProvider = Provider<MockApiRegistry>(
-  (ref) => MockApiRegistry(),
-);
+/// Módulos com handlers mock; a app (`main.dart`) preenche-a.
+final mockApiModulesProvider = Provider<List<MockApiModule>>((ref) => const []);
+
+/// Registo partilhado de handlers mock, com os módulos de [mockApiModulesProvider].
+final mockApiRegistryProvider = Provider<MockApiRegistry>((ref) {
+  final registry = MockApiRegistry();
+  for (final module in ref.watch(mockApiModulesProvider)) {
+    registry.addModule(module);
+  }
+  return registry;
+});
 
 final tokenStoreProvider = Provider<TokenStore>((ref) => InMemoryTokenStore());
 
