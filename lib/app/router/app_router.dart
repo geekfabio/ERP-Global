@@ -4,11 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/animations/app_transitions.dart';
 import '../../core/animations/reduce_motion.dart';
+import '../../core/modules/module_catalog.dart';
 import '../../core/widgets/layout/app_shell.dart';
 
 /// Única rota pública: `/login`. Não existe registo (ver docs/07-mock-api.md).
 /// Placeholder até às issues de auth (#19, #20).
 final appRouterProvider = Provider<GoRouter>((ref) {
+  final registry = ref.watch(moduleRegistryProvider);
   return GoRouter(
     initialLocation: '/login',
     routes: [
@@ -29,6 +31,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/dashboard',
             builder: (context, state) => const Center(child: Text('Painel')),
           ),
+          ...buildModuleRoutes(registry),
         ],
       ),
     ],

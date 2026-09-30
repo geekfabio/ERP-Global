@@ -71,20 +71,30 @@ class AppShell extends ConsumerWidget {
       appBar: const AppTopbar(),
       body: Row(
         children: [
-          NavigationRail(
-            extended: extended,
-            selectedIndex: selected < 0 ? null : selected,
-            onDestinationSelected: go,
-            labelType: extended
-                ? NavigationRailLabelType.none
-                : NavigationRailLabelType.all,
-            destinations: [
-              for (final i in items)
-                NavigationRailDestination(
-                  icon: Icon(i.icon),
-                  label: Text(i.label),
+          // O rail não faz scroll: com muitos módulos evita overflow vertical.
+          LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: NavigationRail(
+                    extended: extended,
+                    selectedIndex: selected < 0 ? null : selected,
+                    onDestinationSelected: go,
+                    labelType: extended
+                        ? NavigationRailLabelType.none
+                        : NavigationRailLabelType.all,
+                    destinations: [
+                      for (final i in items)
+                        NavigationRailDestination(
+                          icon: Icon(i.icon),
+                          label: Text(i.label),
+                        ),
+                    ],
+                  ),
                 ),
-            ],
+              ),
+            ),
           ),
           const VerticalDivider(width: 1),
           Expanded(child: content),

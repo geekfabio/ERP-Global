@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Entrada de menu do shell. Será alimentada pelo `ModuleRegistry` (#22).
+import '../../modules/module_catalog.dart';
+
+/// Entrada de menu do shell.
 @immutable
 class NavItem {
   const NavItem({required this.label, required this.icon, required this.path});
@@ -11,33 +13,25 @@ class NavItem {
   final String path;
 }
 
-/// Itens de menu disponíveis. Por agora estático; o `ModuleRegistry` e os
-/// guards de licença/permissão passam a filtrá-lo (#22, #24).
-final navItemsProvider = Provider<List<NavItem>>(
-  (ref) => const [
-    NavItem(
+/// Menu gerado a partir do `ModuleRegistry` (só módulos registados).
+/// A licença e as permissões passam a filtrá-lo nas issues #24 e #20.
+/// "Painel" abre sempre; os módulos obrigatórios (Definições) ficam no fim.
+final navItemsProvider = Provider<List<NavItem>>((ref) {
+  final modules = ref
+      .watch(moduleRegistryProvider)
+      .all
+      .where((m) => m.showInMenu);
+  NavItem toItem(m) => NavItem(label: m.name, icon: m.icon, path: m.path);
+  return [
+    const NavItem(
       label: 'Painel',
       icon: Icons.dashboard_outlined,
       path: '/dashboard',
     ),
-    NavItem(label: 'Alunos', icon: Icons.school_outlined, path: '/students'),
-    NavItem(
-      label: 'Académico',
-      icon: Icons.menu_book_outlined,
-      path: '/academic',
-    ),
-    NavItem(
-      label: 'Financeiro',
-      icon: Icons.payments_outlined,
-      path: '/billing',
-    ),
-    NavItem(
-      label: 'Definições',
-      icon: Icons.settings_outlined,
-      path: '/settings',
-    ),
-  ],
-);
+    ...modules.where((m) => !m.required).map(toItem),
+    ...modules.where((m) => m.required).map(toItem),
+  ];
+});
 
 /// Índice do item cujo caminho é prefixo de [location]; -1 se nenhum.
 int navIndexFor(List<NavItem> items, String location) => items.indexWhere(
