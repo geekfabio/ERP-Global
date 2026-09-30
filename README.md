@@ -26,6 +26,16 @@ O projecto será desenvolvido em **Flutter** no frontend, com backend atribuído
 - **Sem registo público**: só login; contas são criadas por administração (`super_admin`).
 - **Design consistente** com tokens, componentes partilhados e animações com propósito.
 
+## Agent Skills (Flutter)
+
+**Regra:** todos os modelos/agentes que trabalham neste projecto (e em qualquer projecto Flutter) usam as agent skills oficiais — <https://docs.flutter.dev/ai/tools#agent-skills>. Repositórios: [flutter/agent-plugins](https://github.com/flutter/agent-plugins) (Flutter) e [dart-lang/skills](https://github.com/dart-lang/skills) (Dart).
+
+- **Claude Code:** `claude plugin marketplace add flutter/agent-plugins` e `claude plugin install dart-flutter@dart-flutter`.
+- **Outros agentes (Codex, Cursor…):** seguir <https://docs.flutter.dev/ai/get-started>; as skills ficam em `.agents/skills`.
+- **Skills de pacotes:** após adicionar uma dependência, `dart run skills@ get` para descobrir as skills dela.
+
+Ver a regra em [AGENTS.md](AGENTS.md) (nº 12).
+
 ## Visão do Produto
 
 O ERP-Global pretende reunir num único ecossistema:
