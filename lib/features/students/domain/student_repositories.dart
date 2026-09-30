@@ -79,6 +79,9 @@ abstract interface class GuardianRepository {
   Future<Result<List<StudentGuardian>>> forStudent(String studentId);
 
   Future<Result<GuardianLinkModel>> link(GuardianLinkModel link);
+
+  /// Altera parentesco e responsabilidades de um vínculo existente.
+  Future<Result<GuardianLinkModel>> updateLink(GuardianLinkModel link);
   Future<Result<void>> unlink(String linkId);
 }
 
