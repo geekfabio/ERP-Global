@@ -30,3 +30,7 @@ final enrollmentRepositoryProvider = Provider<EnrollmentRepository>(
 final studentsMockHandlersProvider = Provider<StudentsMockHandlers>(
   (ref) => StudentsMockHandlers(),
 );
+
+final studentDocumentRepositoryProvider = Provider<StudentDocumentRepository>(
+  (ref) => ApiStudentDocumentRepository(ref.watch(apiClientProvider)),
+);
