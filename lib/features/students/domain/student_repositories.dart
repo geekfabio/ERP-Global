@@ -2,8 +2,10 @@ import '../../../core/errors/result.dart';
 import '../../../core/network/api_envelope.dart';
 import '../data/models/enrollment_model.dart';
 import '../data/models/guardian_model.dart';
+import '../data/models/student_document_model.dart';
 import '../data/models/student_enums.dart';
 import '../data/models/student_model.dart';
+import 'student_duplicates.dart';
 
 /// Pesquisa de alunos (feita no servidor/handler: paginação, filtros, ordenação).
 class StudentQuery {
@@ -50,8 +52,21 @@ abstract interface class StudentRepository {
   Future<Result<PagedList<StudentModel>>> list(StudentQuery query);
   Future<Result<StudentModel>> get(String id);
 
-  /// O `id` (ULID) é gerado no cliente (offline first).
-  Future<Result<StudentModel>> create(StudentModel student);
+  /// O `id` (ULID) é gerado no cliente (offline first). Duplicados → 409
+  /// `CONFLICT`: BI repetido é sempre recusado; nome + data de nascimento
+  /// repetidos só com [confirmDuplicate] (o utilizador já foi avisado).
+  Future<Result<StudentModel>> create(
+    StudentModel student, {
+    bool confirmDuplicate = false,
+  });
+
+  /// Possíveis duplicados (BI, ou nome + data de nascimento) — para avisar
+  /// antes de guardar.
+  Future<Result<List<StudentDuplicate>>> findDuplicates({
+    required String fullName,
+    required DateTime birthDate,
+    String? idNumber,
+  });
   Future<Result<StudentModel>> update(StudentModel student);
 
   /// Remoção lógica (`deletedAt`); o aluno deixa de aparecer nas listagens.
@@ -97,4 +112,9 @@ abstract interface class EnrollmentRepository {
 
   Future<Result<EnrollmentModel>> create(EnrollmentModel enrollment);
   Future<Result<EnrollmentModel>> update(EnrollmentModel enrollment);
+}
+
+/// Documentos entregues no cadastro do aluno.
+abstract interface class StudentDocumentRepository {
+  Future<Result<StudentDocumentModel>> create(StudentDocumentModel document);
 }

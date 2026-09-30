@@ -1,9 +1,11 @@
 import '../../../../core/errors/result.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_envelope.dart';
+import '../../domain/student_duplicates.dart';
 import '../../domain/student_repositories.dart';
 import '../models/enrollment_model.dart';
 import '../models/guardian_model.dart';
+import '../models/student_document_model.dart';
 import '../models/student_enums.dart';
 import '../models/student_model.dart';
 
@@ -42,14 +44,46 @@ class ApiStudentRepository implements StudentRepository {
   });
 
   @override
-  Future<Result<StudentModel>> create(StudentModel student) =>
-      Result.guard(() async {
-        final response = await _client.dio.post<dynamic>(
-          '/v1/students',
-          data: student.toJson(),
-        );
-        return ApiEnvelope.object(response, StudentModel.fromJson);
-      });
+  Future<Result<StudentModel>> create(
+    StudentModel student, {
+    bool confirmDuplicate = false,
+  }) => Result.guard(() async {
+    final response = await _client.dio.post<dynamic>(
+      '/v1/students',
+      queryParameters: {if (confirmDuplicate) 'confirmDuplicate': true},
+      data: student.toJson(),
+    );
+    return ApiEnvelope.object(response, StudentModel.fromJson);
+  });
+
+  @override
+  Future<Result<List<StudentDuplicate>>> findDuplicates({
+    required String fullName,
+    required DateTime birthDate,
+    String? idNumber,
+  }) => Result.guard(() async {
+    final response = await _client.dio.get<dynamic>(
+      '/v1/students/duplicates',
+      queryParameters: {
+        'fullName': fullName,
+        'birthDate': birthDate.toIso8601String().substring(0, 10),
+        if (idNumber != null && idNumber.trim().isNotEmpty)
+          'idNumber': idNumber.trim(),
+      },
+    );
+    final data = ApiEnvelope.data(response)! as List;
+    return [
+      for (final item in data.cast<Map<String, dynamic>>())
+        StudentDuplicate(
+          student: StudentModel.fromJson(
+            item['student'] as Map<String, dynamic>,
+          ),
+          reason: item['reason'] == 'id_number'
+              ? DuplicateReason.idNumber
+              : DuplicateReason.nameAndBirth,
+        ),
+    ];
+  });
 
   @override
   Future<Result<StudentModel>> update(StudentModel student) =>
@@ -191,5 +225,21 @@ class ApiEnrollmentRepository implements EnrollmentRepository {
           data: enrollment.toJson(),
         );
         return ApiEnvelope.object(response, EnrollmentModel.fromJson);
+      });
+}
+
+class ApiStudentDocumentRepository implements StudentDocumentRepository {
+  ApiStudentDocumentRepository(this._client);
+
+  final ApiClient _client;
+
+  @override
+  Future<Result<StudentDocumentModel>> create(StudentDocumentModel document) =>
+      Result.guard(() async {
+        final response = await _client.dio.post<dynamic>(
+          '/v1/student-documents',
+          data: document.toJson(),
+        );
+        return ApiEnvelope.object(response, StudentDocumentModel.fromJson);
       });
 }

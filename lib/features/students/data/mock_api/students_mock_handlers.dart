@@ -2,9 +2,11 @@ import '../../../../core/network/mock/mock_api_registry.dart';
 import '../../../../core/network/mock/mock_query.dart';
 import '../../../../core/network/mock/mock_types.dart';
 import '../../../../core/network/mock/mock_validator.dart';
+import '../../domain/student_duplicates.dart';
 import '../data_mocks/students_seed.dart';
 import '../models/enrollment_model.dart';
 import '../models/guardian_model.dart';
+import '../models/student_document_model.dart';
 import '../models/student_model.dart';
 
 /// Handlers de `/v1/students`, `/v1/guardians`, `/v1/enrollments` (docs/07-mock-api.md).
@@ -21,6 +23,7 @@ class StudentsMockHandlers implements MockApiModule {
   late Map<String, GuardianModel> _guardians;
   late Map<String, GuardianLinkModel> _links;
   late Map<String, EnrollmentModel> _enrollments;
+  late Map<String, StudentDocumentModel> _documents;
 
   void _reset() {
     final s = buildStudentsSeed(seed: seed, count: count);
@@ -28,6 +31,7 @@ class StudentsMockHandlers implements MockApiModule {
     _guardians = {for (final x in s.guardians) x.id: x};
     _links = {for (final x in s.links) x.id: x};
     _enrollments = {for (final x in s.enrollments) x.id: x};
+    _documents = {};
   }
 
   /// Matrícula mais recente (não cancelada) do aluno, para filtros por classe/turma.
@@ -45,6 +49,8 @@ class StudentsMockHandlers implements MockApiModule {
     r
       ..onReset(_reset)
       ..get('/v1/students', _listStudents)
+      // Antes de `{id}`: a primeira rota que casa ganha.
+      ..get('/v1/students/duplicates', _duplicates)
       ..get('/v1/students/{id}', (q) => MockResponse.ok(_student(q).toJson()))
       ..post('/v1/students', _createStudent)
       ..patch('/v1/students/{id}', _updateStudent)
@@ -55,6 +61,7 @@ class StudentsMockHandlers implements MockApiModule {
       ..post('/v1/guardian-links', _createLink)
       ..patch('/v1/guardian-links/{id}', _updateLink)
       ..delete('/v1/guardian-links/{id}', _deleteLink)
+      ..post('/v1/student-documents', _createDocument)
       ..get('/v1/enrollments', _listEnrollments)
       ..post('/v1/enrollments', _createEnrollment)
       ..patch('/v1/enrollments/{id}', _updateEnrollment);
@@ -130,15 +137,73 @@ class StudentsMockHandlers implements MockApiModule {
     v.throwIfInvalid();
   }
 
-  /// BI único entre alunos activos (409 `CONFLICT`).
-  void _assertUniqueId(String? idNumber, {String? exceptId}) {
-    if (idNumber == null || idNumber.isEmpty) return;
-    final clash = _students.values.any(
-      (s) => s.deletedAt == null && s.id != exceptId && s.idNumber == idNumber,
+  /// BI único entre alunos activos (409 `CONFLICT`); nome + data de
+  /// nascimento repetidos também, salvo `confirmDuplicate=true`.
+  void _assertNoDuplicate(
+    StudentModel s, {
+    String? exceptId,
+    bool confirmed = false,
+  }) {
+    final found = findStudentDuplicates(
+      _students.values,
+      fullName: s.fullName,
+      birthDate: s.birthDate,
+      idNumber: s.idNumber,
+      exceptId: exceptId,
     );
-    if (clash) {
+    if (found.any((d) => d.blocking)) {
       throw const MockApiException.conflict('Já existe um aluno com este BI');
     }
+    if (found.isNotEmpty && !confirmed) {
+      throw const MockApiException.conflict(
+        'Já existe um aluno com o mesmo nome e data de nascimento',
+      );
+    }
+  }
+
+  MockResponse _duplicates(MockRequest req) {
+    final name = req.query['fullName'] ?? '';
+    final birth = DateTime.tryParse(req.query['birthDate'] ?? '');
+    if (name.trim().isEmpty || birth == null) {
+      throw const MockApiException.validation({
+        'fullName': 'Obrigatório',
+        'birthDate': 'Obrigatório (yyyy-MM-dd)',
+      });
+    }
+    final found = findStudentDuplicates(
+      _students.values,
+      fullName: name,
+      birthDate: birth,
+      idNumber: req.query['idNumber'],
+    );
+    return MockResponse.ok([
+      for (final d in found)
+        {
+          'student': d.student.toJson(),
+          'reason': d.blocking ? 'id_number' : 'name_and_birth',
+        },
+    ]);
+  }
+
+  MockResponse _createDocument(MockRequest req) {
+    final body = Map<String, dynamic>.of(req.jsonBody);
+    MockValidator(body)
+      ..required('studentId')
+      ..required('type')
+      ..required('fileName')
+      ..throwIfInvalid();
+    if (!_students.containsKey(body['studentId'])) {
+      throw const MockApiException.notFound('Aluno inexistente');
+    }
+    final now = DateTime.now().toUtc().toIso8601String();
+    body
+      ..putIfAbsent('id', _newId)
+      ..putIfAbsent('institutionId', () => 'mock')
+      ..['createdAt'] = now
+      ..['updatedAt'] = now;
+    final d = StudentDocumentModel.fromJson(body);
+    _documents[d.id] = d;
+    return MockResponse.created(d.toJson());
   }
 
   MockResponse _createStudent(MockRequest req) {
@@ -158,7 +223,10 @@ class StudentsMockHandlers implements MockApiModule {
     if (_students.containsKey(student.id)) {
       throw const MockApiException.conflict('Identificador já existe');
     }
-    _assertUniqueId(student.idNumber);
+    _assertNoDuplicate(
+      student,
+      confirmed: req.query['confirmDuplicate'] == 'true',
+    );
     _students[student.id] = student;
     return MockResponse.created(student.toJson());
   }
@@ -175,7 +243,8 @@ class StudentsMockHandlers implements MockApiModule {
       'updatedAt': DateTime.now().toUtc().toIso8601String(),
     };
     final updated = StudentModel.fromJson(merged);
-    _assertUniqueId(updated.idNumber, exceptId: current.id);
+    // Na edição só o BI é validado (corrigir dados não é duplicar).
+    _assertNoDuplicate(updated, exceptId: current.id, confirmed: true);
     _students[current.id] = updated;
     return MockResponse.ok(updated.toJson());
   }

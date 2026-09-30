@@ -11,6 +11,7 @@ import 'package:erp_global/core/widgets/feedback/toasts.dart';
 import 'package:erp_global/features/students/data/mock_api/students_mock_handlers.dart';
 import 'package:erp_global/features/students/data/models/student_enums.dart';
 import 'package:erp_global/features/students/data/models/student_model.dart';
+import 'package:erp_global/features/students/domain/student_duplicates.dart';
 import 'package:erp_global/features/students/domain/student_repositories.dart';
 import 'package:erp_global/features/students/presentation/pages/students_list_page.dart';
 import 'package:erp_global/features/students/presentation/providers/student_list_providers.dart';
@@ -113,8 +114,16 @@ class _FlakyRepo implements StudentRepository {
   @override
   Future<Result<StudentModel>> get(String id) => throw UnimplementedError();
   @override
-  Future<Result<StudentModel>> create(StudentModel student) =>
-      throw UnimplementedError();
+  Future<Result<StudentModel>> create(
+    StudentModel student, {
+    bool confirmDuplicate = false,
+  }) => throw UnimplementedError();
+  @override
+  Future<Result<List<StudentDuplicate>>> findDuplicates({
+    required String fullName,
+    required DateTime birthDate,
+    String? idNumber,
+  }) => throw UnimplementedError();
   @override
   Future<Result<StudentModel>> update(StudentModel student) =>
       throw UnimplementedError();
