@@ -11,6 +11,7 @@ import '../../core/widgets/layout/app_shell.dart';
 import '../../core/widgets/license/license_widgets.dart';
 import '../../core/widgets/states/app_states.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
+import 'module_routes.dart';
 import '../../features/auth/presentation/providers/active_role.dart';
 import '../../features/auth/presentation/providers/auth_state.dart';
 
@@ -130,7 +131,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               onAction: () => context.go('/dashboard'),
             ),
           ),
-          ...buildModuleRoutes(registry),
+          ...buildModuleRoutes(registry, featureRoutes: featureModuleRoutes),
         ],
       ),
     ],

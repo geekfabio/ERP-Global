@@ -1,4 +1,5 @@
 import 'package:erp_global/app/router/app_router.dart';
+import 'package:erp_global/app/router/module_routes.dart';
 import 'package:erp_global/app/theme/app_theme.dart';
 import 'package:erp_global/core/modules/module_catalog.dart';
 import 'package:erp_global/core/modules/module_descriptor.dart';
@@ -151,6 +152,9 @@ void main() {
     for (final m in registry.all) {
       router.go(m.path);
       await tester.pumpAndSettle();
+      expect(router.state.uri.path, m.path, reason: m.code);
+      // Módulos com rotas reais (featureModuleRoutes) já não são placeholder.
+      if (featureModuleRoutes.containsKey(m.code)) continue;
       expect(
         find.text('Módulo em construção.'),
         findsOneWidget,

@@ -5,12 +5,16 @@ import 'app/app.dart';
 import 'core/modules/license_gate.dart';
 import 'core/network/api_client.dart';
 import 'core/security/permission_providers.dart';
+import 'core/utils/pt_ao_formatters.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
 import 'features/auth/presentation/providers/auth_state.dart';
 import 'features/license/presentation/providers/license_providers.dart';
 import 'features/students/presentation/providers/student_providers.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Datas e números em pt-AO têm de estar carregados antes de qualquer ecrã.
+  await PtAoFormatters.initialize();
   runApp(
     ProviderScope(
       overrides: [
