@@ -11,6 +11,7 @@ class ModuleDescriptor {
     required this.path,
     this.permissions = const [],
     this.dependencies = const [],
+    this.permissionNamespace,
     this.required = false,
     this.showInMenu = true,
     this.routes,
@@ -31,6 +32,11 @@ class ModuleDescriptor {
 
   /// Códigos de módulos de que depende (resolvidos pelo [ModuleRegistry]).
   final List<String> dependencies;
+
+  /// Prefixo das permissões do módulo (`students.record.read` → `students`);
+  /// por omissão, o próprio [code].
+  final String? permissionNamespace;
+  String get namespace => permissionNamespace ?? code;
 
   /// Módulo obrigatório (`core`): sempre activo.
   final bool required;

@@ -91,6 +91,7 @@ const moduleCatalog = <ModuleDescriptor>[
     name: 'Acessos',
     icon: Icons.door_sliding_outlined,
     path: '/access',
+    permissionNamespace: 'access',
     dependencies: ['cards'],
   ),
   ModuleDescriptor(
@@ -126,6 +127,7 @@ const moduleCatalog = <ModuleDescriptor>[
     name: 'Portal',
     icon: Icons.groups_outlined,
     path: '/portal',
+    permissionNamespace: 'portal',
     dependencies: ['guardians'],
   ),
   ModuleDescriptor(
@@ -145,6 +147,7 @@ const moduleCatalog = <ModuleDescriptor>[
     name: 'Sincronização',
     icon: Icons.cloud_sync_outlined,
     path: '/sync',
+    permissionNamespace: 'sync',
     dependencies: ['core'],
   ),
 ];

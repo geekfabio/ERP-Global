@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../helpers/auth_test_helpers.dart';
+
 ModuleDescriptor _m(String code, [List<String> deps = const []]) =>
     ModuleDescriptor(
       code: code,
@@ -111,7 +113,10 @@ void main() {
         _m('students', ['core']),
       ]);
       final c = ProviderContainer(
-        overrides: [moduleRegistryProvider.overrideWithValue(small)],
+        overrides: [
+          moduleRegistryProvider.overrideWithValue(small),
+          ...permissionsOnly(['*']),
+        ],
       );
       addTearDown(c.dispose);
       final labels = c.read(navItemsProvider).map((i) => i.label).toList();
@@ -120,7 +125,7 @@ void main() {
   );
 
   test('menu por omissão inclui os 20 módulos + Painel', () {
-    final c = ProviderContainer();
+    final c = ProviderContainer(overrides: permissionsOnly(['*']));
     addTearDown(c.dispose);
     expect(c.read(navItemsProvider), hasLength(21));
   });
@@ -129,7 +134,7 @@ void main() {
     tester.view.physicalSize = const Size(1280, 800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    final container = ProviderContainer();
+    final container = ProviderContainer(overrides: signedInOverrides());
     addTearDown(container.dispose);
     await tester.pumpWidget(
       UncontrolledProviderScope(

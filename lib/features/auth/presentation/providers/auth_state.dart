@@ -12,10 +12,13 @@ class AuthNotifier extends AsyncNotifier<AuthSession?> {
   @override
   Future<AuthSession?> build() async {
     try {
-      final result = await ref.read(authRepositoryProvider).restoreSession();
+      final result = await ref
+          .read(authRepositoryProvider)
+          .restoreSession()
+          .timeout(const Duration(seconds: 8));
       return result.valueOrNull;
     } catch (_) {
-      // Ex.: armazenamento seguro indisponível — segue para o login.
+      // Ex.: armazenamento seguro indisponível ou lento — segue para o login.
       return null;
     }
   }
