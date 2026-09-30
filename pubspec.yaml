@@ -45,6 +45,8 @@ dependencies:
   intl: ^0.20.2
   flutter_localizations:
     sdk: flutter
+  fl_chart: ^1.2.0
+  skeletonizer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
