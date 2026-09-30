@@ -1,3 +1,5 @@
+import 'package:erp_global/core/modules/license_gate.dart';
+import 'package:erp_global/core/modules/module_catalog.dart';
 import 'package:erp_global/core/security/permission_providers.dart';
 import 'package:erp_global/features/auth/data/models/auth_session.dart';
 import 'package:erp_global/features/auth/presentation/providers/auth_state.dart';
@@ -29,10 +31,20 @@ class FixedAuthNotifier extends AuthNotifier {
   Future<AuthSession?> build() async => _session;
 }
 
-/// Sessão iniciada com [roles]/[permissions] (por omissão super_admin, tudo).
+/// Licença com todos os módulos do catálogo, sem avisos.
+LicenseGate get fullLicenseGate =>
+    LicenseGate(enabledModules: {for (final m in moduleCatalog) m.code});
+
+/// Fixa o estado da licença.
+Override licenseOverride([LicenseGate? gate]) =>
+    licenseGateProvider.overrideWithValue(gate ?? fullLicenseGate);
+
+/// Sessão iniciada com [roles]/[permissions] (por omissão super_admin, tudo) e
+/// licença completa (ou [gate]).
 List<Override> signedInOverrides({
   List<String> roles = const ['super_admin'],
   List<String> permissions = const ['*'],
+  LicenseGate? gate,
 }) => [
   authStateProvider.overrideWith(
     () =>
@@ -41,6 +53,7 @@ List<Override> signedInOverrides({
   sessionPermissionsProvider.overrideWith(
     (ref) => ref.watch(currentSessionProvider)?.permissions,
   ),
+  licenseOverride(gate),
 ];
 
 /// Sem sessão (mostra `/login`).
@@ -49,9 +62,11 @@ List<Override> signedOutOverrides() => [
   sessionPermissionsProvider.overrideWith(
     (ref) => ref.watch(currentSessionProvider)?.permissions,
   ),
+  licenseOverride(),
 ];
 
-/// Só as permissões (sem router/auth), para testar menu e widgets.
-List<Override> permissionsOnly(List<String> codes) => [
+/// Só as permissões (sem router/auth), para testar menu e widgets; licença completa.
+List<Override> permissionsOnly(List<String> codes, {LicenseGate? gate}) => [
   sessionPermissionsProvider.overrideWithValue(codes),
+  licenseOverride(gate),
 ];
