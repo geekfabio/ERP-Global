@@ -53,6 +53,7 @@ class StudentsMockHandlers implements MockApiModule {
       ..get('/v1/guardians', _listGuardians)
       ..post('/v1/guardians', _createGuardian)
       ..post('/v1/guardian-links', _createLink)
+      ..patch('/v1/guardian-links/{id}', _updateLink)
       ..delete('/v1/guardian-links/{id}', _deleteLink)
       ..get('/v1/enrollments', _listEnrollments)
       ..post('/v1/enrollments', _createEnrollment)
@@ -259,6 +260,25 @@ class StudentsMockHandlers implements MockApiModule {
     final link = GuardianLinkModel.fromJson(body);
     _links[link.id] = link;
     return MockResponse.created(link.toJson());
+  }
+
+  MockResponse _updateLink(MockRequest req) {
+    final current = _links[req.params['id']];
+    if (current == null || current.deletedAt != null) {
+      throw const MockApiException.notFound();
+    }
+    final merged = {
+      ...current.toJson(),
+      ...req.jsonBody,
+      'id': current.id,
+      'studentId': current.studentId,
+      'guardianId': current.guardianId,
+      'createdAt': current.createdAt.toIso8601String(),
+      'updatedAt': DateTime.now().toUtc().toIso8601String(),
+    };
+    final updated = GuardianLinkModel.fromJson(merged);
+    _links[current.id] = updated;
+    return MockResponse.ok(updated.toJson());
   }
 
   MockResponse _deleteLink(MockRequest req) {

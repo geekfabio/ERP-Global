@@ -11,8 +11,11 @@ class AppTextField extends StatelessWidget {
     super.key,
     required this.label,
     this.controller,
+    this.initialValue,
     this.validator,
     this.onChanged,
+    this.onSaved,
+    this.maxLines = 1,
     this.helperText,
     this.hintText,
     this.keyboardType,
@@ -25,8 +28,15 @@ class AppTextField extends StatelessWidget {
 
   final String label;
   final TextEditingController? controller;
+
+  /// Valor inicial (não usar em conjunto com [controller]).
+  final String? initialValue;
   final FormFieldValidator<String>? validator;
   final ValueChanged<String>? onChanged;
+
+  /// Chamado por `FormState.save()` (formulários com rascunho no separador).
+  final FormFieldSetter<String>? onSaved;
+  final int maxLines;
   final String? helperText;
   final String? hintText;
   final TextInputType? keyboardType;
@@ -39,6 +49,9 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) => TextFormField(
     controller: controller,
+    initialValue: initialValue,
+    onSaved: onSaved,
+    maxLines: maxLines,
     enabled: enabled,
     obscureText: obscureText,
     keyboardType: keyboardType,
@@ -189,13 +202,17 @@ class AppPhoneField extends StatelessWidget {
     super.key,
     this.label = 'Telefone',
     this.controller,
+    this.initialValue,
     this.onChanged,
+    this.onSaved,
     this.required = false,
   });
 
   final String label;
   final TextEditingController? controller;
+  final String? initialValue;
   final ValueChanged<String>? onChanged;
+  final FormFieldSetter<String>? onSaved;
   final bool required;
 
   /// Só dígitos do número nacional (sem `+244`); `null` se inválido.
@@ -210,6 +227,8 @@ class AppPhoneField extends StatelessWidget {
   Widget build(BuildContext context) => AppTextField(
     label: label,
     controller: controller,
+    initialValue: initialValue,
+    onSaved: onSaved,
     keyboardType: TextInputType.phone,
     hintText: '+244 9XX XXX XXX',
     inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9+\s-]'))],

@@ -301,6 +301,34 @@ void main() {
       expect(found.items.map((x) => x.id), contains(g.id));
     });
 
+    test('actualizar vínculo: parentesco e responsabilidades; 404', () async {
+      final env = _Env(count: 10);
+      final s = (await env.students.list(
+        const StudentQuery(),
+      )).getOrThrow().items.first;
+      final item = (await env.guardians.forStudent(s.id)).getOrThrow().first;
+      final updated = (await env.guardians.updateLink(
+        item.link.copyWith(
+          relationship: GuardianRelationship.tutor,
+          isEmergency: !item.link.isEmergency,
+          canPickup: !item.link.canPickup,
+        ),
+      )).getOrThrow();
+      expect(updated.relationship, GuardianRelationship.tutor);
+      final after = (await env.guardians.forStudent(
+        s.id,
+      )).getOrThrow().firstWhere((x) => x.link.id == item.link.id).link;
+      expect(after.isEmergency, !item.link.isEmergency);
+      expect(after.canPickup, !item.link.canPickup);
+      expect(after.studentId, s.id);
+      expect(after.guardianId, item.guardian.id);
+
+      final missing = await env.guardians.updateLink(
+        item.link.copyWith(id: '01JMISSINGLINK00000000000X'),
+      );
+      expect(_fail(missing).code, 'NOT_FOUND');
+    });
+
     test('criar encarregado, ligar (409 se repetido) e desligar', () async {
       final env = _Env(count: 10);
       final s = (await env.students.list(

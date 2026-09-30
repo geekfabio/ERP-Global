@@ -53,6 +53,8 @@ const authProfilePermissions = <AuthProfile, List<String>>{
     'students.record.read',
     'students.record.create',
     'students.record.update',
+    'students.health.read',
+    'students.health.update',
   ],
   AuthProfile.teacher: ['academic.class.read', 'grades.entry.write'],
   AuthProfile.homeroomTeacher: ['academic.class.read', 'grades.entry.write'],

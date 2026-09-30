@@ -130,6 +130,16 @@ class ApiGuardianRepository implements GuardianRepository {
       });
 
   @override
+  Future<Result<GuardianLinkModel>> updateLink(GuardianLinkModel link) =>
+      Result.guard(() async {
+        final response = await _client.dio.patch<dynamic>(
+          '/v1/guardian-links/${link.id}',
+          data: link.toJson(),
+        );
+        return ApiEnvelope.object(response, GuardianLinkModel.fromJson);
+      });
+
+  @override
   Future<Result<void>> unlink(String linkId) => Result.guard(() async {
     await _client.dio.delete<dynamic>('/v1/guardian-links/$linkId');
   });
