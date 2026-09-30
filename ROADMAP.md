@@ -1,430 +1,156 @@
 # Roadmap — ERP-Global
 
-Este roadmap organiza a evolução inicial do ERP-Global, começando pela fundação técnica do Flutter, passando pelos módulos principais, até à integração com backend, offline first, catracas, refeitório e portal do encarregado.
+Plataforma completa de gestão escolar, **modular e licenciada por módulos**. Detalhe funcional em [`docs/03-funcionalidades.md`](docs/03-funcionalidades.md); licenciamento em [`docs/02-modulos-e-licenciamento.md`](docs/02-modulos-e-licenciamento.md); execução por issues pequenas em [`docs/05-orquestracao-agentes.md`](docs/05-orquestracao-agentes.md).
+
+Cada fase entrega algo navegável sobre uma **API mockada** ([`docs/07-mock-api.md`](docs/07-mock-api.md)). Não há registo público: só login; contas criadas por administração. Cada módulo respeita perfis/permissões e a licença.
 
 ## Fase 0 — Preparação do Projecto
 
-- Criar repositório `ERP-Global`
-- Definir padrão de commits
-- Configurar Flutter/FVM
-- Criar estrutura base do projecto
-- Definir tema global e design system
-- Definir arquitectura feature-first
-- Criar estrutura base para:
-  - `models/`
-  - `repositories/`
-  - `data_mocks/`
-  - `presentation/`
-  - `domain/`
-- Criar documentação inicial
-- Definir convenções de nomes
-- Definir padrões para erros, estados e carregamentos
+- Repositório, padrão de commits, Flutter/FVM
+- Estrutura feature-first (`models/`, `repositories/`, `data_mocks/`, `domain/`, `presentation/`)
+- Convenções de nomes; padrões de erros, estados e carregamentos
+- Documentação completa (`docs/`), `AGENTS.md`, template de issues, labels
+- **Logo e identidade geradas por IA** (brief em `docs/04-design-system.md`)
 
-## Fase 1 — Fundação Flutter
+## Fase 1 — Fundação Flutter e Design System
 
-### Objectivo
+- Riverpod, GoRouter, tema claro/escuro com **tokens** (usar bibliotecas sólidas)
+- Componentes base: botões, inputs, cards, **DataTable**, modais, toasts/alerts, layout dashboard, sidebar, topbar (responsivos)
+- Gráficos, skeletons, empty/loading/error states
+- **Animações** (transições, KPIs, feedback) respeitando acessibilidade
+- Tratamento global de erros, i18n pt-AO
+- Autenticação mockada e utilizadores mockados por perfil
 
-Criar uma base escalável para que todos os módulos sejam desenvolvidos com consistência.
+**Resultado:** app navegável com layout administrativo funcional.
 
-### Tarefas
+## Fase 2 — Autenticação, Perfis, Permissões e Licenciamento
 
-- Configurar Riverpod
-- Configurar GoRouter
-- Configurar tema claro/escuro
-(Usar livrarias ou bibliotecas solidas idealmente)
-- Criar componentes base:
-  - Botões
-  - Inputs
-  - Cards
-  - Tabelas
-  - Modais
-  - Toasts/alerts
-  - Layout dashboard
-  - Sidebar
-  - Topbar
-- Criar tratamento global de erros
-- Criar loading states e empty states
-- Criar estrutura base de autenticação mockada
-- Criar utilizadores mockados por perfil
-
-### Resultado esperado
-
-Aplicação Flutter navegável, com layout administrativo funcional e dados simulados.
-
-## Fase 2 — Autenticação, Perfis e Permissões
-
-### Objectivo
-
-Preparar o controlo de acesso por tipo de utilizador.
-
-### Perfis iniciais
-
-- Super Administrador
-- Direcção
-- Secretaria
-- Professor
-- Financeiro
-- Contabilista
-- RH
-- Operador do Refeitório
-- Segurança
-- Bibliotecário
-- Encarregado
-- Aluno
+### Perfis
+Super Administrador, Direcção, Coordenação, Secretaria, Professor, Director de turma, Financeiro, Contabilista, RH, Operador do Refeitório, Segurança, Bibliotecário, Encarregado, Aluno.
 
 ### Tarefas
+- `UserModel`, `RoleModel`, `PermissionModel` (com **âmbito**: campus/curso/classe/turma)
+- `AuthRepository` + `MockAuthRepository` + `auth_mock_data.dart`; login e sessão local mockados
+- Controlo de rotas por perfil (`PermissionGuard`) e auditoria
+- **`ModuleRegistry` + `LicenseService`**: licença assinada, validação offline, planos, limites, período de graça, `ModuleGuard`, ecrã "módulo não licenciado"
 
-- Criar `UserModel`
-- Criar `RoleModel`
-- Criar `PermissionModel`
-- Criar `AuthRepository`
-- Criar `MockAuthRepository`
-- Criar `auth_mock_data.dart`
-- Criar login mockado
-- Criar controlo de rotas por perfil
-- Criar sessão local mockada
+## Fase 3 — Configurações Gerais e Estrutura Escolar
 
-## Fase 3 — Configurações Gerais
+- Dados da instituição, campus/filiais
+- **Ano lectivo** (planeado → activo → em fecho → encerrado)
+- **Períodos/Trimestres** (datas, prazos de notas, abertura/fecho)
+- Ciclos, classes, cursos, currículo, turmas, disciplinas, salas, turnos
+- Moedas, impostos, regras académicas, regras financeiras
+- Refeitório, cartões, catracas, cloud/sincronização, notificações, importação/exportação
 
-### Objectivo
+**Resultado:** base configurável que alimenta os restantes módulos.
 
-Construir o módulo de configurações para evitar regras fixas no código.
+## Fase 4 — Alunos, Ficha do Aluno, Matrículas e Encarregados
 
-### Áreas de configuração
+- Models: `StudentModel`, `EnrollmentModel`, `GuardianModel`, `StudentDocumentModel`, `StudentCardModel` (+ saúde, ocorrências, transferências)
+- Listagem, pesquisa avançada, detecção de duplicados
+- **Ficha do aluno completa** (identificação, encarregados, saúde, percurso, matrícula, notas, assiduidade, financeiro, disciplina, documentos, cartão, auditoria)
+- Encarregados e vínculo (responsável financeiro, emergência, recolha)
+- **Matrículas**: nova, renovação (em massa), transferência, reingresso; wizard com documentos e taxa; ficha/comprovativo/contrato em PDF
+- Histórico académico, estado do aluno, associação de cartão escolar
 
-- Dados da instituição
-- Campus/filiais
-- Ano lectivo
-- Períodos
-- Classes
-- Cursos
-- Turmas
-- Disciplinas
-- Salas
-- Turnos
-- Moedas
-- Impostos
-- Regras académicas
-- Regras financeiras
-- Refeitório
-- Cartões
-- Catracas
-- Cloud/sincronização
-- Notificações
-- Importação/exportação
+## Fase 5 — Gestão Académica, Professores e Avaliações
 
-### Resultado esperado
+- Cursos, classes, turmas, disciplinas
+- **Professores e atribuição professor↔turma↔disciplina**, director de turma
+- Horários com detecção de conflitos
+- Presenças e faltas (justificações, limites, alertas)
+- **Avaliações e notas**: esquema configurável (MAC/NPP/NPT → MT → MF), lançamento por trimestre, fecho/reabertura auditada
+- Médias, **boletim de notas** (PDF), **pautas**, conselho de turma
+- Certificados e declarações (QR de verificação)
+- Estatísticas de desempenho
 
-Base configurável para alimentar os restantes módulos.
+**Objectivo:** controlar o percurso académico do aluno.
 
-## Fase 4 — Alunos, Matrículas e Encarregados
+## Fase 6 — Financeiro, Facturação e Tesouraria
 
-### Objectivo
-
-Criar a base académica e administrativa do aluno.
-
-### Models
-
-- `StudentModel`
-- `EnrollmentModel`
-- `GuardianModel`
-- `StudentDocumentModel`
-- `StudentCardModel`
-
-### Repositories
-
-- `StudentRepository`
-- `MockStudentRepository`
-- `GuardianRepository`
-- `MockGuardianRepository`
-
-### Data Mocks
-
-- `students_mock_data.dart`
-- `guardians_mock_data.dart`
-- `enrollments_mock_data.dart`
-
-### Funcionalidades
-
-- Listagem de alunos
-- Cadastro de aluno
-- Associação de encarregados
-- Matrícula
-- Histórico académico
-- Documentos
-- Estado do aluno
-- Associação de cartão escolar
-
-## Fase 5 — Gestão Académica
-
-### Funcionalidades
-
-- Cursos
-- Classes
-- Turmas
-- Disciplinas
-- Professores por disciplina
-- Horários
-- Presenças
-- Faltas
-- Avaliações
-- Notas
-- Médias
-- Pautas
-- Certificados e declarações
-
-### Objectivo
-
-Permitir que a escola controle o percurso académico do aluno.
-
-## Fase 6 — Financeiro e Tesouraria
-
-### Funcionalidades
-
-- Propinas
-- Matrículas
-- Mensalidades
-- Taxas
-- Multas
-- Descontos
-- Bolsas
-- Pagamentos
-- Recibos
-- Facturas
-- Conta corrente do aluno
-- Caixa
-- Bancos
+- Tabela de preços por ano lectivo × classe × campus
+- Propinas, matrículas, mensalidades, taxas, multas/juros, descontos, bolsas
+- **Facturação**: facturas, facturas-recibo, recibos, notas de crédito, séries, IVA/isenções; preparação fiscal local (AGT/SAF-T)
+- Pagamentos (numerário, transferência, TPA, referência, saldo pré-pago), parciais e adiantados
+- Conta corrente do aluno e do encarregado
+- Caixa (abertura/fecho, sangrias), bancos e reconciliação
+- Devedores, avisos automáticos, acordos de pagamento
 - Relatórios financeiros
+- Models: `InvoiceModel`, `ReceiptModel`, `PaymentModel`, `StudentAccountModel`, `CashRegisterModel`
 
-### Models
+## Fase 7 — Contabilidade e Recursos Humanos
 
-- `InvoiceModel`
-- `ReceiptModel`
-- `PaymentModel`
-- `StudentAccountModel`
-- `CashRegisterModel`
+### Contabilidade
+Plano de contas, lançamentos (automáticos do financeiro), diário, razão, centros de custo, balancetes, contas a pagar/receber, exercícios, relatórios. Regras próprias e auditáveis.
 
-## Fase 7 — Contabilidade
-
-### Funcionalidades
-
-- Plano de contas
-- Lançamentos
-- Diário
-- Razão
-- Centros de custo
-- Balancetes
-- Contas a pagar
-- Contas a receber
-- Exercícios contabilísticos
-- Relatórios contabilísticos
-
-### Observação
-
-A contabilidade deverá receber movimentos gerados pelo financeiro, mas manter regras próprias e auditáveis.
+### RH
+Funcionários (docentes e não docentes), contratos, cargos, assiduidade, férias, folha salarial, documentos. Docentes alimentam a Fase 5.
 
 ## Fase 8 — Refeitório, Restaurante e Carteira Pré-paga
 
-### Diferencial principal
-
-O aluno poderá usar o cartão escolar para consumir no refeitório/restaurante, descontando automaticamente do saldo pré-pago.
-
-### Funcionalidades
-
-- Gestão de menus
-- Tipos de refeição
-- Preços
-- Horários
-- Vendas
-- POS do refeitório
-- Saldo pré-pago
-- Carregamentos
-- Consumos
-- Estornos
-- Extracto
-- Limites diários
-- Bloqueio do cartão
-- Relatórios de consumo
-
-### Fluxo
+Menus, tipos de refeição, preços, horários, POS, saldo pré-pago, carregamentos, consumos, estornos, extracto, limites diários, alergias visíveis no POS, bloqueio do cartão, relatórios de consumo.
 
 ```txt
-Cartão do aluno
-  -> Terminal do refeitório
-  -> Validação local
-  -> Desconto no saldo
-  -> Registo da transacção
-  -> Sincronização futura
+Cartão do aluno -> Terminal do refeitório -> Validação local
+  -> Desconto no saldo -> Registo da transacção -> Sincronização futura
 ```
 
-## Fase 9 — Catracas, Cartões e Controlo de Acesso
+## Fase 9 — Cartões, Catracas, Controlo de Acesso e Serviços do Campus
 
-### Funcionalidades
+- Registo, associação (aluno/funcionário), bloqueio e substituição de cartões
+- Entrada/saída, logs, regras por horário e campus/zona, alertas a encarregados
+- Validação **local** (cloud não obrigatória); integração futura com catracas, RFID/NFC/biometria
+- **Biblioteca**: acervo, empréstimos, multas, reservas
+- **Inventário/Património**: bens, localização, stock
 
-- Registo de cartões
-- Associação cartão/aluno/funcionário
-- Bloqueio de cartões
-- Substituição de cartões
-- Entrada e saída
-- Logs de acesso
-- Regras por horário
-- Regras por campus/zona
-- Integração futura com catracas
-- Integração futura com biometria/RFID/NFC
+## Fase 10 — Portais (Encarregado, Aluno) e Comunicação
 
-### Observação
-
-A cloud não deve ser obrigatória para o funcionamento das catracas. A validação principal deve ocorrer localmente.
-
-## Fase 10 — Portal do Encarregado
-
-### Funcionalidades
-
-- Login do encarregado
-- Lista de educandos
-- Notas
-- Faltas
-- Horários
-- Pagamentos
-- Dívidas
-- Recibos
-- Facturas
-- Saldo do cartão
-- Consumos no refeitório
-- Entradas e saídas
-- Comunicados
-- Pedidos de documentos
-- Justificação de faltas
-- Notificações
+- Login do encarregado/aluno; multi-educando
+- Notas, boletins, faltas, horários, pagamentos, dívidas, recibos, facturas
+- Saldo do cartão, consumos, entradas e saídas
+- Comunicados, mensagens, notificações (push/SMS/e-mail), agenda escolar
+- Pedidos de documentos, justificação de faltas
 
 ## Fase 11 — Importação e Exportação
 
-### Importação
-
-- Excel
-- CSV
-- Templates oficiais
-- Validação de dados
-- Pré-visualização
-- Relatório de erros
-- Importação de alunos
-- Importação de encarregados
-- Importação de professores
-- Importação de turmas
-- Importação de notas
-- Importação financeira
-
-### Exportação
-
-- Excel
-- CSV
-- PDF
-- Relatórios filtrados
-- Respeito às permissões
+**Importação:** Excel/CSV, templates oficiais, validação, pré-visualização, relatório de erros — alunos, encarregados, professores, turmas, notas, financeiro.
+**Exportação:** Excel, CSV, PDF, relatórios filtrados, respeito às permissões.
 
 ## Fase 12 — Offline First e Sincronização
 
-### Estratégia
-
-- Base local
-- Outbox de alterações
-- Identificadores UUID/ULID
-- Estado de sincronização
-- Registos pendentes
-- Registos com erro
-- Resolução de conflitos
-- Sync manual e automático
-- Cloud opcional
-
-### Estados
-
-- Apenas local
-- Local + backup cloud
-- Local + sincronização cloud
+Base local (Drift), outbox, ULID, estados de sincronização, pendentes/erros, conflitos, sync manual e automático, cloud opcional (módulo `cloud_sync`).
+Estados: apenas local · local + backup cloud · local + sincronização cloud.
 
 ## Fase 13 — Relatórios e Dashboards
 
-### Dashboards
-
-- Direcção
-- Secretaria
-- Financeiro
-- Contabilidade
-- Refeitório
-- Catracas
-- RH
-- Académico
-- Portal do encarregado
-
-### Indicadores
-
-- Alunos matriculados
-- Alunos activos
-- Propinas pagas
-- Dívidas
-- Receitas
-- Despesas
-- Presenças
-- Entradas/saídas
-- Consumos no refeitório
-- Saldo pré-pago
-- Stock
-- Desempenho académico
+Dashboards: Direcção, Coordenação, Secretaria, Professor, Financeiro, Contabilidade, Refeitório, Catracas, RH, Académico, Portal.
+Indicadores: matriculados/activos, aprovação, propinas pagas, dívidas, receitas/despesas, presenças, entradas/saídas, consumos, saldo pré-pago, stock, desempenho — com filtros por **ano lectivo, trimestre e campus** e comparação entre períodos. Relatórios agendados e exportáveis.
 
 ## Fase 14 — Testes e Qualidade
 
-- Unit tests
-- Widget tests
-- Testes de repositories
-- Testes de data mocks
-- Testes de navegação
-- Testes de permissões
-- Testes de sincronização
-- CI/CD
-- Análise estática
-- Padronização de código
+Unit, widget, repositories, data mocks, navegação, **permissões e licença** (app arranca com cada módulo desligado), sincronização, CI/CD, análise estática, padronização.
 
 ## Fase 15 — Integração com Backend Real
 
-### Objectivo
+Manter contratos nos repositories, trocar `MockRepository` por `ApiRepository`, fallback local, sincronizar com backend, validar contratos de API e numeração fiscal com a equipa backend.
 
-Substituir gradualmente mocks por API real.
-
-### Estratégia
-
-- Manter contratos nos repositories
-- Trocar `MockRepository` por `ApiRepository`
-- Manter fallback local quando necessário
-- Sincronizar dados locais com backend
-- Validar contratos de API com a equipa backend
-
-## Convenção Recomendada
-
-Cada módulo deve nascer com:
+## Convenção por módulo
 
 ```txt
-data/
-  models/
-  repositories/
-  data_mocks/
-domain/
-  entities/
-  usecases/
-presentation/
-  pages/
-  widgets/
-  providers/
+data/         models/  repositories/  data_mocks/
+domain/       entities/  usecases/
+presentation/ pages/  widgets/  providers/
 ```
 
 ## Prioridade Inicial
 
-1. Fundação Flutter
+1. Fundação Flutter + CI
 2. Design system
-3. Auth mockado
-4. Configurações
-5. Alunos
-6. Encarregados
-7. Financeiro básico
-8. Refeitório com saldo pré-pago
-9. Cartões
-10. Portal do encarregado
+3. Auth mockado, perfis, módulos e licença
+4. Configurações (ano lectivo, trimestres, turmas)
+5. Alunos, ficha, matrículas, encarregados
+6. Professor↔turma, notas, boletim
+7. Financeiro/facturação básica
+8. Refeitório com saldo pré-pago, cartões
+9. Portal do encarregado

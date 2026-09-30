@@ -1,0 +1,39 @@
+name: Tarefa pequena (agente)
+description: Issue pequena e autocontida para um agente (Claude Code / Codex) concluir num único PR
+title: "[modulo] Verbo + resultado"
+labels: ["status:ready"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto
+      description: Porquê e onde (link para docs/ e issues relacionadas)
+    validations:
+      required: true
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Tarefas
+      value: "- [ ] "
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critérios de aceitação
+      value: "- [ ] flutter analyze limpo\n- [ ] testes passam\n- [ ] "
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Ficheiros esperados
+  - type: textarea
+    id: out
+    attributes:
+      label: Fora de âmbito
+  - type: input
+    id: deps
+    attributes:
+      label: Depende de
+      placeholder: "#12, #13"

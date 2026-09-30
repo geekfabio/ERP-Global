@@ -4,6 +4,28 @@ ERP-Global é uma plataforma de gestão escolar completa, pensada para escolas, 
 
 O projecto será desenvolvido em **Flutter** no frontend, com backend atribuído a outra equipa/pessoa, seguindo uma arquitectura modular, offline first e preparada para sincronização opcional com cloud.
 
+## Documentação
+
+| Documento | Conteúdo |
+|---|---|
+| [ROADMAP](ROADMAP.md) | Marcos e fases |
+| [docs/01 — Perfis e permissões](docs/01-perfis-e-permissoes.md) | 14 perfis, RBAC com âmbito, matriz de acessos |
+| [docs/02 — Módulos e licenciamento](docs/02-modulos-e-licenciamento.md) | Catálogo de módulos, planos, licença assinada offline |
+| [docs/03 — Funcionalidades](docs/03-funcionalidades.md) | Ano lectivo, trimestres, ficha do aluno, matrículas, notas, boletim, facturação… |
+| [docs/04 — Design system](docs/04-design-system.md) | Tokens, componentes, animações, brief do logo por IA |
+| [docs/05 — Orquestração de agentes](docs/05-orquestracao-agentes.md) | Como Claude Code e Codex trabalham por issues pequenas |
+| [docs/06 — Modelo de dados](docs/06-modelo-de-dados.md) | Entidades e relações |
+| [docs/07 — Mock API e login](docs/07-mock-api.md) | API simulada (Dio), contrato, seed, autenticação só-login |
+| [AGENTS.md](AGENTS.md) / [CLAUDE.md](CLAUDE.md) | Regras para agentes |
+
+## Princípios
+
+- **Modular e licenciado**: cada secção da escola é um módulo; a licença (assinada, validada offline) define o que está activo.
+- **Multi-perfil**: direcção, coordenação, secretaria, professores, financeiro, encarregados, alunos e mais, cada um com a sua experiência.
+- **Offline first**; API mockada realista (mesmo contrato do backend) até o backend existir.
+- **Sem registo público**: só login; contas são criadas por administração (`super_admin`).
+- **Design consistente** com tokens, componentes partilhados e animações com propósito.
+
 ## Visão do Produto
 
 O ERP-Global pretende reunir num único ecossistema:
