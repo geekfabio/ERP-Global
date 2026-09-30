@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
 import 'core/network/api_client.dart';
+import 'core/security/permission_providers.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
+import 'features/auth/presentation/providers/auth_state.dart';
 
 void main() {
   runApp(
@@ -11,6 +13,10 @@ void main() {
       overrides: [
         tokenStoreProvider.overrideWith(
           (ref) => ref.watch(persistentTokenStoreProvider),
+        ),
+        // O `core` não conhece `features/`: liga as permissões à sessão de auth.
+        sessionPermissionsProvider.overrideWith(
+          (ref) => ref.watch(currentSessionProvider)?.permissions,
         ),
         // Módulos com API mock; só têm efeito com `AppConfig.useMockApi`.
         mockApiModulesProvider.overrideWith(

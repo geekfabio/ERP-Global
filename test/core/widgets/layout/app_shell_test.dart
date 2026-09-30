@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../helpers/auth_test_helpers.dart';
+
 Widget _app() {
   final router = GoRouter(
     initialLocation: '/students/123',
@@ -22,7 +24,10 @@ Widget _app() {
       ),
     ],
   );
-  return ProviderScope(child: MaterialApp.router(routerConfig: router));
+  return ProviderScope(
+    overrides: permissionsOnly(['*']),
+    child: MaterialApp.router(routerConfig: router),
+  );
 }
 
 Future<void> _pumpAt(WidgetTester tester, Size size) async {
