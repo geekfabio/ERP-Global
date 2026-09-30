@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
+import 'core/audit/audit_providers.dart';
+import 'core/audit/audit_service.dart';
 import 'core/modules/license_gate.dart';
 import 'core/network/api_client.dart';
 import 'core/security/permission_providers.dart';
@@ -25,6 +27,17 @@ Future<void> main() async {
         sessionPermissionsProvider.overrideWith(
           (ref) => ref.watch(currentSessionProvider)?.permissions,
         ),
+        // Quem pratica as acções auditadas: o utilizador da sessão de auth.
+        auditActorProvider.overrideWith((ref) {
+          final user = ref.watch(currentSessionProvider)?.user;
+          return user == null
+              ? null
+              : AuditActor(
+                  id: user.id,
+                  name: user.name,
+                  institutionId: user.institutionId,
+                );
+        }),
         // Liga o gate de licença do core ao serviço de licenciamento.
         licenseGateProvider.overrideWith(
           (ref) => ref.watch(licenseGateFromServiceProvider),
@@ -34,6 +47,7 @@ Future<void> main() async {
           (ref) => [
             ref.watch(authMockHandlersProvider),
             ref.watch(studentsMockHandlersProvider),
+            ref.watch(auditMockHandlersProvider),
           ],
         ),
       ],

@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme/app_tokens.dart';
+import '../../../../core/audit/audit_log_model.dart';
+import '../../../../core/audit/audit_providers.dart';
 import '../../../../core/network/api_envelope.dart';
 import '../../../../core/network/mock/mock_reference_data.dart';
 import '../../../../core/security/permission_providers.dart';
@@ -89,6 +91,17 @@ class _StudentsListPageState extends ConsumerState<StudentsListPage> {
     final toast = ref.read(toastProvider.notifier);
     result.when(
       ok: (_) {
+        // Acção sensível: fica em auditoria (falhar aqui não anula a remoção).
+        unawaited(
+          ref
+              .read(auditServiceProvider)
+              .record(
+                entity: 'student',
+                action: AuditAction.delete,
+                entityId: s.id,
+                before: s.toJson(),
+              ),
+        );
         toast.success('Aluno removido');
         ref.invalidate(studentListProvider);
       },
