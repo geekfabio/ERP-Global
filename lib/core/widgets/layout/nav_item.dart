@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../modules/license_gate.dart';
 import '../../modules/module_catalog.dart';
 import '../../security/permission_providers.dart';
 
@@ -13,16 +14,20 @@ class NavItem {
   final String path;
 }
 
-/// Menu = módulos registados ∩ permissões do utilizador (a licença passa a
-/// filtrá-lo na #24). "Painel" abre sempre; os módulos obrigatórios
+/// Menu = módulos registados ∩ licença ∩ permissões do utilizador.
+/// "Painel" abre sempre; os módulos obrigatórios
 /// (Definições) ficam no fim.
 final navItemsProvider = Provider<List<NavItem>>((ref) {
   final permissions = ref.watch(permissionServiceProvider);
+  final enabled = ref.watch(enabledModulesProvider);
   final modules = ref
       .watch(moduleRegistryProvider)
       .all
       .where(
-        (m) => m.showInMenu && permissions.canAccessNamespace(m.namespace),
+        (m) =>
+            m.showInMenu &&
+            enabled.contains(m.code) &&
+            permissions.canAccessNamespace(m.namespace),
       );
   NavItem toItem(m) => NavItem(label: m.name, icon: m.icon, path: m.path);
   return [

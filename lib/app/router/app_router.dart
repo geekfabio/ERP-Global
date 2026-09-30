@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/animations/app_transitions.dart';
 import '../../core/animations/reduce_motion.dart';
+import '../../core/modules/license_gate.dart';
 import '../../core/modules/module_catalog.dart';
 import '../../core/security/permission_providers.dart';
 import '../../core/widgets/layout/app_shell.dart';
+import '../../core/widgets/license/license_widgets.dart';
 import '../../core/widgets/states/app_states.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/providers/active_role.dart';
@@ -44,6 +46,11 @@ String? appRedirect(Ref ref, GoRouterState state) {
         : withFrom('/login');
   }
 
+  // A validar a licença: aguarda em /splash antes de decidir acessos a módulos.
+  if (ref.read(licenseGateProvider).loading) {
+    return location == '/splash' ? null : withFrom('/splash');
+  }
+
   // Vários perfis: tem de escolher o activo antes de entrar.
   final needsRole =
       session.roles.length > 1 && ref.read(activeRoleProvider) == null;
@@ -55,11 +62,13 @@ String? appRedirect(Ref ref, GoRouterState state) {
 
   final registry = ref.read(moduleRegistryProvider);
   final permissions = ref.read(permissionServiceProvider);
+  final enabled = ref.read(enabledModulesProvider);
   for (final m in registry.all) {
     final inModule = location == m.path || location.startsWith('${m.path}/');
-    if (inModule && !permissions.canAccessNamespace(m.namespace)) {
-      return '/forbidden';
-    }
+    if (!inModule) continue;
+    // ModuleGuard: módulo fora da licença → ecrã "não licenciado".
+    if (!enabled.contains(m.code)) return '/not-licensed?module=${m.code}';
+    if (!permissions.canAccessNamespace(m.namespace)) return '/forbidden';
   }
   return null;
 }
@@ -73,6 +82,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   ref.listen(authStateProvider, (_, _) => refresh.value++);
   ref.listen(activeRoleProvider, (_, _) => refresh.value++);
   ref.listen(sessionPermissionsProvider, (_, _) => refresh.value++);
+  ref.listen(licenseGateProvider, (_, _) => refresh.value++);
   ref.onDispose(refresh.dispose);
 
   return GoRouter(
@@ -103,6 +113,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/dashboard',
             builder: (context, state) => const Center(child: Text('Painel')),
+          ),
+          GoRoute(
+            path: '/not-licensed',
+            builder: (context, state) => NotLicensedPage(
+              moduleCode: state.uri.queryParameters['module'],
+            ),
           ),
           GoRoute(
             path: '/forbidden',

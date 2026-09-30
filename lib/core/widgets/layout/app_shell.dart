@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_tokens.dart';
+import '../license/license_widgets.dart';
 import 'app_topbar.dart';
 import 'breadcrumbs.dart';
 import 'nav_item.dart';
@@ -23,6 +24,7 @@ class AppShell extends ConsumerWidget {
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const LicenseBannerBar(),
         Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,

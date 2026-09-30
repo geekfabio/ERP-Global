@@ -64,26 +64,48 @@ class PermissionGrant {
 /// Verificação de permissões. Regra de ouro: a UI esconde, o router bloqueia e o
 /// repository valida — este serviço é a fonte única para as três camadas.
 class PermissionService {
-  const PermissionService(this.grants);
+  const PermissionService(this.grants, {this.readOnly = false});
 
-  const PermissionService.none() : grants = const [];
+  const PermissionService.none() : grants = const [], readOnly = false;
 
   /// A partir dos códigos da sessão (sem âmbito).
-  factory PermissionService.fromCodes(Iterable<String> codes) =>
-      PermissionService([for (final c in codes) PermissionGrant(c)]);
+  factory PermissionService.fromCodes(
+    Iterable<String> codes, {
+    bool readOnly = false,
+  }) => PermissionService([
+    for (final c in codes) PermissionGrant(c),
+  ], readOnly: readOnly);
 
   final List<PermissionGrant> grants;
 
+  /// Licença em modo só leitura: acções que alteram dados são negadas
+  /// (só `read` e `export` passam), mesmo com a permissão concedida.
+  final bool readOnly;
+
+  static bool _isReadAction(String permission) {
+    final action = permission.split('.').last;
+    return action == 'read' || action == 'export';
+  }
+
+  bool _blockedByReadOnly(String permission) =>
+      readOnly && !_isReadAction(permission);
+
   /// Tem [permission] para o [scope] pedido? Uma concessão restrita só vale
   /// se o pedido indicar o âmbito correspondente.
-  bool can(String permission, {PermissionScope? scope}) => grants.any(
-    (g) =>
-        g.matches(permission) &&
-        (g.scope == null || g.scope!.isUnrestricted || g.scope!.covers(scope)),
-  );
+  bool can(String permission, {PermissionScope? scope}) =>
+      !_blockedByReadOnly(permission) &&
+      grants.any(
+        (g) =>
+            g.matches(permission) &&
+            (g.scope == null ||
+                g.scope!.isUnrestricted ||
+                g.scope!.covers(scope)),
+      );
 
   /// Tem [permission] em algum âmbito? (Para mostrar/esconder menus e botões.)
-  bool canAny(String permission) => grants.any((g) => g.matches(permission));
+  bool canAny(String permission) =>
+      !_blockedByReadOnly(permission) &&
+      grants.any((g) => g.matches(permission));
 
   /// Alguma permissão do módulo/namespace [ns]? (Acesso à rota do módulo.)
   bool canAccessNamespace(String ns) =>
