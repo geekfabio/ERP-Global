@@ -157,10 +157,14 @@ final moduleRegistryProvider = Provider<ModuleRegistry>(
   (ref) => ModuleRegistry(moduleCatalog),
 );
 
-/// Rotas de todos os módulos registados: as do descritor ou um placeholder.
-List<RouteBase> buildModuleRoutes(ModuleRegistry registry) => [
+/// Rotas de todos os módulos registados: as do descritor, as fornecidas em
+/// [featureRoutes] (a app liga cada feature ao seu código) ou um placeholder.
+List<RouteBase> buildModuleRoutes(
+  ModuleRegistry registry, {
+  Map<String, List<RouteBase> Function()> featureRoutes = const {},
+}) => [
   for (final m in registry.all)
-    ...(m.routes?.call() ??
+    ...((m.routes ?? featureRoutes[m.code])?.call() ??
         [
           GoRoute(
             path: m.path,
