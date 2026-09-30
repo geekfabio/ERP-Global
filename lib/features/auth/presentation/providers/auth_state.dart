@@ -11,8 +11,13 @@ import 'auth_providers.dart';
 class AuthNotifier extends AsyncNotifier<AuthSession?> {
   @override
   Future<AuthSession?> build() async {
-    final result = await ref.read(authRepositoryProvider).restoreSession();
-    return result.valueOrNull;
+    try {
+      final result = await ref.read(authRepositoryProvider).restoreSession();
+      return result.valueOrNull;
+    } catch (_) {
+      // Ex.: armazenamento seguro indisponível — segue para o login.
+      return null;
+    }
   }
 
   /// Autentica; em sucesso actualiza o estado. O erro (`Failure`) é devolvido
