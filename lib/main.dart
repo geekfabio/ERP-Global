@@ -8,6 +8,7 @@ import 'core/security/permission_providers.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
 import 'features/auth/presentation/providers/auth_state.dart';
 import 'features/license/presentation/providers/license_providers.dart';
+import 'features/students/presentation/providers/student_providers.dart';
 
 void main() {
   runApp(
@@ -26,7 +27,10 @@ void main() {
         ),
         // Módulos com API mock; só têm efeito com `AppConfig.useMockApi`.
         mockApiModulesProvider.overrideWith(
-          (ref) => [ref.watch(authMockHandlersProvider)],
+          (ref) => [
+            ref.watch(authMockHandlersProvider),
+            ref.watch(studentsMockHandlersProvider),
+          ],
         ),
       ],
       child: const ErpGlobalApp(),
