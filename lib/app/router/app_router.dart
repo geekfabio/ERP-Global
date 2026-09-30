@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/animations/app_transitions.dart';
+import '../../core/animations/reduce_motion.dart';
 import '../../core/widgets/layout/app_shell.dart';
 
 /// Única rota pública: `/login`. Não existe registo (ver docs/07-mock-api.md).
@@ -12,8 +14,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: '/login',
-        builder: (context, state) =>
-            const Scaffold(body: Center(child: Text('ERP-Global'))),
+        pageBuilder: (context, state) => fadeThroughPage(
+          state: state,
+          reduceMotion: ref.read(reduceMotionProvider),
+          child: const Scaffold(body: Center(child: Text('ERP-Global'))),
+        ),
       ),
       // Rotas autenticadas partilham o shell; os módulos registam-se aqui (#22).
       ShellRoute(
