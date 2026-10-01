@@ -6,6 +6,7 @@ import '../../features/accounting/accounting_routes.dart';
 import '../../features/access_control/access_control_routes.dart';
 import '../../features/auth/auth_routes.dart';
 import '../../features/billing/billing_routes.dart';
+import '../../features/cafeteria/cafeteria_routes.dart';
 import '../../features/cards/cards_routes.dart';
 import '../../features/communication/communication_routes.dart';
 import '../../features/library/library_routes.dart';
@@ -33,6 +34,7 @@ final Map<String, List<RouteBase> Function()> featureModuleRoutes = {
   'billing': billingRoutes,
   'accounting': accountingRoutes,
   'access_control': accessControlRoutes,
+  'cafeteria': cafeteriaRoutes,
   'cards': cardsRoutes,
   'communication': communicationRoutes,
   'grades': gradesRoutes,

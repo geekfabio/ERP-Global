@@ -37,6 +37,29 @@ class EnrollmentConfirmed extends DomainEvent {
   final int feeMinor;
 }
 
+/// Carteira pré-paga do refeitório carregada. Contrato com o billing: este
+/// pode emitir recibo/registar a receita; `cafeteria` não conhece `billing`.
+class WalletToppedUp extends DomainEvent {
+  const WalletToppedUp({
+    required this.walletId,
+    required this.holderId,
+    required this.transactionId,
+    required this.amountMinor,
+    required this.method,
+    this.reference,
+    required DateTime occurredAt,
+  }) : super(occurredAt);
+
+  final String walletId;
+  final String holderId;
+  final String transactionId;
+  final int amountMinor;
+
+  /// `cash`, `bank_transfer`, `card` ou `payment_reference`.
+  final String method;
+  final String? reference;
+}
+
 /// Barramento em memória (broadcast). Quem consome subscreve por tipo.
 class DomainEventBus {
   final _controller = StreamController<DomainEvent>.broadcast(sync: true);
