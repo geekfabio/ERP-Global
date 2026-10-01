@@ -21,6 +21,7 @@ import 'features/inventory/presentation/providers/inventory_providers.dart';
 import 'features/license/presentation/providers/license_providers.dart';
 import 'features/license/presentation/providers/license_usage_providers.dart';
 import 'features/license/data/mock_api/license_mock_handlers.dart';
+import 'features/settings/presentation/providers/settings_providers.dart';
 import 'features/students/presentation/providers/student_providers.dart';
 
 Future<void> main() async {
@@ -84,6 +85,7 @@ Future<void> main() async {
             ref.watch(cardsMockHandlersProvider),
             ref.watch(inventoryMockHandlersProvider),
             ref.watch(licenseMockHandlersProvider),
+            ref.watch(settingsMockHandlersProvider),
           ],
         ),
       ],
