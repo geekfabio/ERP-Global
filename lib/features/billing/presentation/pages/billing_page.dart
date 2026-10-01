@@ -120,6 +120,14 @@ class _BillingPageState extends ConsumerState<BillingPage> {
                     ),
                   ),
                   Can(
+                    permission: 'billing.cash.read',
+                    child: IconButton(
+                      tooltip: 'Caixa',
+                      icon: const Icon(Icons.point_of_sale_outlined),
+                      onPressed: () => context.go('/billing/cash'),
+                    ),
+                  ),
+                  Can(
                     permission: 'billing.invoice.create',
                     child: Wrap(
                       spacing: AppSpacing.sm,

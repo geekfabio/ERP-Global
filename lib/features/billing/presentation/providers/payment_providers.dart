@@ -15,6 +15,7 @@ import '../../domain/payment_repository.dart';
 import '../../domain/payments.dart';
 import '../pdf/receipt_pdf_template.dart';
 import 'billing_providers.dart';
+import 'cash_providers.dart';
 
 /// Permissões das acções de pagamentos.
 const paymentReadPermission = 'billing.payment.read';
@@ -27,7 +28,9 @@ final paymentRepositoryProvider = Provider<PaymentRepository>(
 /// Handlers mock de pagamentos; partilham as cobranças do módulo billing.
 final paymentMockHandlersProvider = Provider<PaymentMockHandlers>((ref) {
   final billing = ref.watch(billingMockHandlersProvider);
+  final cash = ref.watch(cashMockHandlersProvider);
   return PaymentMockHandlers(
+    onPayment: cash.recordCashPayment,
     chargesOf: billing.chargesOf,
     setChargeStatus: billing.setChargeStatus,
   );

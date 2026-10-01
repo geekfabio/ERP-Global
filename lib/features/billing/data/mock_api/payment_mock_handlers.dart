@@ -20,11 +20,14 @@ class PaymentMockHandlers implements MockApiModule {
   PaymentMockHandlers({
     required this._chargesOf,
     required this._setChargeStatus,
+    this._onPayment,
     DateTime Function()? clock,
   }) : _clock = clock ?? (() => DateTime.now().toUtc()) {
     _reset();
   }
 
+  /// Notifica cada pagamento registado (ex.: o caixa regista o numerário).
+  final void Function(Payment payment)? _onPayment;
   final List<Charge> Function(String studentId) _chargesOf;
   final void Function(String id, ChargeStatus status) _setChargeStatus;
   final DateTime Function() _clock;
@@ -190,6 +193,7 @@ class PaymentMockHandlers implements MockApiModule {
       allocations: allocations,
     );
     _payments[payment.id] = payment;
+    _onPayment?.call(payment);
     final after = allocatedByCharge(_paymentsOf(studentId));
     for (final a in allocations) {
       _setChargeStatus(

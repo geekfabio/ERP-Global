@@ -34,3 +34,10 @@ enum PaymentMethod {
 
 /// Estado do registo do caixa; abertura/fecho pertencem à sessão de caixa.
 enum CashRegisterStatus { active, inactive }
+
+enum CashSessionStatus { open, closed }
+
+/// Tipo de movimento de caixa: recebimento em numerário (vindo de um
+/// pagamento), reforço (entrada) ou sangria (saída).
+@JsonEnum(fieldRename: FieldRename.snake)
+enum CashMovementType { cashPayment, supply, withdrawal }
