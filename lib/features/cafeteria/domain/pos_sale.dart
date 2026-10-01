@@ -12,6 +12,7 @@ class PosCustomer {
     this.cardBlocked = false,
     this.allergies = const [],
     this.spentTodayMinor = 0,
+    this.className,
   });
 
   final String holderId;
@@ -25,6 +26,9 @@ class PosCustomer {
 
   /// Consumido hoje (UTC), já descontados os estornos.
   final int spentTodayMinor;
+
+  /// Turma do aluno (ficha), quando conhecida; vai para o relatório de consumo.
+  final String? className;
 }
 
 /// Linha do carrinho: prato e quantidade.

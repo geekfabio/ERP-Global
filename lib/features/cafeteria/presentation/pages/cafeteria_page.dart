@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../widgets/meal_catalog_tabs.dart';
 import '../widgets/weekly_menu_tab.dart';
+import 'consumption_page.dart';
 import 'pos_page.dart';
 import 'wallets_page.dart';
 
@@ -12,7 +13,7 @@ class CafeteriaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DefaultTabController(
-    length: 5,
+    length: 6,
     child: Align(
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
@@ -31,6 +32,7 @@ class CafeteriaPage extends StatelessWidget {
                   Tab(text: 'Refeições'),
                   Tab(text: 'Pratos'),
                   Tab(text: 'POS'),
+                  Tab(text: 'Consumo'),
                 ],
               ),
               Expanded(
@@ -41,6 +43,7 @@ class CafeteriaPage extends StatelessWidget {
                     MealTypesTab(),
                     MealItemsTab(),
                     PosPage(),
+                    ConsumptionPage(),
                   ],
                 ),
               ),
