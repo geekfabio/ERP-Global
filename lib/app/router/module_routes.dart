@@ -6,6 +6,7 @@ import '../../features/access_control/access_control_routes.dart';
 import '../../features/auth/auth_routes.dart';
 import '../../features/cards/cards_routes.dart';
 import '../../features/communication/communication_routes.dart';
+import '../../features/library/library_routes.dart';
 import '../../features/license/license_routes.dart';
 import '../../features/guardians/guardians_routes.dart';
 import '../../features/import_export/import_export_routes.dart';
@@ -30,6 +31,7 @@ final Map<String, List<RouteBase> Function()> featureModuleRoutes = {
   'guardians': guardiansRoutes,
   'guardian_portal': portalRoutes,
   'inventory': inventoryRoutes,
+  'library': libraryRoutes,
   'students': studentsRoutes,
   'import_export': importExportRoutes,
 };

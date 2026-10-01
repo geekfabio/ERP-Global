@@ -20,6 +20,7 @@ import 'features/import_export/presentation/providers/import_providers.dart';
 import 'features/accounting/presentation/providers/accounting_providers.dart';
 import 'features/access_control/presentation/providers/access_providers.dart';
 import 'features/inventory/presentation/providers/inventory_providers.dart';
+import 'features/library/presentation/providers/library_providers.dart';
 import 'features/license/presentation/providers/license_providers.dart';
 import 'features/license/presentation/providers/license_usage_providers.dart';
 import 'features/license/data/mock_api/license_mock_handlers.dart';
@@ -98,6 +99,7 @@ Future<void> main() async {
             ref.watch(cardsMockHandlersProvider),
             ref.watch(inventoryMockHandlersProvider),
             ref.watch(accountingMockHandlersProvider),
+            ref.watch(libraryMockHandlersProvider),
             ref.watch(licenseMockHandlersProvider),
             ref.watch(settingsMockHandlersProvider),
             ref.watch(portalMockHandlersProvider),
