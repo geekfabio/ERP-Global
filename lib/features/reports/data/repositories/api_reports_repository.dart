@@ -4,6 +4,7 @@ import '../../../../core/network/api_envelope.dart';
 import '../../domain/reports_repository.dart';
 import '../models/academic_overview.dart';
 import '../models/dashboard_metric.dart';
+import '../models/finance_overview.dart';
 
 class ApiReportsRepository implements ReportsRepository {
   ApiReportsRepository(this._client);
@@ -45,6 +46,24 @@ class ApiReportsRepository implements ReportsRepository {
           },
         );
         return AcademicOverview.fromJson(
+          ApiEnvelope.data(response)! as Map<String, dynamic>,
+        );
+      });
+
+  @override
+  Future<Result<FinanceOverview>> financeOverview(FinanceOverviewQuery q) =>
+      Result.guard(() async {
+        final response = await _client.dio.get<dynamic>(
+          '/v1/reports/finance-overview',
+          queryParameters: {
+            'yearId': q.yearId,
+            if (q.termId != null) 'termId': q.termId,
+            if (q.campusId != null) 'campusId': q.campusId,
+            if (q.compareYearId != null) 'compareYearId': q.compareYearId,
+            if (q.compareTermId != null) 'compareTermId': q.compareTermId,
+          },
+        );
+        return FinanceOverview.fromJson(
           ApiEnvelope.data(response)! as Map<String, dynamic>,
         );
       });

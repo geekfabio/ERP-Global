@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/academic/period_context.dart';
+import '../../../../core/modules/license_gate.dart';
 import '../../../../core/utils/pt_ao_formatters.dart';
 import '../../../../core/widgets/cards/app_cards.dart';
 import '../../../../core/widgets/states/app_states.dart';
@@ -56,6 +57,13 @@ class DashboardPage extends ConsumerWidget {
                   icon: const Icon(Icons.school_outlined),
                   onPressed: () => context.go('/reports/academic'),
                 ),
+                if (ref.watch(enabledModulesProvider).contains('billing'))
+                  IconButton(
+                    key: const ValueKey('open_finance_dashboard'),
+                    tooltip: 'Financeiro e Contabilidade',
+                    icon: const Icon(Icons.account_balance_outlined),
+                    onPressed: () => context.go('/reports/finance'),
+                  ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
