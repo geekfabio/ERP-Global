@@ -7,6 +7,12 @@ import '../../../../core/network/mock/mock_types.dart';
 class ImportMockHandlers implements MockApiModule {
   ImportMockHandlers();
 
+  /// Campos obrigatórios por entidade suportada.
+  static const _required = {
+    'students': ['fullName'],
+    'guardians': ['fullName', 'phone'],
+  };
+
   final Map<String, List<Map<String, Object?>>> _stored = {};
 
   /// Registos gravados nesta sessão, por entidade (para testes).
@@ -22,7 +28,7 @@ class ImportMockHandlers implements MockApiModule {
 
   MockResponse _commit(MockRequest req) {
     final entity = req.params['entity']!;
-    if (entity != 'students') throw const MockApiException.notFound();
+    if (!_required.containsKey(entity)) throw const MockApiException.notFound();
     final records = req.jsonBody['records'];
     if (records is! List) {
       throw const MockApiException.validation({'records': 'Campo obrigatório'});
@@ -37,8 +43,10 @@ class ImportMockHandlers implements MockApiModule {
     for (var i = 0; i < records.length; i++) {
       final rec = Map<String, Object?>.from(records[i] as Map);
       final errors = <String, String>{};
-      if ((rec['fullName'] as String?)?.trim().isNotEmpty != true) {
-        errors['fullName'] = 'Campo obrigatório';
+      for (final f in _required[entity]!) {
+        if ((rec[f] as String?)?.trim().isNotEmpty != true) {
+          errors[f] = 'Campo obrigatório';
+        }
       }
       final bi = rec['biNumber'] as String?;
       if (bi != null && !bis.add(bi)) errors['biNumber'] = 'BI já registado';
