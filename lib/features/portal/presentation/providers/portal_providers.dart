@@ -2,7 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/modules/license_gate.dart';
 import '../../../../core/network/api_client.dart';
+import '../../../students/data/models/student_summaries_model.dart';
 import '../../data/mock_api/portal_mock_handlers.dart';
+import '../../data/models/portal_academic_models.dart';
 import '../../data/models/portal_models.dart';
 import '../../data/repositories/api_portal_repository.dart';
 import '../../domain/portal_repository.dart';
@@ -46,6 +48,54 @@ PortalPupil? activePupil(List<PortalPupil> pupils, String? selectedId) {
     orElse: () => pupils.first,
   );
 }
+
+/// Educando activo (escolhido, ou o primeiro); `null` sem educandos.
+final activePupilProvider = FutureProvider.autoDispose<PortalPupil?>((
+  ref,
+) async {
+  final pupils = await ref.watch(portalPupilsProvider.future);
+  return activePupil(pupils, ref.watch(selectedPupilIdProvider));
+});
+
+final portalGradesProvider = FutureProvider.autoDispose
+    .family<StudentGradesSummary, String>((ref, studentId) async {
+      final result = await ref
+          .watch(portalRepositoryProvider)
+          .grades(studentId);
+      return result.getOrThrow();
+    }, retry: (_, _) => null);
+
+final portalAttendanceProvider = FutureProvider.autoDispose
+    .family<StudentAttendanceSummary, String>((ref, studentId) async {
+      final result = await ref
+          .watch(portalRepositoryProvider)
+          .attendance(studentId);
+      return result.getOrThrow();
+    }, retry: (_, _) => null);
+
+final portalScheduleProvider = FutureProvider.autoDispose
+    .family<List<PortalScheduleSlot>, String>((ref, studentId) async {
+      final result = await ref
+          .watch(portalRepositoryProvider)
+          .schedule(studentId);
+      return result.getOrThrow();
+    }, retry: (_, _) => null);
+
+final portalJustificationsProvider = FutureProvider.autoDispose
+    .family<List<AbsenceJustificationRequest>, String>((ref, studentId) async {
+      final result = await ref
+          .watch(portalRepositoryProvider)
+          .justifications(studentId);
+      return result.getOrThrow();
+    }, retry: (_, _) => null);
+
+final portalDocumentRequestsProvider = FutureProvider.autoDispose
+    .family<List<PortalDocumentRequest>, String>((ref, studentId) async {
+      final result = await ref
+          .watch(portalRepositoryProvider)
+          .documentRequests(studentId);
+      return result.getOrThrow();
+    }, retry: (_, _) => null);
 
 /// Módulos da Home que estão licenciados — só estes são pedidos e mostrados.
 final portalSummaryModulesProvider = Provider<Set<String>>((ref) {

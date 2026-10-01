@@ -30,6 +30,7 @@ class ScheduleMockHandlers implements MockApiModule {
   final Map<String, ShiftModel> _shifts = {};
   final Set<String> _rooms = {};
   final Map<String, TeacherModel> _teachers = {};
+  final Map<String, String> _subjectNames = {};
 
   static final _spec = MockListSpec<ScheduleSlotModel>(
     sortable: {
@@ -57,6 +58,9 @@ class ScheduleMockHandlers implements MockApiModule {
       classrooms: classes,
       teachers: teachers,
     ).assignments;
+    _subjectNames
+      ..clear()
+      ..addEntries(academic.subjects.map((s) => MapEntry(s.id, s.name)));
     _ids = SeedGenerator(440);
     _slots
       ..clear()
@@ -79,6 +83,21 @@ class ScheduleMockHandlers implements MockApiModule {
       ..clear()
       ..addEntries(teachers.map((t) => MapEntry(t.id, t)));
   }
+
+  /// Aulas de uma turma com nomes legíveis, para leitura no portal (o âmbito
+  /// do educando é decidido por quem chama).
+  List<Map<String, dynamic>> slotsOfClassroom(String classroomId) => [
+    for (final s in _slots.values)
+      if (s.classroomId == classroomId)
+        {
+          'id': s.id,
+          'weekday': s.weekday,
+          'startTime': s.startTime,
+          'endTime': s.endTime,
+          'subject': _subjectNames[s.subjectId] ?? s.subjectId,
+          'teacher': _teachers[s.teacherId]?.fullName,
+        },
+  ];
 
   @override
   void register(MockApiRegistry r) {
