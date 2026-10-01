@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../widgets/states/app_states.dart';
+import '../sync/sync_page.dart';
 import 'audit_page.dart';
 
 /// Rotas do módulo `core` (Definições), ligadas em `app/router/module_routes.dart`.
@@ -17,6 +18,7 @@ List<RouteBase> coreRoutes() => [
     ),
     routes: [
       GoRoute(path: 'audit', builder: (context, state) => const AuditPage()),
+      GoRoute(path: 'sync', builder: (context, state) => const SyncPage()),
     ],
   ),
 ];

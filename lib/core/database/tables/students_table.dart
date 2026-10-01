@@ -39,4 +39,13 @@ class SyncOutbox extends Table {
   TextColumn get payload => text().withDefault(const Constant('{}'))();
   DateTimeColumn get createdAt => dateTime()();
   IntColumn get attempts => integer().withDefault(const Constant(0))();
+
+  /// `pending` | `error` (ver `core/sync`). Entradas em erro esperam acção do utilizador.
+  TextColumn get status => text().withDefault(const Constant('pending'))();
+
+  /// Última mensagem de erro (pt-AO) quando [status] é `error`.
+  TextColumn get lastError => text().nullable()();
+
+  /// Cópia do registo como estava na última sincronização (base do merge por campo).
+  TextColumn get baseJson => text().nullable()();
 }

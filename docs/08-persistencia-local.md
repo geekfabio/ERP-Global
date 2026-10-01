@@ -31,3 +31,11 @@ Alterar schema = incrementar `schemaVersion` e acrescentar `if (from < N)` em `o
 | Android / Windows | `drift_flutter` abre SQLite nativo (ficheiro na pasta de dados da app). Sem passos extra (SQLite vem via `sqlite3` com build hooks). Nota: `flutter build windows` exige o componente ATL do Visual Studio por causa de `flutter_secure_storage_windows` (`atlstr.h`), independente do Drift. |
 | Web | Requer `web/sqlite3.wasm` e `web/drift_worker.js` (versões compatíveis com `sqlite3`/`drift` do `pubspec.lock`; ver <https://drift.simonbinder.eu/platforms/web/>). A base só abre quando `USE_LOCAL_DB=true`, por isso o build Web continua a compilar e a funcionar com Mock API sem esses ficheiros. |
 | Testes | `AppDatabase(NativeDatabase.memory())`. |
+
+## Sincronização (`lib/core/sync`)
+
+- `sync_outbox` (schema v2) tem `status` (`pending`|`error`), `lastError` e `baseJson` (registo da última sync, base do merge por campo). Estado de um registo: `OutboxStore.statusOf` → `ok` / `pending` / `error`.
+- `SyncEngine.run()` funde as entradas por registo (`create`+`update` → um `create`; `create`+`delete` → nada a enviar), envia por `SyncRepository` (`POST /v1/sync/push`, `GET /v1/sync/{entity}/{id}`) e limpa a outbox. Sem rede: pára e mantém pendente. Outros erros: entrada em `error` (bloqueia o registo até o utilizador repetir ou descartar).
+- Conflitos (`409 CONFLICT`): `ConflictPolicies` — baixo risco = `fieldMerge` (por campo face à base; choques → `updatedAt` mais recente), financeiro/fiscal (`invoice`, `payment`, …) = `serverWins`.
+- Cada módulo regista um `SyncEntityBinding` em `syncBindingsProvider` (aplicar versão do servidor, marcar `synced`, apagar). Os repositories Drift devem gravar `baseJson` ao enfileirar updates; sem base, o merge trata todos os campos diferentes como choque.
+- Ecrã: `/settings/sync` (permissão `core.sync.manage`).
