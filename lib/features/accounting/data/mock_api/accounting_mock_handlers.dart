@@ -28,6 +28,10 @@ class AccountingMockHandlers implements MockApiModule {
     _centers = {for (final c in s.costCenters) c.id: c};
   }
 
+  /// Leitura para outros handlers do módulo (lançamentos).
+  Iterable<AccountModel> get accounts => _accounts.values;
+  Iterable<FiscalYearModel> get fiscalYears => _years.values;
+
   String _newId() => _ids.ulid(DateTime.now().toUtc());
 
   @override
