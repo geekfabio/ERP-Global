@@ -5,6 +5,8 @@ List<Map<String, dynamic>> rulesSeed() => [
   _int('academic', 'gradeScaleMax', 20, 1, 100),
   _int('academic', 'termCount', 3, 2, 4),
   _int('academic', 'maxAbsences', 30, 0, 365),
+  _int('academic', 'maxFailsDeficiency', 1, 0, 20),
+  _int('academic', 'maxFailsRecourse', 3, 0, 20),
   _text('finance', 'currency', 'AOA', const ['AOA', 'USD', 'EUR']),
   _int('finance', 'lateFeeBp', 200, 0, 10000),
   _int('finance', 'lateFeeFixed', 0, 0, 100000000),

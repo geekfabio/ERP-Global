@@ -153,7 +153,7 @@ class ReportCardActions {
     final bytes = await _ref
         .read(pdfTemplateEngineProvider)
         .render(
-          letterhead: await _letterhead(),
+          letterhead: await letterhead(),
           template: template,
           generatedAt: DateTime.now(),
         );
@@ -173,7 +173,7 @@ class ReportCardActions {
     }
   }
 
-  Future<PdfLetterhead> _letterhead() async {
+  Future<PdfLetterhead> letterhead() async {
     try {
       final i = await _ref.read(institutionProvider.future);
       if (i == null) return const PdfLetterhead(institutionName: 'Instituição');

@@ -7,6 +7,7 @@ import '../../domain/assessment_engine.dart';
 import '../../domain/assessment_scheme_repository.dart';
 import '../data_mocks/assessment_scheme_seed.dart';
 import '../models/assessment_scheme_model.dart';
+import 'council_mock_handlers.dart';
 import 'grade_entry_mock_handlers.dart';
 import 'report_card_mock_handlers.dart';
 
@@ -31,6 +32,11 @@ class GradesMockHandlers implements MockApiModule {
   );
 
   late final ReportCardMockHandlers _reportCards = ReportCardMockHandlers(
+    permissions: permissions,
+    now: now,
+  );
+
+  late final CouncilMockHandlers _councils = CouncilMockHandlers(
     permissions: permissions,
     now: now,
   );
@@ -68,6 +74,7 @@ class GradesMockHandlers implements MockApiModule {
     const path = '/v1/assessment-schemes';
     _entries.register(r);
     _reportCards.register(r);
+    _councils.register(r);
     r
       ..onReset(_reset)
       ..get(

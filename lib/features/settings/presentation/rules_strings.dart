@@ -18,6 +18,8 @@ abstract final class RulesStrings {
     'gradeScaleMax': 'Escala (nota máxima)',
     'termCount': 'Número de períodos lectivos',
     'maxAbsences': 'Limite de faltas',
+    'maxFailsDeficiency': 'Negativas para transitar com deficiência (máx.)',
+    'maxFailsRecourse': 'Negativas para recurso (máx.)',
     'currency': 'Moeda',
     'lateFeeBp': 'Multa por atraso (pontos base, 100 = 1 %)',
     'lateFeeFixed': 'Multa fixa (menor unidade da moeda)',

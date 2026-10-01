@@ -65,6 +65,12 @@ class _GradesPageState extends ConsumerState<GradesPage> {
                     icon: const Icon(Icons.description_outlined),
                     label: const Text('Boletins'),
                   ),
+                  TextButton.icon(
+                    key: const Key('grades_pautas'),
+                    onPressed: () => context.go('/grades/pautas'),
+                    icon: const Icon(Icons.table_chart_outlined),
+                    label: const Text('Pautas'),
+                  ),
                 ],
               ),
               const SizedBox(height: AppSpacing.md),
