@@ -109,6 +109,17 @@ Future<void> main() async {
             pupilsFor: ref
                 .read(studentsMockHandlersProvider)
                 .pupilsForPortalUser,
+            // Horário da turma actual do educando (módulo académico).
+            scheduleFor: (studentId) {
+              final classroomId = ref
+                  .read(studentsMockHandlersProvider)
+                  .classroomIdOf(studentId);
+              return classroomId == null
+                  ? const []
+                  : ref
+                        .read(scheduleMockHandlersProvider)
+                        .slotsOfClassroom(classroomId);
+            },
           ),
         ),
         // Selector global de ano/trimestre da topbar → anos lectivos do módulo settings.

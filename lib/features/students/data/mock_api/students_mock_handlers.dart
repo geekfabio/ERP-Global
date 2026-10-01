@@ -100,6 +100,9 @@ class StudentsMockHandlers implements MockApiModule {
     ];
   }
 
+  /// Turma actual do aluno (matrícula mais recente), se tiver.
+  String? classroomIdOf(String studentId) => _current(studentId)?.classroomId;
+
   /// Matrícula mais recente (não cancelada) do aluno, para filtros por classe/turma.
   EnrollmentModel? _current(String studentId) {
     EnrollmentModel? best;

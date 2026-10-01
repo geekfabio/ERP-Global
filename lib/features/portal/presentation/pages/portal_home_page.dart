@@ -10,6 +10,7 @@ import '../../../students/data/models/student_summaries_model.dart';
 import '../../data/models/portal_models.dart';
 import '../../domain/portal_metrics.dart';
 import '../providers/portal_providers.dart';
+import '../widgets/portal_sections.dart';
 import '../widgets/portal_summary_tile.dart';
 import '../widgets/pupil_selector.dart';
 
@@ -46,6 +47,8 @@ class PortalHomePage extends ConsumerWidget {
             _PupilHeader(pupil: active),
             const SizedBox(height: AppSpacing.lg),
             _Summary(studentId: active.student.id),
+            const SizedBox(height: AppSpacing.xl),
+            const PortalSections(),
           ],
         );
       },
