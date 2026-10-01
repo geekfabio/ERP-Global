@@ -7,15 +7,27 @@ import '../../domain/assessment_engine.dart';
 import '../../domain/assessment_scheme_repository.dart';
 import '../data_mocks/assessment_scheme_seed.dart';
 import '../models/assessment_scheme_model.dart';
+import 'grade_entry_mock_handlers.dart';
 
 /// Handlers de `/v1/assessment-schemes`. Valida pesos, escala e unicidade
 /// por classe/curso como o servidor faria.
 class GradesMockHandlers implements MockApiModule {
-  GradesMockHandlers({this.permissions}) {
+  GradesMockHandlers({this.permissions, this.termLookup, this.now}) {
     _reset();
   }
 
   final PermissionService Function()? permissions;
+
+  /// Estado dos trimestres (módulo académico), para o lançamento de notas.
+  final GradeTermLookup? termLookup;
+  final DateTime Function()? now;
+
+  late final GradeEntryMockHandlers _entries = GradeEntryMockHandlers(
+    schemes: () => _rows.values,
+    permissions: permissions,
+    termLookup: termLookup,
+    now: now,
+  );
 
   late SeedGenerator _ids;
   final Map<String, AssessmentSchemeModel> _rows = {};
@@ -48,6 +60,7 @@ class GradesMockHandlers implements MockApiModule {
   @override
   void register(MockApiRegistry r) {
     const path = '/v1/assessment-schemes';
+    _entries.register(r);
     r
       ..onReset(_reset)
       ..get(
