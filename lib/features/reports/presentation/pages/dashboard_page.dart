@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/academic/period_context.dart';
@@ -39,11 +40,23 @@ class DashboardPage extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            Text(
-              profile == null
-                  ? 'Relatórios'
-                  : 'Dashboard · ${dashboardProfiles[profile]}',
-              style: Theme.of(context).textTheme.headlineSmall,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    profile == null
+                        ? 'Relatórios'
+                        : 'Dashboard · ${dashboardProfiles[profile]}',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ),
+                IconButton(
+                  key: const ValueKey('open_academic_dashboard'),
+                  tooltip: 'Direcção e Académico',
+                  icon: const Icon(Icons.school_outlined),
+                  onPressed: () => context.go('/reports/academic'),
+                ),
+              ],
             ),
             const SizedBox(height: AppSpacing.md),
             const DashboardFiltersBar(),
