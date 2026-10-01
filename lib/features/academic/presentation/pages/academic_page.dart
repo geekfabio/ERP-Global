@@ -4,6 +4,7 @@ import '../../../../app/theme/app_tokens.dart';
 import '../widgets/assignment_tab.dart';
 import '../widgets/classroom_tabs.dart';
 import '../widgets/curriculum_tab.dart';
+import '../widgets/schedule_tab.dart';
 import '../widgets/structure_tabs.dart';
 import '../widgets/teacher_tab.dart';
 
@@ -13,7 +14,7 @@ class AcademicPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DefaultTabController(
-    length: 10,
+    length: 11,
     child: Align(
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
@@ -44,6 +45,7 @@ class AcademicPage extends StatelessWidget {
                   Tab(text: 'Turmas'),
                   Tab(text: 'Professores'),
                   Tab(text: 'Atribuições'),
+                  Tab(text: 'Horários'),
                 ],
               ),
               const Expanded(
@@ -59,6 +61,7 @@ class AcademicPage extends StatelessWidget {
                     ClassroomsTab(),
                     TeachersTab(),
                     AssignmentsTab(),
+                    ScheduleTab(),
                   ],
                 ),
               ),

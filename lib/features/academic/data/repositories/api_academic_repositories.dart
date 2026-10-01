@@ -7,6 +7,7 @@ import '../../domain/academic_repositories.dart';
 import '../models/academic_models.dart';
 import '../models/assignment_models.dart';
 import '../models/classroom_models.dart';
+import '../models/schedule_models.dart';
 import '../models/teacher_models.dart';
 
 /// Repository genérico sobre um recurso REST (`/v1/<path>`).
@@ -143,3 +144,11 @@ HomeroomRepository apiHomeroomRepository(ApiClient c) => ApiAcademicRepository(
   fromJson: HomeroomModel.fromJson,
   toJson: (v) => v.toJson(),
 );
+
+ScheduleSlotRepository apiScheduleSlotRepository(ApiClient c) =>
+    ApiAcademicRepository(
+      c,
+      '/v1/schedule-slots',
+      fromJson: ScheduleSlotModel.fromJson,
+      toJson: (v) => v.toJson(),
+    );
