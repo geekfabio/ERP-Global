@@ -6,6 +6,7 @@ import '../../features/cards/cards_routes.dart';
 import '../../features/communication/communication_routes.dart';
 import '../../features/guardians/guardians_routes.dart';
 import '../../features/import_export/import_export_routes.dart';
+import '../../features/inventory/inventory_routes.dart';
 import '../../features/students/students_routes.dart';
 
 /// Rotas reais de cada módulo, por código (ver `ModuleDescriptor.code`). Os
@@ -15,6 +16,7 @@ final Map<String, List<RouteBase> Function()> featureModuleRoutes = {
   'cards': cardsRoutes,
   'communication': communicationRoutes,
   'guardians': guardiansRoutes,
+  'inventory': inventoryRoutes,
   'students': studentsRoutes,
   'import_export': importExportRoutes,
 };
