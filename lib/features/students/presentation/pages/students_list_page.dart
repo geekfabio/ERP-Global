@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/audit/audit_log_model.dart';
 import '../../../../core/audit/audit_providers.dart';
+import '../../../../core/export/export_contract.dart';
 import '../../../../core/network/api_envelope.dart';
 import '../../../../core/network/mock/mock_reference_data.dart';
 import '../../../../core/security/permission_providers.dart';
@@ -17,8 +18,10 @@ import '../../../../core/widgets/feedback/toasts.dart';
 import '../../../../core/widgets/permissions/can.dart';
 import '../../../../core/widgets/states/app_states.dart';
 import '../../../../core/widgets/status_badge.dart';
+import '../../../../core/widgets/table/export_button.dart';
 import '../../data/models/student_enums.dart';
 import '../../data/models/student_model.dart';
+import '../providers/student_export.dart';
 import '../providers/student_list_providers.dart';
 import '../providers/student_providers.dart';
 
@@ -42,11 +45,7 @@ BadgeStatus studentStatusBadge(StudentStatus s) => switch (s) {
 
 /// Listagem e pesquisa avançada de alunos (paginação e filtros no servidor).
 class StudentsListPage extends ConsumerStatefulWidget {
-  const StudentsListPage({super.key, this.onExport});
-
-  /// Hook de exportação: recebe os alunos da página visível. Por omissão avisa
-  /// que a exportação chega com o módulo de importação/exportação.
-  final void Function(List<StudentModel> students)? onExport;
+  const StudentsListPage({super.key});
 
   @override
   ConsumerState<StudentsListPage> createState() => _StudentsListPageState();
@@ -109,17 +108,6 @@ class _StudentsListPageState extends ConsumerState<StudentsListPage> {
     );
   }
 
-  void _export(List<StudentModel> page) {
-    final hook = widget.onExport;
-    if (hook != null) {
-      hook(page);
-    } else {
-      ref
-          .read(toastProvider.notifier)
-          .info('A exportação chega com o módulo de importação/exportação.');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final list = ref.watch(studentListProvider);
@@ -134,11 +122,7 @@ class _StudentsListPageState extends ConsumerState<StudentsListPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _Header(
-                onExport: list.value == null
-                    ? null
-                    : () => _export(list.value!.items),
-              ),
+              _Header(exportRows: list.value?.items),
               const SizedBox(height: AppSpacing.md),
               _Filters(
                 controller: _search,
@@ -183,9 +167,10 @@ class _StudentsListPageState extends ConsumerState<StudentsListPage> {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.onExport});
+  const _Header({required this.exportRows});
 
-  final VoidCallback? onExport;
+  /// Alunos da página visível a exportar (`null` enquanto não há dados).
+  final List<StudentModel>? exportRows;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -198,11 +183,17 @@ class _Header extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
-        AppIconButton(
-          icon: Icons.download_outlined,
-          tooltip: 'Exportar',
-          onPressed: onExport,
-        ),
+        if (exportRows != null)
+          ExportButton(
+            permission: studentsExportPermission,
+            dataset: () => ExportDataset.from<StudentModel>(
+              title: 'Alunos',
+              entity: 'students',
+              permission: studentsExportPermission,
+              columns: studentExportColumns,
+              rows: exportRows!,
+            ),
+          ),
         const SizedBox(width: AppSpacing.sm),
         Can(
           permission: 'students.record.create',

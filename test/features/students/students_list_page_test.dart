@@ -1,6 +1,8 @@
 import 'package:erp_global/app/theme/app_theme.dart';
 import 'package:erp_global/core/errors/failure.dart';
 import 'package:erp_global/core/errors/result.dart';
+import 'package:erp_global/core/export/export_contract.dart';
+import 'package:erp_global/core/modules/license_gate.dart';
 import 'package:erp_global/core/network/api_client.dart';
 import 'package:erp_global/core/network/api_envelope.dart';
 import 'package:erp_global/core/network/mock/mock_api_config.dart';
@@ -48,19 +50,29 @@ Future<ProviderContainer> _pump(
   List<Override>? overrides,
   // Larga: a fonte de teste (Ahem) ocupa muito mais do que a real.
   Size size = const Size(2600, 1200),
-  void Function(List<StudentModel>)? onExport,
+  ExportHandler? exportHandler,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  final container = ProviderContainer(overrides: overrides ?? _overrides());
+  final container = ProviderContainer(
+    overrides: [
+      ...(overrides ?? _overrides()),
+      if (exportHandler != null) ...[
+        exportHandlerProvider.overrideWithValue(exportHandler),
+        licenseGateProvider.overrideWithValue(
+          const LicenseGate(enabledModules: {'import_export'}),
+        ),
+      ],
+    ],
+  );
   addTearDown(container.dispose);
   final router = GoRouter(
     initialLocation: '/students',
     routes: [
       GoRoute(
         path: '/students',
-        builder: (_, _) => Scaffold(body: StudentsListPage(onExport: onExport)),
+        builder: (_, _) => Scaffold(body: StudentsListPage()),
         routes: [
           GoRoute(path: 'new', builder: (_, _) => const Text('NOVO')),
           GoRoute(
@@ -315,18 +327,48 @@ void main() {
       expect(find.byType(Card), findsWidgets);
     });
 
-    testWidgets('hook de exportação recebe a página visível', (tester) async {
-      List<StudentModel>? exported;
-      await _pump(tester, onExport: (s) => exported = s);
+    testWidgets('exportar entrega a página visível e as colunas permitidas', (
+      tester,
+    ) async {
+      ExportDataset? got;
+      ExportFormat? fmt;
+      await _pump(
+        tester,
+        exportHandler: (d, f) async {
+          got = d;
+          fmt = f;
+        },
+        overrides: _overrides(permissions: ['students.*']),
+      );
       await tester.tap(find.byTooltip('Exportar'));
-      expect(exported, hasLength(20));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('PDF'));
+      await tester.pumpAndSettle();
+      expect(fmt, ExportFormat.pdf);
+      expect(got!.rows, hasLength(20));
+      expect(got!.permission, 'students.record.export');
+      expect(
+        got!.columns.any((c) => c.permission == 'students.health.read'),
+        isTrue,
+      );
     });
 
-    testWidgets('exportação sem hook avisa por toast', (tester) async {
+    testWidgets('sem permissão export não há botão', (tester) async {
+      await _pump(
+        tester,
+        exportHandler: (d, f) async {},
+        overrides: _overrides(
+          permissions: ['students.record.read', 'students.record.create'],
+        ),
+      );
+      expect(find.byTooltip('Exportar'), findsNothing);
+    });
+
+    testWidgets('sem módulo/handler de exportação não há botão', (
+      tester,
+    ) async {
       await _pump(tester);
-      await tester.tap(find.byTooltip('Exportar'));
-      await tester.pump();
-      expect(find.textContaining('importação/exportação'), findsOneWidget);
+      expect(find.byTooltip('Exportar'), findsNothing);
     });
 
     testWidgets('erro mostra retry e recupera', (tester) async {
