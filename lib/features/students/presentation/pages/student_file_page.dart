@@ -10,7 +10,9 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/states/app_states.dart';
 import '../../../../core/widgets/status_badge.dart';
 import '../../data/models/student_model.dart';
+import '../pdf/student_pdf_templates.dart';
 import '../providers/student_file_providers.dart';
+import '../providers/student_pdf_providers.dart';
 import '../widgets/student_file/student_file_tab.dart';
 import 'students_list_page.dart';
 
@@ -117,14 +119,17 @@ class _FileBody extends ConsumerWidget {
   }
 }
 
-class _Header extends StatelessWidget {
+class _Header extends ConsumerWidget {
   const _Header({required this.student});
 
   final StudentModel student;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final text = Theme.of(context).textTheme;
+    final canPrint = ref
+        .watch(permissionServiceProvider)
+        .canAny(studentsPdfPermission);
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.lg),
       child: Row(
@@ -161,6 +166,22 @@ class _Header extends StatelessWidget {
               ],
             ),
           ),
+          if (canPrint)
+            PopupMenuButton<StudentPdfKind>(
+              key: const Key('student_pdf_menu'),
+              tooltip: 'Documentos em PDF',
+              icon: const Icon(Icons.picture_as_pdf_outlined),
+              onSelected: (kind) =>
+                  ref.read(studentPdfServiceProvider).export(student, kind),
+              itemBuilder: (_) => [
+                for (final kind in StudentPdfKind.values)
+                  PopupMenuItem(
+                    key: Key('student_pdf_${kind.name}'),
+                    value: kind,
+                    child: Text(kind.label),
+                  ),
+              ],
+            ),
         ],
       ),
     );
