@@ -9,6 +9,7 @@ import 'core/modules/license_gate.dart';
 import 'core/network/api_client.dart';
 import 'core/notifications/notification_service.dart';
 import 'core/security/permission_providers.dart';
+import 'core/sync/sync_providers.dart';
 import 'core/utils/pt_ao_formatters.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
 import 'features/auth/presentation/providers/auth_state.dart';
@@ -55,6 +56,7 @@ Future<void> main() async {
             ref.watch(authMockHandlersProvider),
             ref.watch(studentsMockHandlersProvider),
             ref.watch(auditMockHandlersProvider),
+            ref.watch(syncMockHandlersProvider),
             ref.watch(communicationMockHandlersProvider),
             ref.watch(importMockHandlersProvider),
           ],

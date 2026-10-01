@@ -27,13 +27,19 @@ class AppDatabase extends _$AppDatabase {
 
   /// Incrementar a cada alteração de schema e acrescentar o passo em [migration].
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
     onUpgrade: (m, from, to) async {
-      // v1 é o schema inicial. Novos passos: `if (from < 2) { ... }`.
+      // v1 é o schema inicial. Novos passos: `if (from < 3) { ... }`.
+      if (from < 2) {
+        // Outbox com estado, erro e base de merge (issue #83).
+        await m.addColumn(syncOutbox, syncOutbox.status);
+        await m.addColumn(syncOutbox, syncOutbox.lastError);
+        await m.addColumn(syncOutbox, syncOutbox.baseJson);
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
