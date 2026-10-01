@@ -28,6 +28,7 @@ import 'features/license/data/mock_api/license_mock_handlers.dart';
 import 'features/portal/data/mock_api/portal_mock_handlers.dart';
 import 'features/portal/presentation/providers/portal_providers.dart';
 import 'features/settings/presentation/providers/academic_providers.dart';
+import 'features/settings/presentation/providers/rules_providers.dart';
 import 'features/settings/presentation/providers/settings_providers.dart';
 import 'features/students/presentation/providers/student_providers.dart';
 
@@ -111,6 +112,7 @@ Future<void> main() async {
             ref.watch(portalMockHandlersProvider),
             ref.watch(accessMockHandlersProvider),
             ref.watch(academicMockHandlersProvider),
+            ref.watch(rulesMockHandlersProvider),
           ],
         ),
       ],
