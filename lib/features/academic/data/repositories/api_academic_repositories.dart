@@ -5,6 +5,7 @@ import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_envelope.dart';
 import '../../domain/academic_repositories.dart';
 import '../models/academic_models.dart';
+import '../models/classroom_models.dart';
 
 /// Repository genérico sobre um recurso REST (`/v1/<path>`).
 class ApiAcademicRepository<T> implements AcademicCrudRepository<T> {
@@ -94,5 +95,27 @@ CurriculumRepository apiCurriculumRepository(ApiClient c) =>
       c,
       '/v1/curriculum-items',
       fromJson: CurriculumItemModel.fromJson,
+      toJson: (v) => v.toJson(),
+    );
+
+RoomRepository apiRoomRepository(ApiClient c) => ApiAcademicRepository(
+  c,
+  '/v1/rooms',
+  fromJson: RoomModel.fromJson,
+  toJson: (v) => v.toJson(),
+);
+
+ShiftRepository apiShiftRepository(ApiClient c) => ApiAcademicRepository(
+  c,
+  '/v1/shifts',
+  fromJson: ShiftModel.fromJson,
+  toJson: (v) => v.toJson(),
+);
+
+ClassroomRepository apiClassroomRepository(ApiClient c) =>
+    ApiAcademicRepository(
+      c,
+      '/v1/classrooms',
+      fromJson: ClassroomModel.fromJson,
       toJson: (v) => v.toJson(),
     );

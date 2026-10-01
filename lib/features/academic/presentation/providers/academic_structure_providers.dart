@@ -4,6 +4,7 @@ import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_envelope.dart';
 import '../../data/mock_api/academic_structure_mock_handlers.dart';
 import '../../data/models/academic_models.dart';
+import '../../data/models/classroom_models.dart';
 import '../../data/repositories/api_academic_repositories.dart';
 import '../../domain/academic_repositories.dart';
 
@@ -76,3 +77,28 @@ final curriculumProvider = FutureProvider.autoDispose
       ),
       retry: (_, _) => null,
     );
+
+final roomRepositoryProvider = Provider<RoomRepository>(
+  (ref) => apiRoomRepository(ref.watch(apiClientProvider)),
+);
+final shiftRepositoryProvider = Provider<ShiftRepository>(
+  (ref) => apiShiftRepository(ref.watch(apiClientProvider)),
+);
+final classroomRepositoryProvider = Provider<ClassroomRepository>(
+  (ref) => apiClassroomRepository(ref.watch(apiClientProvider)),
+);
+
+final roomListProvider = FutureProvider.autoDispose<List<RoomModel>>(
+  (ref) => _fetchAll(ref.watch(roomRepositoryProvider)),
+  retry: (_, _) => null,
+);
+
+final shiftListProvider = FutureProvider.autoDispose<List<ShiftModel>>(
+  (ref) => _fetchAll(ref.watch(shiftRepositoryProvider)),
+  retry: (_, _) => null,
+);
+
+final classroomListProvider = FutureProvider.autoDispose<List<ClassroomModel>>(
+  (ref) => _fetchAll(ref.watch(classroomRepositoryProvider)),
+  retry: (_, _) => null,
+);
