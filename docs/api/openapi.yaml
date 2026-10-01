@@ -1,0 +1,206 @@
+openapi: 3.0.3
+info:
+  title: ERP-Global API
+  version: 1.0.0
+  description: |
+    Contrato entre a app Flutter e o backend (fase 15). Espelha o que a Mock API
+    já implementa (docs/07-mock-api.md); o backend real tem de o cumprir e passar
+    os mesmos contract tests (`test/features/students/students_contract_test.dart`).
+    Sem registo público: só `/v1/auth/login`.
+servers:
+  - url: https://api.erp-global.local
+security:
+  - bearerAuth: []
+paths:
+  /v1/auth/login:
+    post:
+      summary: Login (única rota pública, com /refresh)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [identifier, password]
+              properties:
+                identifier: {type: string}
+                password: {type: string}
+      responses:
+        '200': {description: "Tokens, utilizador, perfis, permissões e licença"}
+        '401': {$ref: '#/components/responses/Error'}
+  /v1/auth/refresh:
+    post:
+      summary: Renova tokens (usado pelo interceptor em 401 TOKEN_EXPIRED)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken: {type: string}
+      responses:
+        '200': {description: "Novos accessToken e refreshToken"}
+        '401': {$ref: '#/components/responses/Error'}
+  /v1/students:
+    get:
+      summary: Lista paginada de alunos
+      parameters:
+        - {name: page, in: query, schema: {type: integer, minimum: 1, default: 1}}
+        - {name: pageSize, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+        - {name: q, in: query, description: "Nome, n.º de processo ou BI (sem acentos)", schema: {type: string}}
+        - {name: sort, in: query, description: "Campos separados por vírgula; `-` = descendente", schema: {type: string, example: "fullName,-processNumber"}}
+        - {name: "filter[status]", in: query, schema: {$ref: '#/components/schemas/StudentStatus'}}
+        - {name: "filter[gender]", in: query, schema: {type: string, enum: [male, female]}}
+        - {name: "filter[gradeId]", in: query, schema: {type: string}}
+        - {name: "filter[classroomId]", in: query, schema: {type: string}}
+      responses:
+        '200':
+          description: Página de alunos
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data: {type: array, items: {$ref: '#/components/schemas/Student'}}
+                  meta: {$ref: '#/components/schemas/PageMeta'}
+        '422': {$ref: '#/components/responses/Error'}
+    post:
+      summary: Cria aluno (ID ULID gerado pelo cliente)
+      parameters:
+        - name: confirmDuplicate
+          in: query
+          description: "Aceita nome + data de nascimento repetidos (BI repetido é sempre 409)"
+          schema: {type: boolean, default: false}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Student'}
+      responses:
+        '200': {$ref: '#/components/responses/StudentOk'}
+        '409': {$ref: '#/components/responses/Error'}
+        '422': {$ref: '#/components/responses/Error'}
+  /v1/students/duplicates:
+    get:
+      summary: Possíveis duplicados antes de guardar
+      parameters:
+        - {name: fullName, in: query, required: true, schema: {type: string}}
+        - {name: birthDate, in: query, required: true, schema: {type: string, format: date}}
+        - {name: idNumber, in: query, schema: {type: string}}
+      responses:
+        '200':
+          description: Duplicados encontrados
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required: [student, reason]
+                      properties:
+                        student: {$ref: '#/components/schemas/Student'}
+                        reason: {type: string, enum: [id_number, name_and_birth]}
+  /v1/students/{id}:
+    parameters:
+      - {name: id, in: path, required: true, schema: {type: string}}
+    get:
+      summary: Ficha do aluno
+      responses:
+        '200': {$ref: '#/components/responses/StudentOk'}
+        '404': {$ref: '#/components/responses/Error'}
+    patch:
+      summary: Actualiza aluno
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Student'}
+      responses:
+        '200': {$ref: '#/components/responses/StudentOk'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+        '422': {$ref: '#/components/responses/Error'}
+    delete:
+      summary: Remoção lógica (deletedAt)
+      responses:
+        '200': {description: Removido}
+        '404': {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    bearerAuth: {type: http, scheme: bearer}
+  responses:
+    StudentOk:
+      description: Aluno
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [data]
+            properties:
+              data: {$ref: '#/components/schemas/Student'}
+    Error:
+      description: |
+        Erro no envelope `{error}`. Códigos: 400 BAD_REQUEST · 401 UNAUTHENTICATED,
+        TOKEN_EXPIRED, INVALID_CREDENTIALS · 403 FORBIDDEN, MODULE_NOT_LICENSED,
+        LICENSE_READ_ONLY · 404 NOT_FOUND · 409 CONFLICT · 422 VALIDATION_ERROR ·
+        500 INTERNAL_ERROR.
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error:
+                type: object
+                required: [code, message]
+                properties:
+                  code: {type: string, example: VALIDATION_ERROR}
+                  message: {type: string}
+                  fields: {type: object, additionalProperties: {type: string}}
+  schemas:
+    PageMeta:
+      type: object
+      required: [page, pageSize, total]
+      properties:
+        page: {type: integer}
+        pageSize: {type: integer}
+        total: {type: integer}
+    StudentStatus:
+      type: string
+      description: "Valores como no JSON (ver StudentStatus em student_enums.dart; filtros em snake_case)"
+      enum: [active, inactive, suspended, transferred, graduated, dropout]
+    Student:
+      type: object
+      required: [id, institutionId, createdAt, updatedAt, processNumber, fullName, birthDate, gender]
+      properties:
+        id: {type: string, description: ULID}
+        institutionId: {type: string}
+        campusId: {type: string, nullable: true}
+        createdAt: {type: string, format: date-time, description: UTC}
+        updatedAt: {type: string, format: date-time, description: UTC}
+        deletedAt: {type: string, format: date-time, nullable: true}
+        syncState: {type: string, default: synced}
+        processNumber: {type: string, description: Gerado pelo servidor}
+        fullName: {type: string}
+        photoUrl: {type: string, nullable: true}
+        birthDate: {type: string, format: date}
+        birthPlace: {type: string, nullable: true}
+        gender: {type: string, enum: [male, female]}
+        nationality: {type: string, default: Angolana}
+        idNumber: {type: string, nullable: true, description: "BI/cédula/passaporte (único)"}
+        nif: {type: string, nullable: true}
+        address: {type: string, nullable: true}
+        phone: {type: string, nullable: true}
+        email: {type: string, nullable: true}
+        originSchool: {type: string, nullable: true}
+        status: {$ref: '#/components/schemas/StudentStatus'}
+        health: {type: object, description: "Alergias, condições e contactos de emergência"}
