@@ -3,6 +3,7 @@ import '../../../../core/network/mock/mock_query.dart';
 import '../../../../core/network/mock/mock_types.dart';
 import '../../../../core/network/mock/mock_validator.dart';
 import '../../domain/student_duplicates.dart';
+import '../data_mocks/student_summaries_seed.dart';
 import '../data_mocks/students_seed.dart';
 import '../models/enrollment_model.dart';
 import '../models/guardian_model.dart';
@@ -19,6 +20,7 @@ class StudentsMockHandlers implements MockApiModule {
 
   final int seed;
   final int count;
+  final _summaries = StudentSummariesSeed();
 
   late Map<String, StudentModel> _students;
   late Map<String, GuardianModel> _guardians;
@@ -71,6 +73,22 @@ class StudentsMockHandlers implements MockApiModule {
       ..post('/v1/student-documents', _createDocument)
       ..patch('/v1/student-documents/{id}', _updateDocument)
       ..delete('/v1/student-documents/{id}', _deleteDocument)
+      ..get(
+        '/v1/students/{id}/grades',
+        (q) => _summary(q, (id) => _summaries.grades(id).toJson()),
+      )
+      ..get(
+        '/v1/students/{id}/attendance',
+        (q) => _summary(q, (id) => _summaries.attendance(id).toJson()),
+      )
+      ..get(
+        '/v1/students/{id}/finance',
+        (q) => _summary(q, (id) => _summaries.finance(id).toJson()),
+      )
+      ..get(
+        '/v1/students/{id}/card',
+        (q) => _summary(q, (id) => _summaries.card(id).toJson()),
+      )
       ..get('/v1/students/{id}/occurrences', _studentOccurrences)
       ..post('/v1/student-occurrences', _createOccurrence)
       ..delete('/v1/student-occurrences/{id}', _deleteOccurrence)
@@ -217,6 +235,12 @@ class StudentsMockHandlers implements MockApiModule {
     _documents[d.id] = d;
     return MockResponse.created(d.toJson());
   }
+
+  /// Vistas de notas/presenças/financeiro/cartão (ver `StudentSummaryRepository`).
+  MockResponse _summary(
+    MockRequest req,
+    Map<String, dynamic> Function(String studentId) build,
+  ) => MockResponse.ok(build(_student(req).id));
 
   MockResponse _studentDocuments(MockRequest req) {
     final s = _student(req);

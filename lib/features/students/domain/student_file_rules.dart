@@ -1,6 +1,7 @@
 import '../data/models/enrollment_model.dart';
 import '../data/models/student_document_model.dart';
 import '../data/models/student_enums.dart';
+import '../data/models/student_summaries_model.dart';
 
 /// Ids das matrículas que são repetência: o aluno já tinha frequentado a mesma
 /// classe num ano anterior (matrículas anuladas não contam).
@@ -45,3 +46,32 @@ DocumentValidity documentValidity(StudentDocumentModel d, DateTime now) {
   }
   return DocumentValidity.valid;
 }
+
+/// Média de uma disciplina (só trimestres com nota); `null` se não há notas.
+double? subjectAverage(SubjectGrades s) =>
+    _mean([?s.term1, ?s.term2, ?s.term3]);
+
+/// Média geral das médias das disciplinas com nota.
+double? overallAverage(List<SubjectGrades> subjects) =>
+    _mean([for (final s in subjects) ?subjectAverage(s)]);
+
+double? _mean(List<double> values) => values.isEmpty
+    ? null
+    : values.fold<double>(0, (a, b) => a + b) / values.length;
+
+/// Contagem de presenças por tipo.
+Map<AttendanceKind, int> attendanceCounts(List<AttendanceRecord> records) => {
+  for (final k in AttendanceKind.values)
+    k: records.where((r) => r.kind == k).length,
+};
+
+/// Valor em dívida (menor unidade): o que falta pagar das cobranças em aberto.
+int outstandingMinor(List<StudentChargeLine> charges) => charges.fold(
+  0,
+  (sum, c) => sum + (c.amountMinor - c.paidMinor).clamp(0, c.amountMinor),
+);
+
+/// Valor das cobranças vencidas e por pagar (menor unidade).
+int overdueMinor(List<StudentChargeLine> charges) => charges
+    .where((c) => c.status == StudentChargeStatus.overdue)
+    .fold(0, (sum, c) => sum + (c.amountMinor - c.paidMinor));

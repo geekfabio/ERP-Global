@@ -6,6 +6,7 @@ import '../data/models/student_document_model.dart';
 import '../data/models/student_enums.dart';
 import '../data/models/student_model.dart';
 import '../data/models/student_occurrence_model.dart';
+import '../data/models/student_summaries_model.dart';
 import 'student_duplicates.dart';
 
 /// Pesquisa de alunos (feita no servidor/handler: paginação, filtros, ordenação).
@@ -145,4 +146,13 @@ abstract interface class OccurrenceRepository {
     StudentOccurrenceModel occurrence,
   );
   Future<Result<void>> delete(String id);
+}
+
+/// Vistas de leitura de outros módulos para a ficha do aluno. Só se pedem
+/// quando o módulo respectivo está licenciado (o separador fica oculto).
+abstract interface class StudentSummaryRepository {
+  Future<Result<StudentGradesSummary>> grades(String studentId);
+  Future<Result<StudentAttendanceSummary>> attendance(String studentId);
+  Future<Result<StudentFinanceSummary>> finance(String studentId);
+  Future<Result<StudentCardSummary>> card(String studentId);
 }
