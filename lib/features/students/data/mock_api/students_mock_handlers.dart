@@ -2,6 +2,7 @@ import '../../../../core/network/mock/mock_api_registry.dart';
 import '../../../../core/network/mock/mock_query.dart';
 import '../../../../core/network/mock/mock_types.dart';
 import '../../../../core/network/mock/mock_validator.dart';
+import '../../../../core/utils/seed_generator.dart';
 import '../../domain/student_duplicates.dart';
 import '../data_mocks/student_summaries_seed.dart';
 import '../data_mocks/students_seed.dart';
@@ -656,8 +657,6 @@ class StudentsMockHandlers implements MockApiModule {
     return MockResponse.ok(updated.toJson());
   }
 
-  int _seq = 0;
-  String _newId() =>
-      '01JMOCK${DateTime.now().toUtc().millisecondsSinceEpoch.toRadixString(36).toUpperCase().padLeft(9, '0')}${(_seq++).toString().padLeft(11, '0')}'
-          .substring(0, 26);
+  late final _ids = SeedGenerator(seed + 1);
+  String _newId() => _ids.ulid(DateTime.now().toUtc());
 }
