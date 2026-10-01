@@ -307,7 +307,9 @@ mixin _$WalletTransaction {
  String? get method;/// Carregamento: referência do pagamento/recibo no billing.
  String? get reference;/// Consumo: descrição (ex.: prato). Estorno: motivo.
  String? get description;/// Estorno: movimento de consumo estornado.
- String? get refundOfId;
+ String? get refundOfId;/// Consumo: tipo de refeição servida (relatórios de consumo).
+ String? get mealTypeId;/// Consumo: turma do aluno no momento da compra (relatórios de consumo).
+ String? get className;
 /// Create a copy of WalletTransaction
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -320,16 +322,16 @@ $WalletTransactionCopyWith<WalletTransaction> get copyWith => _$WalletTransactio
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WalletTransaction&&(identical(other.id, id) || other.id == id)&&(identical(other.walletId, walletId) || other.walletId == walletId)&&(identical(other.type, type) || other.type == type)&&(identical(other.amountMinor, amountMinor) || other.amountMinor == amountMinor)&&(identical(other.balanceAfterMinor, balanceAfterMinor) || other.balanceAfterMinor == balanceAfterMinor)&&(identical(other.occurredAt, occurredAt) || other.occurredAt == occurredAt)&&(identical(other.method, method) || other.method == method)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.description, description) || other.description == description)&&(identical(other.refundOfId, refundOfId) || other.refundOfId == refundOfId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WalletTransaction&&(identical(other.id, id) || other.id == id)&&(identical(other.walletId, walletId) || other.walletId == walletId)&&(identical(other.type, type) || other.type == type)&&(identical(other.amountMinor, amountMinor) || other.amountMinor == amountMinor)&&(identical(other.balanceAfterMinor, balanceAfterMinor) || other.balanceAfterMinor == balanceAfterMinor)&&(identical(other.occurredAt, occurredAt) || other.occurredAt == occurredAt)&&(identical(other.method, method) || other.method == method)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.description, description) || other.description == description)&&(identical(other.refundOfId, refundOfId) || other.refundOfId == refundOfId)&&(identical(other.mealTypeId, mealTypeId) || other.mealTypeId == mealTypeId)&&(identical(other.className, className) || other.className == className));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,walletId,type,amountMinor,balanceAfterMinor,occurredAt,method,reference,description,refundOfId);
+int get hashCode => Object.hash(runtimeType,id,walletId,type,amountMinor,balanceAfterMinor,occurredAt,method,reference,description,refundOfId,mealTypeId,className);
 
 @override
 String toString() {
-  return 'WalletTransaction(id: $id, walletId: $walletId, type: $type, amountMinor: $amountMinor, balanceAfterMinor: $balanceAfterMinor, occurredAt: $occurredAt, method: $method, reference: $reference, description: $description, refundOfId: $refundOfId)';
+  return 'WalletTransaction(id: $id, walletId: $walletId, type: $type, amountMinor: $amountMinor, balanceAfterMinor: $balanceAfterMinor, occurredAt: $occurredAt, method: $method, reference: $reference, description: $description, refundOfId: $refundOfId, mealTypeId: $mealTypeId, className: $className)';
 }
 
 
@@ -340,7 +342,7 @@ abstract mixin class $WalletTransactionCopyWith<$Res>  {
   factory $WalletTransactionCopyWith(WalletTransaction value, $Res Function(WalletTransaction) _then) = _$WalletTransactionCopyWithImpl;
 @useResult
 $Res call({
- String id, String walletId, WalletTransactionType type, int amountMinor, int balanceAfterMinor,@UtcDateTimeConverter() DateTime occurredAt, String? method, String? reference, String? description, String? refundOfId
+ String id, String walletId, WalletTransactionType type, int amountMinor, int balanceAfterMinor,@UtcDateTimeConverter() DateTime occurredAt, String? method, String? reference, String? description, String? refundOfId, String? mealTypeId, String? className
 });
 
 
@@ -357,7 +359,7 @@ class _$WalletTransactionCopyWithImpl<$Res>
 
 /// Create a copy of WalletTransaction
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? walletId = null,Object? type = null,Object? amountMinor = null,Object? balanceAfterMinor = null,Object? occurredAt = null,Object? method = freezed,Object? reference = freezed,Object? description = freezed,Object? refundOfId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? walletId = null,Object? type = null,Object? amountMinor = null,Object? balanceAfterMinor = null,Object? occurredAt = null,Object? method = freezed,Object? reference = freezed,Object? description = freezed,Object? refundOfId = freezed,Object? mealTypeId = freezed,Object? className = freezed,}) {
   return _then(WalletTransaction(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,walletId: null == walletId ? _self.walletId : walletId // ignore: cast_nullable_to_non_nullable
@@ -369,6 +371,8 @@ as DateTime,method: freezed == method ? _self.method : method // ignore: cast_nu
 as String?,reference: freezed == reference ? _self.reference : reference // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,refundOfId: freezed == refundOfId ? _self.refundOfId : refundOfId // ignore: cast_nullable_to_non_nullable
+as String?,mealTypeId: freezed == mealTypeId ? _self.mealTypeId : mealTypeId // ignore: cast_nullable_to_non_nullable
+as String?,className: freezed == className ? _self.className : className // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -454,10 +458,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String walletId,  WalletTransactionType type,  int amountMinor,  int balanceAfterMinor, @UtcDateTimeConverter()  DateTime occurredAt,  String? method,  String? reference,  String? description,  String? refundOfId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String walletId,  WalletTransactionType type,  int amountMinor,  int balanceAfterMinor, @UtcDateTimeConverter()  DateTime occurredAt,  String? method,  String? reference,  String? description,  String? refundOfId,  String? mealTypeId,  String? className)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WalletTransaction() when $default != null:
-return $default(_that.id,_that.walletId,_that.type,_that.amountMinor,_that.balanceAfterMinor,_that.occurredAt,_that.method,_that.reference,_that.description,_that.refundOfId);case _:
+return $default(_that.id,_that.walletId,_that.type,_that.amountMinor,_that.balanceAfterMinor,_that.occurredAt,_that.method,_that.reference,_that.description,_that.refundOfId,_that.mealTypeId,_that.className);case _:
   return orElse();
 
 }
@@ -475,10 +479,10 @@ return $default(_that.id,_that.walletId,_that.type,_that.amountMinor,_that.balan
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String walletId,  WalletTransactionType type,  int amountMinor,  int balanceAfterMinor, @UtcDateTimeConverter()  DateTime occurredAt,  String? method,  String? reference,  String? description,  String? refundOfId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String walletId,  WalletTransactionType type,  int amountMinor,  int balanceAfterMinor, @UtcDateTimeConverter()  DateTime occurredAt,  String? method,  String? reference,  String? description,  String? refundOfId,  String? mealTypeId,  String? className)  $default,) {final _that = this;
 switch (_that) {
 case _WalletTransaction():
-return $default(_that.id,_that.walletId,_that.type,_that.amountMinor,_that.balanceAfterMinor,_that.occurredAt,_that.method,_that.reference,_that.description,_that.refundOfId);case _:
+return $default(_that.id,_that.walletId,_that.type,_that.amountMinor,_that.balanceAfterMinor,_that.occurredAt,_that.method,_that.reference,_that.description,_that.refundOfId,_that.mealTypeId,_that.className);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -495,10 +499,10 @@ return $default(_that.id,_that.walletId,_that.type,_that.amountMinor,_that.balan
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String walletId,  WalletTransactionType type,  int amountMinor,  int balanceAfterMinor, @UtcDateTimeConverter()  DateTime occurredAt,  String? method,  String? reference,  String? description,  String? refundOfId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String walletId,  WalletTransactionType type,  int amountMinor,  int balanceAfterMinor, @UtcDateTimeConverter()  DateTime occurredAt,  String? method,  String? reference,  String? description,  String? refundOfId,  String? mealTypeId,  String? className)?  $default,) {final _that = this;
 switch (_that) {
 case _WalletTransaction() when $default != null:
-return $default(_that.id,_that.walletId,_that.type,_that.amountMinor,_that.balanceAfterMinor,_that.occurredAt,_that.method,_that.reference,_that.description,_that.refundOfId);case _:
+return $default(_that.id,_that.walletId,_that.type,_that.amountMinor,_that.balanceAfterMinor,_that.occurredAt,_that.method,_that.reference,_that.description,_that.refundOfId,_that.mealTypeId,_that.className);case _:
   return null;
 
 }
@@ -510,7 +514,7 @@ return $default(_that.id,_that.walletId,_that.type,_that.amountMinor,_that.balan
 @JsonSerializable()
 
 class _WalletTransaction implements WalletTransaction {
-  const _WalletTransaction({required this.id, required this.walletId, required this.type, required this.amountMinor, required this.balanceAfterMinor, @UtcDateTimeConverter() required this.occurredAt, this.method, this.reference, this.description, this.refundOfId});
+  const _WalletTransaction({required this.id, required this.walletId, required this.type, required this.amountMinor, required this.balanceAfterMinor, @UtcDateTimeConverter() required this.occurredAt, this.method, this.reference, this.description, this.refundOfId, this.mealTypeId, this.className});
   factory _WalletTransaction.fromJson(Map<String, dynamic> json) => _$WalletTransactionFromJson(json);
 
 @override final  String id;
@@ -528,6 +532,10 @@ class _WalletTransaction implements WalletTransaction {
 @override final  String? description;
 /// Estorno: movimento de consumo estornado.
 @override final  String? refundOfId;
+/// Consumo: tipo de refeição servida (relatórios de consumo).
+@override final  String? mealTypeId;
+/// Consumo: turma do aluno no momento da compra (relatórios de consumo).
+@override final  String? className;
 
 /// Create a copy of WalletTransaction
 /// with the given fields replaced by the non-null parameter values.
@@ -542,16 +550,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WalletTransaction&&(identical(other.id, id) || other.id == id)&&(identical(other.walletId, walletId) || other.walletId == walletId)&&(identical(other.type, type) || other.type == type)&&(identical(other.amountMinor, amountMinor) || other.amountMinor == amountMinor)&&(identical(other.balanceAfterMinor, balanceAfterMinor) || other.balanceAfterMinor == balanceAfterMinor)&&(identical(other.occurredAt, occurredAt) || other.occurredAt == occurredAt)&&(identical(other.method, method) || other.method == method)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.description, description) || other.description == description)&&(identical(other.refundOfId, refundOfId) || other.refundOfId == refundOfId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WalletTransaction&&(identical(other.id, id) || other.id == id)&&(identical(other.walletId, walletId) || other.walletId == walletId)&&(identical(other.type, type) || other.type == type)&&(identical(other.amountMinor, amountMinor) || other.amountMinor == amountMinor)&&(identical(other.balanceAfterMinor, balanceAfterMinor) || other.balanceAfterMinor == balanceAfterMinor)&&(identical(other.occurredAt, occurredAt) || other.occurredAt == occurredAt)&&(identical(other.method, method) || other.method == method)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.description, description) || other.description == description)&&(identical(other.refundOfId, refundOfId) || other.refundOfId == refundOfId)&&(identical(other.mealTypeId, mealTypeId) || other.mealTypeId == mealTypeId)&&(identical(other.className, className) || other.className == className));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,walletId,type,amountMinor,balanceAfterMinor,occurredAt,method,reference,description,refundOfId);
+int get hashCode => Object.hash(runtimeType,id,walletId,type,amountMinor,balanceAfterMinor,occurredAt,method,reference,description,refundOfId,mealTypeId,className);
 
 @override
 String toString() {
-  return 'WalletTransaction(id: $id, walletId: $walletId, type: $type, amountMinor: $amountMinor, balanceAfterMinor: $balanceAfterMinor, occurredAt: $occurredAt, method: $method, reference: $reference, description: $description, refundOfId: $refundOfId)';
+  return 'WalletTransaction(id: $id, walletId: $walletId, type: $type, amountMinor: $amountMinor, balanceAfterMinor: $balanceAfterMinor, occurredAt: $occurredAt, method: $method, reference: $reference, description: $description, refundOfId: $refundOfId, mealTypeId: $mealTypeId, className: $className)';
 }
 
 
@@ -562,7 +570,7 @@ abstract mixin class _$WalletTransactionCopyWith<$Res> implements $WalletTransac
   factory _$WalletTransactionCopyWith(_WalletTransaction value, $Res Function(_WalletTransaction) _then) = __$WalletTransactionCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String walletId, WalletTransactionType type, int amountMinor, int balanceAfterMinor,@UtcDateTimeConverter() DateTime occurredAt, String? method, String? reference, String? description, String? refundOfId
+ String id, String walletId, WalletTransactionType type, int amountMinor, int balanceAfterMinor,@UtcDateTimeConverter() DateTime occurredAt, String? method, String? reference, String? description, String? refundOfId, String? mealTypeId, String? className
 });
 
 
@@ -579,7 +587,7 @@ class __$WalletTransactionCopyWithImpl<$Res>
 
 /// Create a copy of WalletTransaction
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? walletId = null,Object? type = null,Object? amountMinor = null,Object? balanceAfterMinor = null,Object? occurredAt = null,Object? method = freezed,Object? reference = freezed,Object? description = freezed,Object? refundOfId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? walletId = null,Object? type = null,Object? amountMinor = null,Object? balanceAfterMinor = null,Object? occurredAt = null,Object? method = freezed,Object? reference = freezed,Object? description = freezed,Object? refundOfId = freezed,Object? mealTypeId = freezed,Object? className = freezed,}) {
   return _then(_WalletTransaction(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,walletId: null == walletId ? _self.walletId : walletId // ignore: cast_nullable_to_non_nullable
@@ -591,6 +599,8 @@ as DateTime,method: freezed == method ? _self.method : method // ignore: cast_nu
 as String?,reference: freezed == reference ? _self.reference : reference // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,refundOfId: freezed == refundOfId ? _self.refundOfId : refundOfId // ignore: cast_nullable_to_non_nullable
+as String?,mealTypeId: freezed == mealTypeId ? _self.mealTypeId : mealTypeId // ignore: cast_nullable_to_non_nullable
+as String?,className: freezed == className ? _self.className : className // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

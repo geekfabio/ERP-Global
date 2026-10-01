@@ -52,6 +52,12 @@ abstract class WalletTransaction with _$WalletTransaction {
 
     /// Estorno: movimento de consumo estornado.
     String? refundOfId,
+
+    /// Consumo: tipo de refeição servida (relatórios de consumo).
+    String? mealTypeId,
+
+    /// Consumo: turma do aluno no momento da compra (relatórios de consumo).
+    String? className,
   }) = _WalletTransaction;
 
   factory WalletTransaction.fromJson(Map<String, dynamic> json) =>

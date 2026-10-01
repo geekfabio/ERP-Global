@@ -20,6 +20,9 @@ class MenuMockHandlers implements MockApiModule {
   static final _time = RegExp(r'^([01]\d|2[0-3]):[0-5]\d$');
   static final _date = RegExp(r'^\d{4}-\d{2}-\d{2}$');
 
+  /// Tipos de refeição actuais (para relatórios calculados).
+  List<MealType> get allMealTypes => _types.values.toList();
+
   late Map<String, MealType> _types;
   late Map<String, MealItem> _items;
   late Map<String, MealMenu> _menus;

@@ -66,9 +66,13 @@ class ApiWalletRepository implements WalletRepository {
     String walletId, {
     required int amountMinor,
     String? description,
+    String? mealTypeId,
+    String? className,
   }) => _post('/v1/wallets/$walletId/purchases', {
     'amountMinor': amountMinor,
     'description': ?description,
+    'mealTypeId': ?mealTypeId,
+    'className': ?className,
   }, WalletTransaction.fromJson);
 
   @override

@@ -63,6 +63,7 @@ class ApiPosRepository implements PosRepository {
         message: 'O titular não tem carteira',
       );
     }
+    final student = await _student(holderId);
     final now = DateTime.now().toUtc();
     final txs = (await _wallets.statement(
       wallet.id,
@@ -75,21 +76,28 @@ class ApiPosRepository implements PosRepository {
       wallet: wallet,
       cardUid: cardUid,
       cardBlocked: cardBlocked,
-      allergies: await _allergies(holderId),
+      allergies: student.allergies,
+      className: student.className,
       spentTodayMinor: netSpent(txs),
     );
   }
 
-  /// Alergias da ficha de saúde; sem ficha (ex.: funcionário) → sem alergias.
-  Future<List<String>> _allergies(String holderId) async {
+  /// Alergias (ficha de saúde) e turma; sem ficha (ex.: funcionário) → vazio.
+  Future<({List<String> allergies, String? className})> _student(
+    String holderId,
+  ) async {
     try {
       final response = await _client.dio.get<dynamic>('/v1/students/$holderId');
       final data = ApiEnvelope.object(response, (j) => j);
       final health = data['health'];
       final list = health is Map ? health['allergies'] : null;
-      return list is List ? [for (final a in list) '$a'] : const [];
+      final name = data['className'];
+      return (
+        allergies: list is List ? [for (final a in list) '$a'] : <String>[],
+        className: name is String && name.isNotEmpty ? name : null,
+      );
     } on Object {
-      return const [];
+      return (allergies: <String>[], className: null);
     }
   }
 }

@@ -125,6 +125,8 @@ class PosNotifier extends Notifier<PosState> {
           customer.wallet.id,
           amountMinor: state.totalMinor,
           description: description,
+          mealTypeId: state.lines.firstOrNull?.item.mealTypeId,
+          className: customer.className,
         );
     switch (result) {
       case Ok(:final value):

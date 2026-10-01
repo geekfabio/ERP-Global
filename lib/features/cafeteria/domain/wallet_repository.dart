@@ -31,6 +31,8 @@ abstract interface class WalletRepository {
     String walletId, {
     required int amountMinor,
     String? description,
+    String? mealTypeId,
+    String? className,
   });
 
   /// Estorna um consumo (uma só vez).

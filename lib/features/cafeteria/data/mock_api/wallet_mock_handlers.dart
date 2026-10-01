@@ -24,6 +24,10 @@ class WalletMockHandlers implements MockApiModule {
     'payment_reference',
   };
 
+  /// Estado actual, para relatórios calculados (só leitura).
+  List<Wallet> get allWallets => _wallets.values.toList();
+  List<WalletTransaction> get allTransactions => List.unmodifiable(_txs);
+
   late Map<String, Wallet> _wallets;
   late List<WalletTransaction> _txs;
   late SeedGenerator _ids;
@@ -162,6 +166,8 @@ class WalletMockHandlers implements MockApiModule {
     String? reference,
     String? description,
     String? refundOfId,
+    String? mealTypeId,
+    String? className,
   }) {
     final signed = type == WalletTransactionType.purchase ? -amount : amount;
     final after = w.balanceMinor + signed;
@@ -183,6 +189,8 @@ class WalletMockHandlers implements MockApiModule {
       reference: reference,
       description: description,
       refundOfId: refundOfId,
+      mealTypeId: mealTypeId,
+      className: className,
     );
     _txs.add(tx);
     _wallets[w.id] = w.copyWith(balanceMinor: after, updatedAt: now);
@@ -241,6 +249,8 @@ class WalletMockHandlers implements MockApiModule {
       WalletTransactionType.purchase,
       amount,
       description: req.jsonBody['description'] as String?,
+      mealTypeId: req.jsonBody['mealTypeId'] as String?,
+      className: req.jsonBody['className'] as String?,
     );
     return MockResponse.created(tx.toJson());
   }

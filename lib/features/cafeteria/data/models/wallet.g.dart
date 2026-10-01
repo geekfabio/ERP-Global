@@ -42,6 +42,8 @@ _WalletTransaction _$WalletTransactionFromJson(Map<String, dynamic> json) =>
       reference: json['reference'] as String?,
       description: json['description'] as String?,
       refundOfId: json['refundOfId'] as String?,
+      mealTypeId: json['mealTypeId'] as String?,
+      className: json['className'] as String?,
     );
 
 Map<String, dynamic> _$WalletTransactionToJson(_WalletTransaction instance) =>
@@ -56,6 +58,8 @@ Map<String, dynamic> _$WalletTransactionToJson(_WalletTransaction instance) =>
       'reference': instance.reference,
       'description': instance.description,
       'refundOfId': instance.refundOfId,
+      'mealTypeId': instance.mealTypeId,
+      'className': instance.className,
     };
 
 const _$WalletTransactionTypeEnumMap = {
