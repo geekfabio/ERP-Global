@@ -18,6 +18,7 @@ import 'features/communication/presentation/providers/communication_providers.da
 import 'features/import_export/presentation/providers/export_providers.dart';
 import 'features/import_export/presentation/providers/import_providers.dart';
 import 'features/accounting/presentation/providers/accounting_providers.dart';
+import 'features/access_control/presentation/providers/access_providers.dart';
 import 'features/inventory/presentation/providers/inventory_providers.dart';
 import 'features/license/presentation/providers/license_providers.dart';
 import 'features/license/presentation/providers/license_usage_providers.dart';
@@ -100,6 +101,7 @@ Future<void> main() async {
             ref.watch(licenseMockHandlersProvider),
             ref.watch(settingsMockHandlersProvider),
             ref.watch(portalMockHandlersProvider),
+            ref.watch(accessMockHandlersProvider),
           ],
         ),
       ],
