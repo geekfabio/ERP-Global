@@ -30,6 +30,7 @@ class CrudTab<T> extends ConsumerWidget {
     required this.fieldsFor,
     required this.fromValues,
     required this.describe,
+    this.extraActions = const [],
   });
 
   final AsyncValue<List<T>> value;
@@ -52,6 +53,9 @@ class CrudTab<T> extends ConsumerWidget {
 
   /// Texto do registo na confirmação de eliminação.
   final String Function(T) describe;
+
+  /// Acções adicionais por linha (ex.: abrir a ficha), sem permissão própria.
+  final List<RowAction<T>> extraActions;
 
   String get _new => feminine ? 'Nova' : 'Novo';
   String get _done => feminine ? 'registada' : 'registado';
@@ -140,6 +144,7 @@ class CrudTab<T> extends ConsumerWidget {
               emptyText: 'Sem resultados',
               columns: columns,
               rowActions: [
+                ...extraActions,
                 if (can('$permission.update'))
                   RowAction(
                     label: 'Editar',

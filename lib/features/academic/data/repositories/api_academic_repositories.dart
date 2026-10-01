@@ -6,6 +6,7 @@ import '../../../../core/network/api_envelope.dart';
 import '../../domain/academic_repositories.dart';
 import '../models/academic_models.dart';
 import '../models/classroom_models.dart';
+import '../models/teacher_models.dart';
 
 /// Repository genérico sobre um recurso REST (`/v1/<path>`).
 class ApiAcademicRepository<T> implements AcademicCrudRepository<T> {
@@ -119,3 +120,10 @@ ClassroomRepository apiClassroomRepository(ApiClient c) =>
       fromJson: ClassroomModel.fromJson,
       toJson: (v) => v.toJson(),
     );
+
+TeacherRepository apiTeacherRepository(ApiClient c) => ApiAcademicRepository(
+  c,
+  '/v1/teachers',
+  fromJson: TeacherModel.fromJson,
+  toJson: (v) => v.toJson(),
+);

@@ -122,6 +122,7 @@ Future<void> main() async {
             ref.watch(rulesMockHandlersProvider),
             ref.watch(reportsMockHandlersProvider),
             ref.watch(academicStructureMockHandlersProvider),
+            ref.watch(teacherMockHandlersProvider),
             ref.watch(gradesMockHandlersProvider),
           ],
         ),
