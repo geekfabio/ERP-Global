@@ -240,7 +240,9 @@ void main() {
       'balanceMinor': -_amount,
       'entries': [_entry],
     });
-    expect(invoice.toJson()['lines'], [_line]);
+    expect(invoice.toJson()['lines'], [
+      {..._line, 'taxRateBp': 0, 'taxMinor': 0, 'exemptionReason': null},
+    ]);
     expect(payment.toJson()['allocations'], [_allocation]);
     expect(account.toJson()['entries'], [
       {..._entry, 'occurredAt': _utc},
