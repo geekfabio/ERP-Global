@@ -106,6 +106,7 @@ Future<void> main() async {
             ref.watch(cardsMockHandlersProvider),
             ref.watch(inventoryMockHandlersProvider),
             ref.watch(accountingMockHandlersProvider),
+            ref.watch(journalMockHandlersProvider),
             ref.watch(libraryMockHandlersProvider),
             ref.watch(licenseMockHandlersProvider),
             ref.watch(settingsMockHandlersProvider),
