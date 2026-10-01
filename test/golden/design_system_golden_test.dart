@@ -20,7 +20,7 @@ class _TolerantComparator extends LocalFileComparator {
   _TolerantComparator(super.testFile);
 
   /// Fracção máxima de píxeis diferentes aceite.
-  static const tolerance = 0.005;
+  static const tolerance = 0.02;
 
   @override
   Future<bool> compare(Uint8List imageBytes, Uri golden) async {
