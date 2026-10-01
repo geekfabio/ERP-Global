@@ -126,7 +126,11 @@ class _ZoneDialogState extends State<_ZoneDialog> {
           label: 'Campus',
           options: widget.campuses,
           value: _campusId,
-          errorText: _campusError ? 'Campo obrigatório' : null,
+          errorText: widget.campuses.isEmpty
+              ? 'Sem campus disponíveis (verifique as permissões de definições)'
+              : _campusError
+              ? 'Campo obrigatório'
+              : null,
           onSelected: (v) => setState(() {
             _campusId = v;
             _campusError = false;

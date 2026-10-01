@@ -89,6 +89,11 @@ void main() {
     // Secretaria está inactiva no seed.
     expect(find.text('Negado'), findsOneWidget);
     expect(find.text('Zona inactiva'), findsOneWidget);
+
+    // Mudar um campo invalida o resultado anterior.
+    await tester.tap(find.byKey(const Key('sim_student_active')));
+    await tester.pumpAndSettle();
+    expect(find.text('Negado'), findsNothing);
   });
 
   testWidgets('só leitura: sem botões de criação', (tester) async {

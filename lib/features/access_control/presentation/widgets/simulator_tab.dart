@@ -31,7 +31,12 @@ class _SimulatorTabState extends ConsumerState<SimulatorTab> {
 
   Future<void> _pickTime() async {
     final t = await showTimePicker(context: context, initialTime: _time);
-    if (t != null) setState(() => _time = t);
+    if (t != null) {
+      setState(() {
+        _time = t;
+        _decision = null;
+      });
+    }
   }
 
   void _validate(List<ZoneModel> zones, List<AccessRuleModel> rules) {
@@ -89,7 +94,10 @@ class _SimulatorTabState extends ConsumerState<SimulatorTab> {
                 label: 'Zona',
                 options: {for (final z in zoneList) z.id: z.name},
                 value: _zoneId,
-                onSelected: (v) => setState(() => _zoneId = v),
+                onSelected: (v) => setState(() {
+                  _zoneId = v;
+                  _decision = null;
+                }),
               ),
               const SizedBox(height: AppSpacing.md),
               AppSearchableSelect<AccessSubject>(
@@ -102,7 +110,10 @@ class _SimulatorTabState extends ConsumerState<SimulatorTab> {
                     s: subjectLabel(s),
                 },
                 value: _subject,
-                onSelected: (v) => setState(() => _subject = v ?? _subject),
+                onSelected: (v) => setState(() {
+                  _subject = v ?? _subject;
+                  _decision = null;
+                }),
               ),
               const SizedBox(height: AppSpacing.md),
               Row(
@@ -112,7 +123,10 @@ class _SimulatorTabState extends ConsumerState<SimulatorTab> {
                       key: const Key('sim_date'),
                       label: 'Data',
                       value: _date,
-                      onChanged: (d) => setState(() => _date = d),
+                      onChanged: (d) => setState(() {
+                        _date = d;
+                        _decision = null;
+                      }),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
@@ -128,14 +142,20 @@ class _SimulatorTabState extends ConsumerState<SimulatorTab> {
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Aluno activo'),
                 value: _studentActive,
-                onChanged: (v) => setState(() => _studentActive = v),
+                onChanged: (v) => setState(() {
+                  _studentActive = v;
+                  _decision = null;
+                }),
               ),
               SwitchListTile(
                 key: const Key('sim_financial'),
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Situação financeira regularizada'),
                 value: _financialClear,
-                onChanged: (v) => setState(() => _financialClear = v),
+                onChanged: (v) => setState(() {
+                  _financialClear = v;
+                  _decision = null;
+                }),
               ),
               const SizedBox(height: AppSpacing.sm),
               AppButton(
