@@ -8,6 +8,7 @@ import '../data_mocks/student_summaries_seed.dart';
 import '../data_mocks/students_seed.dart';
 import '../models/enrollment_model.dart';
 import 'enrollment_flow_mock_handlers.dart';
+import 'renewal_mock_handlers.dart';
 import '../models/guardian_model.dart';
 import '../models/student_document_model.dart';
 import '../models/student_model.dart';
@@ -27,6 +28,12 @@ class StudentsMockHandlers implements MockApiModule {
     students: () => _students,
     enrollments: () => _enrollments,
     documents: () => _documents,
+  );
+
+  late final _renewals = RenewalMockHandlers(
+    students: () => _students,
+    enrollments: () => _enrollments,
+    newId: _newId,
   );
 
   late Map<String, StudentModel> _students;
@@ -149,6 +156,7 @@ class StudentsMockHandlers implements MockApiModule {
       ..get('/v1/enrollments', _listEnrollments)
       ..post('/v1/enrollments', _createEnrollment)
       ..patch('/v1/enrollments/{id}', _updateEnrollment);
+    _renewals.register(r);
     _flow.register(r);
   }
 
@@ -608,6 +616,7 @@ class StudentsMockHandlers implements MockApiModule {
         'studentId': (e) => e.studentId,
         'academicYearId': (e) => e.academicYearId,
         'gradeId': (e) => e.gradeId,
+        'classroomId': (e) => e.classroomId,
         'status': (e) => _wire(e.status),
       },
       defaultSort: const ['-enrolledOn'],
