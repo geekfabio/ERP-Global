@@ -3,6 +3,7 @@ import '../../../core/network/api_envelope.dart';
 import '../data/models/academic_models.dart';
 import '../data/models/assignment_models.dart';
 import '../data/models/classroom_models.dart';
+import '../data/models/schedule_models.dart';
 import '../data/models/teacher_models.dart';
 
 /// Contrato CRUD de um recurso da estrutura académica; a UI só conhece isto.
@@ -37,3 +38,4 @@ typedef TeacherRepository = AcademicCrudRepository<TeacherModel>;
 typedef TeachingAssignmentRepository =
     AcademicCrudRepository<TeachingAssignmentModel>;
 typedef HomeroomRepository = AcademicCrudRepository<HomeroomModel>;
+typedef ScheduleSlotRepository = AcademicCrudRepository<ScheduleSlotModel>;
