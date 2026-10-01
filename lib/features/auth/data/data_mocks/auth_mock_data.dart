@@ -1,24 +1,53 @@
 import '../models/auth_profile.dart';
+import '../models/scope_model.dart';
 import '../models/user_model.dart';
 
 /// Conta do seed de desenvolvimento (só carrega com `useMockApi = true`).
 /// A password vive apenas aqui e no estado do mock; nunca no [UserModel].
 class MockAccount {
-  const MockAccount({
+  MockAccount({
     required this.user,
     required this.profile,
     required this.password,
-  });
+    List<String>? roles,
+    this.scope = const ScopeModel(),
+  }) : roles = List.unmodifiable(roles ?? [authProfileCodes[profile]!]);
 
   final UserModel user;
+
+  /// Perfil principal (o primeiro de [roles]).
   final AuthProfile profile;
   final String password;
 
-  MockAccount copyWith({UserModel? user, String? password}) => MockAccount(
-    user: user ?? this.user,
-    profile: profile,
-    password: password ?? this.password,
-  );
+  /// Códigos de todos os perfis atribuídos (`super_admin`, `professor`, …).
+  final List<String> roles;
+
+  /// Âmbito (campus/classe/…) a que os perfis ficam restritos.
+  final ScopeModel scope;
+
+  bool get isSuperAdmin => roles.contains('super_admin');
+
+  /// Permissões efectivas: união das dos perfis atribuídos.
+  List<String> get permissions => {
+    for (final code in roles)
+      ...authProfilePermissions[authProfileByCode[code]]!,
+  }.toList();
+
+  MockAccount copyWith({
+    UserModel? user,
+    String? password,
+    List<String>? roles,
+    ScopeModel? scope,
+  }) {
+    final newRoles = roles ?? this.roles;
+    return MockAccount(
+      user: user ?? this.user,
+      profile: authProfileByCode[newRoles.first]!,
+      password: password ?? this.password,
+      roles: newRoles,
+      scope: scope ?? this.scope,
+    );
+  }
 }
 
 const mockInstitutionId = '01JINSTITUTION000000000001';
@@ -41,6 +70,11 @@ const authProfileCodes = <AuthProfile, String>{
   AuthProfile.librarian: 'bibliotecario',
   AuthProfile.guardian: 'encarregado',
   AuthProfile.student: 'aluno',
+};
+
+/// Perfil de cada código do contrato JSON.
+final authProfileByCode = <String, AuthProfile>{
+  for (final e in authProfileCodes.entries) e.value: e.key,
 };
 
 /// Permissões `modulo.recurso.acção` por perfil (resumo da matriz do doc 01).
