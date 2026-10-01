@@ -7,6 +7,7 @@ import '../../domain/assessment_engine.dart';
 import '../../domain/assessment_scheme_repository.dart';
 import '../data_mocks/assessment_scheme_seed.dart';
 import '../models/assessment_scheme_model.dart';
+import 'academic_document_mock_handlers.dart';
 import 'council_mock_handlers.dart';
 import 'grade_entry_mock_handlers.dart';
 import 'report_card_mock_handlers.dart';
@@ -40,6 +41,9 @@ class GradesMockHandlers implements MockApiModule {
     permissions: permissions,
     now: now,
   );
+
+  late final AcademicDocumentMockHandlers _documents =
+      AcademicDocumentMockHandlers(permissions: permissions, now: now);
 
   late SeedGenerator _ids;
   final Map<String, AssessmentSchemeModel> _rows = {};
@@ -75,6 +79,7 @@ class GradesMockHandlers implements MockApiModule {
     _entries.register(r);
     _reportCards.register(r);
     _councils.register(r);
+    _documents.register(r);
     r
       ..onReset(_reset)
       ..get(

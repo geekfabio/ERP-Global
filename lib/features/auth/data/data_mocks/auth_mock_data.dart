@@ -85,6 +85,10 @@ const authProfilePermissions = <AuthProfile, List<String>>{
   AuthProfile.coordination: [
     'academic.class.read',
     'grades.entry.approve',
+    'grades.document.read',
+    'grades.document.request',
+    'grades.document.issue',
+    'grades.document.template',
     'attendance.record.all',
   ],
   AuthProfile.academicOffice: [
@@ -93,6 +97,8 @@ const authProfilePermissions = <AuthProfile, List<String>>{
     'students.record.update',
     'students.health.read',
     'students.health.update',
+    'grades.document.read',
+    'grades.document.request',
     'attendance.record.all',
   ],
   AuthProfile.teacher: [

@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import 'presentation/pages/academic_documents_page.dart';
 import 'presentation/pages/grade_statistics_page.dart';
 import 'presentation/pages/grades_page.dart';
 import 'presentation/pages/pauta_page.dart';
@@ -15,6 +16,10 @@ List<RouteBase> gradesRoutes() => [
   GoRoute(
     path: '/grades/pautas',
     builder: (context, state) => const PautaPage(),
+  ),
+  GoRoute(
+    path: '/grades/documents',
+    builder: (context, state) => const AcademicDocumentsPage(),
   ),
   GoRoute(
     path: '/grades/statistics',
