@@ -9,6 +9,7 @@ import '../../../../core/errors/failure.dart';
 import '../../../../core/errors/result.dart';
 import '../../../../core/network/api_envelope.dart';
 import '../../../../core/network/mock/mock_query.dart' show foldText;
+import '../../domain/student_duplicates.dart';
 import '../../domain/student_repositories.dart';
 import '../models/student_model.dart';
 
@@ -72,27 +73,74 @@ class DriftStudentRepository implements StudentRepository {
   });
 
   @override
-  Future<Result<StudentModel>> create(StudentModel student) =>
-      Result.guard(() async {
-        return _db.transaction(() async {
-          if (await _findAny(student.id) != null) {
-            throw UnknownFailure(
-              code: 'CONFLICT',
-              message: 'Identificador já existe',
-            );
-          }
-          await _assertUniqueIdNumber(student.idNumber);
-          final now = DateTime.now().toUtc();
-          final saved = student.copyWith(
-            createdAt: now,
-            updatedAt: now,
-            syncState: SyncState.pendingCreate.name,
-          );
-          await _db.into(_db.students).insert(_toCompanion(saved));
-          await _enqueue('create', saved);
-          return saved;
-        });
-      });
+  Future<Result<StudentModel>> create(
+    StudentModel student, {
+    bool confirmDuplicate = false,
+  }) => Result.guard(() async {
+    return _db.transaction(() async {
+      if (await _findAny(student.id) != null) {
+        throw UnknownFailure(
+          code: 'CONFLICT',
+          message: 'Identificador já existe',
+        );
+      }
+      final found = await _duplicates(
+        fullName: student.fullName,
+        birthDate: student.birthDate,
+        idNumber: student.idNumber,
+      );
+      if (found.any((d) => d.blocking)) {
+        throw UnknownFailure(
+          code: 'CONFLICT',
+          message: 'Já existe um aluno com este BI',
+        );
+      }
+      if (found.isNotEmpty && !confirmDuplicate) {
+        throw UnknownFailure(
+          code: 'CONFLICT',
+          message: 'Já existe um aluno com o mesmo nome e data de nascimento',
+        );
+      }
+      final now = DateTime.now().toUtc();
+      final saved = student.copyWith(
+        createdAt: now,
+        updatedAt: now,
+        syncState: SyncState.pendingCreate.name,
+      );
+      await _db.into(_db.students).insert(_toCompanion(saved));
+      await _enqueue('create', saved);
+      return saved;
+    });
+  });
+
+  @override
+  Future<Result<List<StudentDuplicate>>> findDuplicates({
+    required String fullName,
+    required DateTime birthDate,
+    String? idNumber,
+  }) => Result.guard(
+    () => _duplicates(
+      fullName: fullName,
+      birthDate: birthDate,
+      idNumber: idNumber,
+    ),
+  );
+
+  Future<List<StudentDuplicate>> _duplicates({
+    required String fullName,
+    required DateTime birthDate,
+    String? idNumber,
+  }) async {
+    final rows = await (_db.select(
+      _db.students,
+    )..where((s) => s.deletedAt.isNull())).get();
+    return findStudentDuplicates(
+      rows.map(_toModel),
+      fullName: fullName,
+      birthDate: birthDate,
+      idNumber: idNumber,
+    );
+  }
 
   @override
   Future<Result<StudentModel>> update(

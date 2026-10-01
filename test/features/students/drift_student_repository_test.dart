@@ -8,6 +8,7 @@ import 'package:erp_global/features/students/data/data_mocks/students_seed.dart'
 import 'package:erp_global/features/students/data/models/student_enums.dart';
 import 'package:erp_global/features/students/data/repositories/api_student_repositories.dart';
 import 'package:erp_global/features/students/data/repositories/drift_student_repository.dart';
+import 'package:erp_global/features/students/domain/student_duplicates.dart';
 import 'package:erp_global/features/students/domain/student_repositories.dart';
 import 'package:erp_global/features/students/presentation/providers/student_providers.dart';
 
@@ -82,6 +83,27 @@ void main() {
     expect(r.items.every((s) => s.status == StudentStatus.dropout), isTrue);
     final bad = await repo.list(const StudentQuery(sort: ['nope']));
     expect(bad.isErr, isTrue);
+  });
+
+  test('nome + data de nascimento repetidos só com confirmDuplicate', () async {
+    final base = seed.first;
+    final copy = base.copyWith(
+      id: '01DUPLICATE000000000000000',
+      processNumber: 'P-DUP-0001',
+      idNumber: null,
+    );
+
+    final found = (await repo.findDuplicates(
+      fullName: base.fullName.toUpperCase(),
+      birthDate: base.birthDate,
+    )).getOrThrow();
+    expect(found.single.reason, DuplicateReason.nameAndBirth);
+
+    final refused = await repo.create(copy);
+    expect(refused.failureOrNull?.code, 'CONFLICT');
+
+    final ok = await repo.create(copy, confirmDuplicate: true);
+    expect(ok.failureOrNull, isNull);
   });
 
   test('provider troca Api ↔ Drift', () {
