@@ -21,6 +21,10 @@ class HrMockHandlers implements MockApiModule {
   final Map<String, ContractModel> _contracts = {};
   int _nextNumber = 1;
 
+  /// Estado actual, partilhado com os handlers da folha salarial.
+  List<EmployeeModel> get employeesSnapshot => _employees.values.toList();
+  List<ContractModel> get contractsSnapshot => _contracts.values.toList();
+
   DateTime get _today => (_clock?.call() ?? DateTime.now()).toUtc();
 
   static final _employeeSpec = MockListSpec<EmployeeModel>(

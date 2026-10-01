@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/theme/app_tokens.dart';
+import '../widgets/attendance_leave_tabs.dart';
 import '../widgets/contracts_positions_tabs.dart';
 import '../widgets/employees_tab.dart';
+import '../widgets/payroll_tab.dart';
 
-/// RH: funcionários, contratos e cargos.
+/// RH: funcionários, contratos, cargos, assiduidade, férias e folha salarial.
 class HrPage extends StatelessWidget {
   const HrPage({super.key});
 
   @override
   Widget build(BuildContext context) => DefaultTabController(
-    length: 3,
+    length: 6,
     child: Align(
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
@@ -34,11 +36,21 @@ class HrPage extends StatelessWidget {
                   Tab(text: 'Funcionários'),
                   Tab(text: 'Contratos'),
                   Tab(text: 'Cargos'),
+                  Tab(text: 'Assiduidade'),
+                  Tab(text: 'Férias'),
+                  Tab(text: 'Folha salarial'),
                 ],
               ),
               const Expanded(
                 child: TabBarView(
-                  children: [EmployeesTab(), ContractsTab(), PositionsTab()],
+                  children: [
+                    EmployeesTab(),
+                    ContractsTab(),
+                    PositionsTab(),
+                    AttendanceTab(),
+                    LeavesTab(),
+                    PayrollTab(),
+                  ],
                 ),
               ),
             ],
