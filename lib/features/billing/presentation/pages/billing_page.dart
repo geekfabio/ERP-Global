@@ -125,6 +125,14 @@ class _BillingPageState extends ConsumerState<BillingPage> {
                     ),
                   ),
                   Can(
+                    permission: 'billing.report.read',
+                    child: IconButton(
+                      tooltip: 'Relatórios',
+                      icon: const Icon(Icons.bar_chart_outlined),
+                      onPressed: () => context.go('/billing/reports'),
+                    ),
+                  ),
+                  Can(
                     permission: 'billing.cash.read',
                     child: IconButton(
                       tooltip: 'Caixa',
