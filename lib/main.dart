@@ -15,6 +15,7 @@ import 'core/utils/pt_ao_formatters.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
 import 'features/auth/presentation/providers/auth_state.dart';
 import 'features/billing/presentation/providers/billing_providers.dart';
+import 'features/billing/presentation/providers/invoice_providers.dart';
 import 'features/cards/presentation/providers/card_providers.dart';
 import 'features/communication/presentation/providers/communication_providers.dart';
 import 'features/import_export/presentation/providers/export_providers.dart';
@@ -128,6 +129,7 @@ Future<void> main() async {
             ref.watch(assignmentMockHandlersProvider),
             ref.watch(gradesMockHandlersProvider),
             ref.watch(billingMockHandlersProvider),
+            ref.watch(invoiceMockHandlersProvider),
           ],
         ),
       ],

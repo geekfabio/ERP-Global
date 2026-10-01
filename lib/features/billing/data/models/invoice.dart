@@ -22,10 +22,18 @@ abstract class Invoice with _$Invoice {
     @Default('synced') String syncState,
     required String studentId,
     String? number,
+
+    /// Série local (`FT 2026`); a numeração fiscal definitiva é do backend.
+    String? series,
     @UtcDateTimeConverter() DateTime? issuedAt,
     @Default(InvoiceStatus.draft) InvoiceStatus status,
     @Default(<InvoiceLine>[]) List<InvoiceLine> lines,
+    @MinorUnitConverter() @Default(0) int taxMinor,
     @MinorUnitConverter() required int totalMinor,
+
+    /// Preenchidos ao anular (a factura passa a `cancelled`).
+    String? cancelReason,
+    String? creditNoteId,
   }) = _Invoice;
 
   factory Invoice.fromJson(Map<String, dynamic> json) =>
@@ -41,6 +49,11 @@ abstract class InvoiceLine with _$InvoiceLine {
     required String chargeId,
     required String description,
     @MinorUnitConverter() required int amountMinor,
+
+    /// Taxa de IVA em pontos-base (1400 = 14 %); 0 = isento.
+    @Default(0) int taxRateBp,
+    @MinorUnitConverter() @Default(0) int taxMinor,
+    String? exemptionReason,
   }) = _InvoiceLine;
 
   factory InvoiceLine.fromJson(Map<String, dynamic> json) =>

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/errors/result.dart';
@@ -15,19 +16,11 @@ import '../../../../core/widgets/table/app_data_table.dart';
 import '../../../../core/widgets/table/table_controller.dart';
 import '../../data/models/billing_enums.dart';
 import '../../data/models/fee_item.dart';
+import '../../domain/invoicing.dart';
 import '../providers/billing_providers.dart';
 import '../widgets/fee_item_dialog.dart';
 
-const feeTypeLabels = <FeeType, String>{
-  FeeType.enrollment: 'Matrícula',
-  FeeType.tuition: 'Propina',
-  FeeType.uniform: 'Uniforme',
-  FeeType.material: 'Material',
-  FeeType.exam: 'Exame',
-  FeeType.transport: 'Transporte',
-  FeeType.cafeteria: 'Cantina',
-  FeeType.other: 'Outro',
-};
+const feeTypeLabels = feeTypeLabelsPt;
 
 String _gradeLabel(String gradeId) {
   for (var i = 0; i < MockRef.gradeCount; i++) {
@@ -105,6 +98,17 @@ class _BillingPageState extends ConsumerState<BillingPage> {
                     child: Text(
                       'Tabela de preços',
                       style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                  Can(
+                    permission: 'billing.invoice.read',
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: AppSpacing.sm),
+                      child: AppButton(
+                        label: 'Facturas',
+                        icon: Icons.receipt_long_outlined,
+                        onPressed: () => context.go('/billing/invoices'),
+                      ),
                     ),
                   ),
                   Can(
