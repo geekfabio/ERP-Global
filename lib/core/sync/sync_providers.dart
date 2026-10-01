@@ -7,10 +7,12 @@ import 'api_sync_repository.dart';
 import 'conflict_resolver.dart';
 import 'outbox_store.dart';
 import 'sync_binding.dart';
+import 'sync_controller.dart';
 import 'sync_engine.dart';
 import 'sync_mock_handlers.dart';
 import 'sync_models.dart';
 import 'sync_repository.dart';
+import 'sync_settings.dart';
 
 /// Ligações entidade → armazenamento local. Cada módulo acrescenta a sua em
 /// `main.dart` (o `core` não conhece `features/`). Vazio = nada sincroniza.
@@ -28,6 +30,10 @@ final outboxStoreProvider = Provider<OutboxStore>(
 
 final syncRepositoryProvider = Provider<SyncRepository>(
   (ref) => ApiSyncRepository(ref.watch(apiClientProvider)),
+);
+
+final syncSettingsRepositoryProvider = Provider<SyncSettingsRepository>(
+  (ref) => ApiSyncSettingsRepository(ref.watch(apiClientProvider)),
 );
 
 /// Handlers mock do módulo, registados em `main.dart` (só com mock activo).
@@ -59,7 +65,9 @@ class SyncActions {
 
   final Ref _ref;
 
-  Future<SyncReport> syncNow() => _ref.read(syncEngineProvider).run();
+  /// Respeita o modo: só local (ou sem licença `cloud_sync`) não envia nada.
+  Future<SyncReport> syncNow() =>
+      _ref.read(syncControllerProvider.notifier).syncNow();
 
   /// Põe o registo de novo em `pending` e tenta já.
   Future<SyncReport> retry(String entity, String entityId) async {

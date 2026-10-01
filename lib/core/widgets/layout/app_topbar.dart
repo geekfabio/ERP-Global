@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_tokens.dart';
+import '../../sync/sync_indicator.dart';
 
 /// Ano lectivo e trimestre seleccionados. Placeholder até à issue #27.
 class PeriodSelection {
@@ -76,6 +77,7 @@ class AppTopbar extends ConsumerWidget implements PreferredSizeWidget {
             options: _terms,
             onSelected: ref.read(periodProvider.notifier).setTerm,
           ),
+        SyncIndicator(compact: compact),
         IconButton(
           tooltip: 'Notificações',
           icon: const Icon(Icons.notifications_outlined),
