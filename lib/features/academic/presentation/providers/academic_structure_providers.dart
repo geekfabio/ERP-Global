@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_envelope.dart';
 import '../../data/mock_api/academic_structure_mock_handlers.dart';
+import '../../data/mock_api/teacher_mock_handlers.dart';
 import '../../data/models/academic_models.dart';
 import '../../data/models/classroom_models.dart';
+import '../../data/models/teacher_models.dart';
 import '../../data/repositories/api_academic_repositories.dart';
 import '../../domain/academic_repositories.dart';
 
@@ -100,5 +102,19 @@ final shiftListProvider = FutureProvider.autoDispose<List<ShiftModel>>(
 
 final classroomListProvider = FutureProvider.autoDispose<List<ClassroomModel>>(
   (ref) => _fetchAll(ref.watch(classroomRepositoryProvider)),
+  retry: (_, _) => null,
+);
+
+final teacherRepositoryProvider = Provider<TeacherRepository>(
+  (ref) => apiTeacherRepository(ref.watch(apiClientProvider)),
+);
+
+/// Handlers mock dos professores, registados em `main.dart` (só com mock activo).
+final teacherMockHandlersProvider = Provider<TeacherMockHandlers>(
+  (ref) => TeacherMockHandlers(),
+);
+
+final teacherListProvider = FutureProvider.autoDispose<List<TeacherModel>>(
+  (ref) => _fetchAll(ref.watch(teacherRepositoryProvider)),
   retry: (_, _) => null,
 );
