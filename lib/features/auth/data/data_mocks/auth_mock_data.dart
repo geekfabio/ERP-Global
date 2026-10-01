@@ -81,12 +81,7 @@ final authProfileByCode = <String, AuthProfile>{
 /// `*` = acesso total (super_admin).
 const authProfilePermissions = <AuthProfile, List<String>>{
   AuthProfile.superAdmin: ['*'],
-  AuthProfile.management: [
-    'reports.dashboard.read',
-    'students.record.read',
-    'billing.discount.read',
-    'billing.discount.approve',
-  ],
+  AuthProfile.management: ['reports.dashboard.read', 'students.record.read'],
   AuthProfile.coordination: [
     'academic.class.read',
     'grades.entry.approve',
@@ -122,6 +117,7 @@ const authProfilePermissions = <AuthProfile, List<String>>{
     'billing.debtor.manage',
     'billing.discount.read',
     'billing.discount.request',
+    'billing.discount.approve',
     'billing.report.read',
     'billing.report.export',
   ],
