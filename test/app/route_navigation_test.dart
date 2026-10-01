@@ -71,10 +71,10 @@ void main() {
     'super_admin abre todas as rotas estáticas sem erros',
     (tester) async {
       final (router, _) = await _boot(tester, overrides: signedInOverrides());
-      final paths = _staticPaths(
-        router.configuration.routes,
-      ).where((p) => !publicPaths.contains(p)).toSet();
-      paths.removeAll(knownBroken);
+      final all = _staticPaths(router.configuration.routes);
+      final paths = all.toSet()
+        ..removeAll(publicPaths)
+        ..removeAll(knownBroken);
       // Garante que o teste cobre mais do que as raízes dos módulos.
       expect(paths.length, greaterThan(moduleCatalog.length));
       for (final path in paths) {
