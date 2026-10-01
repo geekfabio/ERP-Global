@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import 'presentation/pages/academic_years_page.dart';
 import 'presentation/pages/institution_page.dart';
 
 /// Rotas de `core` da área Definições (ligadas em `app/router/module_routes.dart`,
@@ -8,5 +9,9 @@ List<RouteBase> settingsRoutes() => [
   GoRoute(
     path: '/settings/institution',
     builder: (context, state) => const InstitutionPage(),
+  ),
+  GoRoute(
+    path: '/settings/academic-year',
+    builder: (context, state) => const AcademicYearsPage(),
   ),
 ];

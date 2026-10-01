@@ -2,33 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_tokens.dart';
+import '../../academic/period_context.dart';
 import '../../sync/sync_indicator.dart';
-
-/// Ano lectivo e trimestre seleccionados. Placeholder até à issue #27.
-class PeriodSelection {
-  const PeriodSelection({this.year = '2025/2026', this.term = '1.º Trimestre'});
-
-  final String year;
-  final String term;
-
-  PeriodSelection copyWith({String? year, String? term}) =>
-      PeriodSelection(year: year ?? this.year, term: term ?? this.term);
-}
-
-class PeriodNotifier extends Notifier<PeriodSelection> {
-  @override
-  PeriodSelection build() => const PeriodSelection();
-
-  void setYear(String year) => state = state.copyWith(year: year);
-  void setTerm(String term) => state = state.copyWith(term: term);
-}
-
-final periodProvider = NotifierProvider<PeriodNotifier, PeriodSelection>(
-  PeriodNotifier.new,
-);
-
-const _years = ['2024/2025', '2025/2026'];
-const _terms = ['1.º Trimestre', '2.º Trimestre', '3.º Trimestre'];
 
 /// Barra superior: pesquisa global, período, notificações e menu do utilizador.
 class AppTopbar extends ConsumerWidget implements PreferredSizeWidget {
@@ -42,7 +17,8 @@ class AppTopbar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final period = ref.watch(periodProvider);
+    final period = ref.watch(effectivePeriodProvider);
+    final years = ref.watch(periodChoicesProvider).value?.years ?? const [];
     return AppBar(
       leading: leading,
       automaticallyImplyLeading: false,
@@ -66,18 +42,18 @@ class AppTopbar extends ConsumerWidget implements PreferredSizeWidget {
           ),
         // Em ecrã compacto o espaço vai para o indicador de sync (o trimestre
         // já estava escondido).
-        if (!compact)
+        if (!compact && period.year != null)
           _PeriodMenu(
             tooltip: 'Ano lectivo',
-            label: period.year,
-            options: _years,
+            label: period.year!.label,
+            options: {for (final y in years) y.id: y.label},
             onSelected: ref.read(periodProvider.notifier).setYear,
           ),
-        if (!compact)
+        if (!compact && period.term != null)
           _PeriodMenu(
-            tooltip: 'Trimestre',
-            label: period.term,
-            options: _terms,
+            tooltip: 'Período',
+            label: period.term!.label,
+            options: {for (final t in period.year!.terms) t.id: t.label},
             onSelected: ref.read(periodProvider.notifier).setTerm,
           ),
         SyncIndicator(compact: compact),
@@ -110,7 +86,7 @@ class _PeriodMenu extends StatelessWidget {
 
   final String tooltip;
   final String label;
-  final List<String> options;
+  final Map<String, String> options;
   final ValueChanged<String> onSelected;
 
   @override
@@ -118,7 +94,8 @@ class _PeriodMenu extends StatelessWidget {
     tooltip: tooltip,
     onSelected: onSelected,
     itemBuilder: (_) => [
-      for (final o in options) PopupMenuItem(value: o, child: Text(o)),
+      for (final o in options.entries)
+        PopupMenuItem(value: o.key, child: Text(o.value)),
     ],
     child: Padding(
       padding: const EdgeInsets.symmetric(

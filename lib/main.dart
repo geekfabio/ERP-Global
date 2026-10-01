@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
 import 'core/audit/audit_providers.dart';
+import 'core/academic/period_context.dart';
 import 'core/audit/audit_service.dart';
 import 'core/export/export_contract.dart';
 import 'core/modules/license_gate.dart';
@@ -26,6 +27,7 @@ import 'features/license/presentation/providers/license_usage_providers.dart';
 import 'features/license/data/mock_api/license_mock_handlers.dart';
 import 'features/portal/data/mock_api/portal_mock_handlers.dart';
 import 'features/portal/presentation/providers/portal_providers.dart';
+import 'features/settings/presentation/providers/academic_providers.dart';
 import 'features/settings/presentation/providers/settings_providers.dart';
 import 'features/students/presentation/providers/student_providers.dart';
 
@@ -87,6 +89,10 @@ Future<void> main() async {
                 .pupilsForPortalUser,
           ),
         ),
+        // Selector global de ano/trimestre da topbar → anos lectivos do módulo settings.
+        periodChoicesProvider.overrideWith(
+          (ref) => ref.watch(academicPeriodChoicesProvider.future),
+        ),
         // Módulos com API mock; só têm efeito com `AppConfig.useMockApi`.
         mockApiModulesProvider.overrideWith(
           (ref) => [
@@ -104,6 +110,7 @@ Future<void> main() async {
             ref.watch(settingsMockHandlersProvider),
             ref.watch(portalMockHandlersProvider),
             ref.watch(accessMockHandlersProvider),
+            ref.watch(academicMockHandlersProvider),
           ],
         ),
       ],
