@@ -5,6 +5,7 @@ import '../data/models/guardian_model.dart';
 import '../data/models/student_document_model.dart';
 import '../data/models/student_enums.dart';
 import '../data/models/student_model.dart';
+import '../data/models/student_occurrence_model.dart';
 import 'student_duplicates.dart';
 
 /// Pesquisa de alunos (feita no servidor/handler: paginação, filtros, ordenação).
@@ -129,5 +130,19 @@ abstract interface class EnrollmentRepository {
 
 /// Documentos entregues no cadastro do aluno.
 abstract interface class StudentDocumentRepository {
+  Future<Result<List<StudentDocumentModel>>> forStudent(String studentId);
   Future<Result<StudentDocumentModel>> create(StudentDocumentModel document);
+
+  /// Altera validade e verificação (`verified`, `verifiedBy`, `verifiedAt`).
+  Future<Result<StudentDocumentModel>> update(StudentDocumentModel document);
+  Future<Result<void>> delete(String id);
+}
+
+/// Ocorrências disciplinares (mais recentes primeiro).
+abstract interface class OccurrenceRepository {
+  Future<Result<List<StudentOccurrenceModel>>> forStudent(String studentId);
+  Future<Result<StudentOccurrenceModel>> create(
+    StudentOccurrenceModel occurrence,
+  );
+  Future<Result<void>> delete(String id);
 }

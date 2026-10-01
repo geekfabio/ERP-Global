@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import '../../../../core/errors/result.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_envelope.dart';
@@ -8,10 +10,19 @@ import '../models/guardian_model.dart';
 import '../models/student_document_model.dart';
 import '../models/student_enums.dart';
 import '../models/student_model.dart';
+import '../models/student_occurrence_model.dart';
 
 /// `snake_case` como no JSON (`newEnrollment` → `new_enrollment`).
 String _wire(Enum e) =>
     e.name.replaceAllMapped(RegExp('[A-Z]'), (m) => '_${m[0]!.toLowerCase()}');
+
+List<T> _list<T>(
+  Response<dynamic> response,
+  T Function(Map<String, dynamic>) fromJson,
+) => [
+  for (final item in (ApiEnvelope.data(response)! as List))
+    fromJson(item as Map<String, dynamic>),
+];
 
 class ApiStudentRepository implements StudentRepository {
   ApiStudentRepository(this._client);
@@ -270,6 +281,15 @@ class ApiStudentDocumentRepository implements StudentDocumentRepository {
   final ApiClient _client;
 
   @override
+  Future<Result<List<StudentDocumentModel>>> forStudent(String studentId) =>
+      Result.guard(() async {
+        final response = await _client.dio.get<dynamic>(
+          '/v1/students/$studentId/documents',
+        );
+        return _list(response, StudentDocumentModel.fromJson);
+      });
+
+  @override
   Future<Result<StudentDocumentModel>> create(StudentDocumentModel document) =>
       Result.guard(() async {
         final response = await _client.dio.post<dynamic>(
@@ -278,4 +298,50 @@ class ApiStudentDocumentRepository implements StudentDocumentRepository {
         );
         return ApiEnvelope.object(response, StudentDocumentModel.fromJson);
       });
+
+  @override
+  Future<Result<StudentDocumentModel>> update(StudentDocumentModel document) =>
+      Result.guard(() async {
+        final response = await _client.dio.patch<dynamic>(
+          '/v1/student-documents/${document.id}',
+          data: document.toJson(),
+        );
+        return ApiEnvelope.object(response, StudentDocumentModel.fromJson);
+      });
+
+  @override
+  Future<Result<void>> delete(String id) => Result.guard(() async {
+    await _client.dio.delete<dynamic>('/v1/student-documents/$id');
+  });
+}
+
+class ApiOccurrenceRepository implements OccurrenceRepository {
+  ApiOccurrenceRepository(this._client);
+
+  final ApiClient _client;
+
+  @override
+  Future<Result<List<StudentOccurrenceModel>>> forStudent(String studentId) =>
+      Result.guard(() async {
+        final response = await _client.dio.get<dynamic>(
+          '/v1/students/$studentId/occurrences',
+        );
+        return _list(response, StudentOccurrenceModel.fromJson);
+      });
+
+  @override
+  Future<Result<StudentOccurrenceModel>> create(
+    StudentOccurrenceModel occurrence,
+  ) => Result.guard(() async {
+    final response = await _client.dio.post<dynamic>(
+      '/v1/student-occurrences',
+      data: occurrence.toJson(),
+    );
+    return ApiEnvelope.object(response, StudentOccurrenceModel.fromJson);
+  });
+
+  @override
+  Future<Result<void>> delete(String id) => Result.guard(() async {
+    await _client.dio.delete<dynamic>('/v1/student-occurrences/$id');
+  });
 }

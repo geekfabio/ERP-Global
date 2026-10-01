@@ -8,6 +8,7 @@ import '../models/enrollment_model.dart';
 import '../models/guardian_model.dart';
 import '../models/student_document_model.dart';
 import '../models/student_model.dart';
+import '../models/student_occurrence_model.dart';
 
 /// Handlers de `/v1/students`, `/v1/guardians`, `/v1/enrollments` (docs/07-mock-api.md).
 /// Estado mutável em memória; `POST /__mock/reset` repõe o seed.
@@ -24,6 +25,7 @@ class StudentsMockHandlers implements MockApiModule {
   late Map<String, GuardianLinkModel> _links;
   late Map<String, EnrollmentModel> _enrollments;
   late Map<String, StudentDocumentModel> _documents;
+  late Map<String, StudentOccurrenceModel> _occurrences;
 
   void _reset() {
     final s = buildStudentsSeed(seed: seed, count: count);
@@ -32,6 +34,7 @@ class StudentsMockHandlers implements MockApiModule {
     _links = {for (final x in s.links) x.id: x};
     _enrollments = {for (final x in s.enrollments) x.id: x};
     _documents = {};
+    _occurrences = {};
   }
 
   /// Matrícula mais recente (não cancelada) do aluno, para filtros por classe/turma.
@@ -64,7 +67,13 @@ class StudentsMockHandlers implements MockApiModule {
       ..post('/v1/guardian-links', _createLink)
       ..patch('/v1/guardian-links/{id}', _updateLink)
       ..delete('/v1/guardian-links/{id}', _deleteLink)
+      ..get('/v1/students/{id}/documents', _studentDocuments)
       ..post('/v1/student-documents', _createDocument)
+      ..patch('/v1/student-documents/{id}', _updateDocument)
+      ..delete('/v1/student-documents/{id}', _deleteDocument)
+      ..get('/v1/students/{id}/occurrences', _studentOccurrences)
+      ..post('/v1/student-occurrences', _createOccurrence)
+      ..delete('/v1/student-occurrences/{id}', _deleteOccurrence)
       ..get('/v1/enrollments', _listEnrollments)
       ..post('/v1/enrollments', _createEnrollment)
       ..patch('/v1/enrollments/{id}', _updateEnrollment);
@@ -207,6 +216,87 @@ class StudentsMockHandlers implements MockApiModule {
     final d = StudentDocumentModel.fromJson(body);
     _documents[d.id] = d;
     return MockResponse.created(d.toJson());
+  }
+
+  MockResponse _studentDocuments(MockRequest req) {
+    final s = _student(req);
+    final items = [
+      for (final d in _documents.values)
+        if (d.studentId == s.id && d.deletedAt == null) d,
+    ]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return MockResponse.ok([for (final d in items) d.toJson()]);
+  }
+
+  MockResponse _updateDocument(MockRequest req) {
+    final current = _documents[req.params['id']];
+    if (current == null || current.deletedAt != null) {
+      throw const MockApiException.notFound();
+    }
+    final merged = {
+      ...current.toJson(),
+      ...req.jsonBody,
+      'id': current.id,
+      'studentId': current.studentId,
+      'createdAt': current.createdAt.toIso8601String(),
+      'updatedAt': DateTime.now().toUtc().toIso8601String(),
+    };
+    final updated = StudentDocumentModel.fromJson(merged);
+    if (updated.verified && updated.verifiedBy == null) {
+      throw const MockApiException.validation({
+        'verifiedBy': 'Indique quem verificou o documento',
+      });
+    }
+    _documents[current.id] = updated;
+    return MockResponse.ok(updated.toJson());
+  }
+
+  MockResponse _deleteDocument(MockRequest req) {
+    final d = _documents[req.params['id']];
+    if (d == null || d.deletedAt != null) {
+      throw const MockApiException.notFound();
+    }
+    _documents[d.id] = d.copyWith(deletedAt: DateTime.now().toUtc());
+    return MockResponse.ok({'deleted': true});
+  }
+
+  MockResponse _studentOccurrences(MockRequest req) {
+    final s = _student(req);
+    final items = [
+      for (final o in _occurrences.values)
+        if (o.studentId == s.id && o.deletedAt == null) o,
+    ]..sort((a, b) => b.occurredOn.compareTo(a.occurredOn));
+    return MockResponse.ok([for (final o in items) o.toJson()]);
+  }
+
+  MockResponse _createOccurrence(MockRequest req) {
+    final body = Map<String, dynamic>.of(req.jsonBody);
+    MockValidator(body)
+      ..required('studentId')
+      ..required('type')
+      ..required('occurredOn')
+      ..required('title')
+      ..throwIfInvalid();
+    if (!_students.containsKey(body['studentId'])) {
+      throw const MockApiException.notFound('Aluno inexistente');
+    }
+    final now = DateTime.now().toUtc().toIso8601String();
+    body
+      ..putIfAbsent('id', _newId)
+      ..putIfAbsent('institutionId', () => 'mock')
+      ..['createdAt'] = now
+      ..['updatedAt'] = now;
+    final o = StudentOccurrenceModel.fromJson(body);
+    _occurrences[o.id] = o;
+    return MockResponse.created(o.toJson());
+  }
+
+  MockResponse _deleteOccurrence(MockRequest req) {
+    final o = _occurrences[req.params['id']];
+    if (o == null || o.deletedAt != null) {
+      throw const MockApiException.notFound();
+    }
+    _occurrences[o.id] = o.copyWith(deletedAt: DateTime.now().toUtc());
+    return MockResponse.ok({'deleted': true});
   }
 
   MockResponse _createStudent(MockRequest req) {

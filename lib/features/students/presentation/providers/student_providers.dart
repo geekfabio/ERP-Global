@@ -34,3 +34,7 @@ final studentsMockHandlersProvider = Provider<StudentsMockHandlers>(
 final studentDocumentRepositoryProvider = Provider<StudentDocumentRepository>(
   (ref) => ApiStudentDocumentRepository(ref.watch(apiClientProvider)),
 );
+
+final occurrenceRepositoryProvider = Provider<OccurrenceRepository>(
+  (ref) => ApiOccurrenceRepository(ref.watch(apiClientProvider)),
+);

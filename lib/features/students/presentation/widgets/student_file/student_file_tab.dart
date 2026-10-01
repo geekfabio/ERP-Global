@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../data/models/student_model.dart';
+import 'tabs/discipline_tab.dart';
+import 'tabs/documents_tab.dart';
+import 'tabs/enrollment_tab.dart';
 import 'tabs/guardians_tab.dart';
 import 'tabs/health_tab.dart';
 import 'tabs/identification_tab.dart';
+import 'tabs/pathway_tab.dart';
 
 /// Descreve um separador da ficha do aluno. Para acrescentar um separador
 /// (issues #35/#36) basta juntar um [StudentFileTab] a [defaultStudentFileTabs]:
@@ -36,7 +40,7 @@ class StudentFileTab {
   final Widget Function(BuildContext context, StudentModel student) builder;
 }
 
-/// Separadores 1–3 (#34). #35 e #36 acrescentam os restantes aqui.
+/// Separadores 1–5, 9 e 10 (#34, #35). #36 acrescenta 6, 7, 8, 11 e 12.
 final defaultStudentFileTabs = <StudentFileTab>[
   StudentFileTab(
     id: 'identification',
@@ -58,6 +62,34 @@ final defaultStudentFileTabs = <StudentFileTab>[
     icon: Icons.medical_services_outlined,
     readPermission: 'students.health.read',
     builder: (_, s) => HealthTab(student: s),
+  ),
+  StudentFileTab(
+    id: 'pathway',
+    label: 'Percurso',
+    icon: Icons.timeline_outlined,
+    readPermission: 'students.record.read',
+    builder: (_, s) => PathwayTab(student: s),
+  ),
+  StudentFileTab(
+    id: 'enrollment',
+    label: 'Matrícula',
+    icon: Icons.assignment_ind_outlined,
+    readPermission: 'students.record.read',
+    builder: (_, s) => EnrollmentTab(student: s),
+  ),
+  StudentFileTab(
+    id: 'discipline',
+    label: 'Disciplina',
+    icon: Icons.gavel_outlined,
+    readPermission: 'students.record.read',
+    builder: (_, s) => DisciplineTab(student: s),
+  ),
+  StudentFileTab(
+    id: 'documents',
+    label: 'Documentos',
+    icon: Icons.folder_outlined,
+    readPermission: 'students.record.read',
+    builder: (_, s) => DocumentsTab(student: s),
   ),
 ];
 
