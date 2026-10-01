@@ -43,6 +43,48 @@ class StudentsMockHandlers implements MockApiModule {
   int get activeStudentCount =>
       _students.values.where((s) => s.deletedAt == null).length;
 
+  /// Educandos acessíveis a uma conta do portal, sem vínculos removidos.
+  /// Encarregado: os do `GuardianModel.userId` (vínculo com `validUntil` já
+  /// passado é ignorado); aluno: apenas ele próprio (`link == null`).
+  /// Seed de dev: sem encarregado ligado à conta, usa o primeiro com ≥ 2
+  /// educandos (multi-educando); o aluno é o primeiro da lista.
+  List<({StudentModel student, GuardianLinkModel? link})> pupilsForPortalUser(
+    String userId, {
+    required bool isStudent,
+    DateTime? now,
+  }) {
+    final active = _students.values.where((s) => s.deletedAt == null).toList();
+    if (isStudent) {
+      return [if (active.isNotEmpty) (student: active.first, link: null)];
+    }
+    final at = (now ?? DateTime.now()).toUtc();
+    final byGuardian = <String, List<GuardianLinkModel>>{};
+    for (final l in _links.values) {
+      if (l.deletedAt != null) continue;
+      // `validUntil` é uma data: o vínculo vale até ao fim desse dia.
+      final until = l.validUntil;
+      if (until != null &&
+          !at.isBefore(DateTime.utc(until.year, until.month, until.day + 1))) {
+        continue;
+      }
+      (byGuardian[l.guardianId] ??= []).add(l);
+    }
+    final owned = _guardians.values.where(
+      (g) => g.deletedAt == null && g.userId == userId,
+    );
+    final guardianId = owned.isNotEmpty
+        ? owned.first.id
+        : byGuardian.entries
+              .where((e) => e.value.length >= 2)
+              .map((e) => e.key)
+              .firstOrNull;
+    return [
+      for (final l in byGuardian[guardianId] ?? const <GuardianLinkModel>[])
+        if (_students[l.studentId] case final s? when s.deletedAt == null)
+          (student: s, link: l),
+    ];
+  }
+
   /// Matrícula mais recente (não cancelada) do aluno, para filtros por classe/turma.
   EnrollmentModel? _current(String studentId) {
     EnrollmentModel? best;

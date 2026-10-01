@@ -186,6 +186,9 @@ class AuthMockHandlers implements MockApiModule {
         : null;
   }
 
+  /// Conta autenticada pelo Bearer (para handlers de outros módulos, ex.: portal).
+  MockAccount authenticate(MockRequest req) => _auth(req);
+
   /// Conta autenticada pelo Bearer: 401 UNAUTHENTICATED / TOKEN_EXPIRED.
   MockAccount _auth(MockRequest req) {
     final token = _bearer(req);
