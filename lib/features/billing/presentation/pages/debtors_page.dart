@@ -127,17 +127,21 @@ class _DebtorsPageState extends ConsumerState<DebtorsPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.sm),
               const _Filters(),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.sm),
               Expanded(
                 child: AsyncValueView<List<Debtor>>(
                   value: debtors,
                   onRetry: () => ref.invalidate(debtorListProvider),
                   isEmpty: (d) => d.isEmpty,
-                  empty: const EmptyState(
-                    icon: Icons.verified_outlined,
-                    title: 'Sem devedores',
+                  empty: const Center(
+                    child: SingleChildScrollView(
+                      child: EmptyState(
+                        icon: Icons.verified_outlined,
+                        title: 'Sem devedores',
+                      ),
+                    ),
                   ),
                   data: (d) => _DebtorTable(
                     debtors: d,
@@ -176,7 +180,10 @@ class _Filters extends ConsumerWidget {
             key: const Key('filter_classroom'),
             initialValue: filter.classroomId,
             isExpanded: true,
-            decoration: const InputDecoration(labelText: 'Turma'),
+            decoration: const InputDecoration(
+              labelText: 'Turma',
+              isDense: true,
+            ),
             items: [
               const DropdownMenuItem<String?>(child: Text('Todas')),
               for (var g = 0; g < MockRef.gradeCount; g++)
@@ -197,7 +204,10 @@ class _Filters extends ConsumerWidget {
             key: const Key('filter_month'),
             initialValue: filter.month,
             isExpanded: true,
-            decoration: const InputDecoration(labelText: 'Mês de vencimento'),
+            decoration: const InputDecoration(
+              labelText: 'Mês de vencimento',
+              isDense: true,
+            ),
             items: [
               const DropdownMenuItem<String?>(child: Text('Todos')),
               for (final m in months)
