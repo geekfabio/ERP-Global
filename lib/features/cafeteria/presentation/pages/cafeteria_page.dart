@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme/app_tokens.dart';
 import '../widgets/meal_catalog_tabs.dart';
 import '../widgets/weekly_menu_tab.dart';
+import 'pos_page.dart';
 import 'wallets_page.dart';
 
 /// Refeitório: carteiras, menu semanal, tipos de refeição e pratos.
@@ -11,7 +12,7 @@ class CafeteriaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DefaultTabController(
-    length: 4,
+    length: 5,
     child: Align(
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
@@ -29,6 +30,7 @@ class CafeteriaPage extends StatelessWidget {
                   Tab(text: 'Menu semanal'),
                   Tab(text: 'Refeições'),
                   Tab(text: 'Pratos'),
+                  Tab(text: 'POS'),
                 ],
               ),
               Expanded(
@@ -38,6 +40,7 @@ class CafeteriaPage extends StatelessWidget {
                     WeeklyMenuTab(),
                     MealTypesTab(),
                     MealItemsTab(),
+                    PosPage(),
                   ],
                 ),
               ),
