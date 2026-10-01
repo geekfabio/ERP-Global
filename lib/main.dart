@@ -21,6 +21,8 @@ import 'features/inventory/presentation/providers/inventory_providers.dart';
 import 'features/license/presentation/providers/license_providers.dart';
 import 'features/license/presentation/providers/license_usage_providers.dart';
 import 'features/license/data/mock_api/license_mock_handlers.dart';
+import 'features/portal/data/mock_api/portal_mock_handlers.dart';
+import 'features/portal/presentation/providers/portal_providers.dart';
 import 'features/settings/presentation/providers/settings_providers.dart';
 import 'features/students/presentation/providers/student_providers.dart';
 
@@ -73,6 +75,15 @@ Future<void> main() async {
                 .length,
           ),
         ),
+        // O portal usa a sessão (auth) e os vínculos (alunos) do mock.
+        portalMockHandlersProvider.overrideWith(
+          (ref) => PortalMockHandlers(
+            authenticate: ref.read(authMockHandlersProvider).authenticate,
+            pupilsFor: ref
+                .read(studentsMockHandlersProvider)
+                .pupilsForPortalUser,
+          ),
+        ),
         // Módulos com API mock; só têm efeito com `AppConfig.useMockApi`.
         mockApiModulesProvider.overrideWith(
           (ref) => [
@@ -86,6 +97,7 @@ Future<void> main() async {
             ref.watch(inventoryMockHandlersProvider),
             ref.watch(licenseMockHandlersProvider),
             ref.watch(settingsMockHandlersProvider),
+            ref.watch(portalMockHandlersProvider),
           ],
         ),
       ],

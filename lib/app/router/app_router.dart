@@ -26,6 +26,9 @@ String safeRedirectTarget(String? from) {
       : from;
 }
 
+/// Perfis que só usam o portal (sem painel de gestão).
+const portalOnlyRoles = {'encarregado', 'aluno'};
+
 /// Decide o redirect global. Sem sessão só existe `/login`; com sessão, as rotas
 /// de módulo exigem alguma permissão do módulo (senão `/forbidden`).
 String? appRedirect(Ref ref, GoRouterState state) {
@@ -61,9 +64,16 @@ String? appRedirect(Ref ref, GoRouterState state) {
     return safeRedirectTarget(state.uri.queryParameters['from']);
   }
 
+  // Contas só de portal (encarregado/aluno) abrem no portal, não no painel.
+  final enabled = ref.read(enabledModulesProvider);
+  if (location == '/dashboard' &&
+      enabled.contains('guardian_portal') &&
+      session.roles.every(portalOnlyRoles.contains)) {
+    return '/portal';
+  }
+
   final registry = ref.read(moduleRegistryProvider);
   final permissions = ref.read(permissionServiceProvider);
-  final enabled = ref.read(enabledModulesProvider);
   for (final m in registry.all) {
     final inModule = location == m.path || location.startsWith('${m.path}/');
     if (!inModule) continue;
