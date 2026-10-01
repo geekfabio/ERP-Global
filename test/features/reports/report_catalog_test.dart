@@ -185,5 +185,8 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Agendar'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Semanal · PDF'), findsOneWidget);
+    // Ligações para relatórios existentes, só de módulos licenciados.
+    expect(find.byKey(const ValueKey('existing_billing')), findsOneWidget);
+    expect(find.byKey(const ValueKey('existing_cafeteria')), findsNothing);
   });
 }
