@@ -110,6 +110,7 @@ const authProfilePermissions = <AuthProfile, List<String>>{
   AuthProfile.cafeteria: [
     'cafeteria.pos.read',
     'cafeteria.pos.create',
+    'cafeteria.pos.refund',
     'cafeteria.wallet.read',
     'cafeteria.wallet.topup',
   ],
