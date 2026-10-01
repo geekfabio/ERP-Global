@@ -1,3 +1,4 @@
+import 'features/import_export/presentation/providers/import_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -55,6 +56,7 @@ Future<void> main() async {
             ref.watch(studentsMockHandlersProvider),
             ref.watch(auditMockHandlersProvider),
             ref.watch(communicationMockHandlersProvider),
+            ref.watch(importMockHandlersProvider),
           ],
         ),
       ],
