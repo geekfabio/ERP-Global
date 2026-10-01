@@ -31,6 +31,7 @@ import 'features/academic/presentation/providers/assignment_providers.dart';
 import 'features/academic/presentation/providers/schedule_providers.dart';
 import 'features/accounting/presentation/providers/accounting_providers.dart';
 import 'features/access_control/presentation/providers/access_providers.dart';
+import 'features/attendance/presentation/providers/attendance_providers.dart';
 import 'features/grades/presentation/providers/grades_providers.dart';
 import 'features/hr/presentation/providers/hr_providers.dart';
 import 'features/hr/presentation/providers/payroll_providers.dart';
@@ -142,6 +143,7 @@ Future<void> main() async {
             ref.watch(assignmentMockHandlersProvider),
             ref.watch(scheduleMockHandlersProvider),
             ref.watch(gradesMockHandlersProvider),
+            ref.watch(attendanceMockHandlersProvider),
             ref.watch(billingMockHandlersProvider),
             ref.watch(invoiceMockHandlersProvider),
             ref.watch(paymentMockHandlersProvider),

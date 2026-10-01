@@ -82,16 +82,29 @@ final authProfileByCode = <String, AuthProfile>{
 const authProfilePermissions = <AuthProfile, List<String>>{
   AuthProfile.superAdmin: ['*'],
   AuthProfile.management: ['reports.dashboard.read', 'students.record.read'],
-  AuthProfile.coordination: ['academic.class.read', 'grades.entry.approve'],
+  AuthProfile.coordination: [
+    'academic.class.read',
+    'grades.entry.approve',
+    'attendance.record.all',
+  ],
   AuthProfile.academicOffice: [
     'students.record.read',
     'students.record.create',
     'students.record.update',
     'students.health.read',
     'students.health.update',
+    'attendance.record.all',
   ],
-  AuthProfile.teacher: ['academic.class.read', 'grades.entry.write'],
-  AuthProfile.homeroomTeacher: ['academic.class.read', 'grades.entry.write'],
+  AuthProfile.teacher: [
+    'academic.class.read',
+    'grades.entry.write',
+    'attendance.record.write',
+  ],
+  AuthProfile.homeroomTeacher: [
+    'academic.class.read',
+    'grades.entry.write',
+    'attendance.record.write',
+  ],
   AuthProfile.finance: [
     'billing.invoice.read',
     'billing.invoice.create',
