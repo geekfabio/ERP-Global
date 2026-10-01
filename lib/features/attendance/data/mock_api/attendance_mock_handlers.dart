@@ -161,8 +161,11 @@ class AttendanceMockHandlers implements MockApiModule {
     }
     await _requireClassroom(body);
     final date = DateTime.parse('${body['date']}');
+    // A data vem do fuso do cliente (ex.: UTC+1): "hoje" local pode já ser
+    // amanhã em UTC. Tolera até um dia à frente da data UTC do servidor.
     final today = _now().toUtc();
-    if (date.isAfter(DateTime.utc(today.year, today.month, today.day))) {
+    final latest = DateTime.utc(today.year, today.month, today.day + 1);
+    if (date.isAfter(latest)) {
       throw const MockApiException.validation({
         'date': 'Não é possível registar presenças em dias futuros',
       });
