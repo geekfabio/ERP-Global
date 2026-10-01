@@ -12,6 +12,7 @@ import '../../features/library/library_routes.dart';
 import '../../features/license/license_routes.dart';
 import '../../features/grades/grades_routes.dart';
 import '../../features/guardians/guardians_routes.dart';
+import '../../features/hr/hr_routes.dart';
 import '../../features/import_export/import_export_routes.dart';
 import '../../features/inventory/inventory_routes.dart';
 import '../../features/portal/portal_routes.dart';
@@ -36,6 +37,7 @@ final Map<String, List<RouteBase> Function()> featureModuleRoutes = {
   'communication': communicationRoutes,
   'grades': gradesRoutes,
   'guardians': guardiansRoutes,
+  'hr': hrRoutes,
   'guardian_portal': portalRoutes,
   'inventory': inventoryRoutes,
   'library': libraryRoutes,

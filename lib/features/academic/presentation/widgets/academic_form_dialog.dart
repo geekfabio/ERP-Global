@@ -17,6 +17,7 @@ class AcademicField {
     this.kind = FieldKind.text,
     this.initial,
     this.options = const {},
+    this.required = true,
   });
 
   final String key;
@@ -29,6 +30,9 @@ class AcademicField {
 
   /// Para `choice`/`multi`: valor → rótulo.
   final Map<String, String> options;
+
+  /// Se `false`, o campo (texto/escolha) pode ficar vazio.
+  final bool required;
 }
 
 /// Mostra [fields] num diálogo e devolve os valores (`String`, `int`,
@@ -96,15 +100,17 @@ class _FormDialogState extends State<_FormDialog> {
     });
   }
 
-  String? _required(String? v) =>
-      v == null || v.trim().isEmpty ? 'Campo obrigatório' : null;
+  String? Function(String?) _required(AcademicField f) =>
+      (v) => f.required && (v == null || v.trim().isEmpty)
+      ? 'Campo obrigatório'
+      : null;
 
   Widget _field(AcademicField f) => switch (f.kind) {
     FieldKind.text || FieldKind.code => AppTextField(
       key: Key('field_${f.key}'),
       label: f.label,
       controller: _controllers[f.key],
-      validator: _required,
+      validator: _required(f),
     ),
     FieldKind.integer => AppTextField(
       key: Key('field_${f.key}'),
@@ -112,7 +118,7 @@ class _FormDialogState extends State<_FormDialog> {
       controller: _controllers[f.key],
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      validator: _required,
+      validator: _required(f),
     ),
     FieldKind.choice => DropdownButtonFormField<String>(
       key: Key('field_${f.key}'),
@@ -126,7 +132,7 @@ class _FormDialogState extends State<_FormDialog> {
           DropdownMenuItem(value: e.key, child: Text(e.value)),
       ],
       onChanged: (v) => _controllers[f.key]!.text = v ?? '',
-      validator: _required,
+      validator: _required(f),
     ),
     FieldKind.multi => Column(
       key: Key('field_${f.key}'),
