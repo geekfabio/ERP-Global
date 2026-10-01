@@ -58,6 +58,9 @@ class StudentsMockHandlers implements MockApiModule {
       ..get('/v1/students/{id}/guardians', _studentGuardians)
       ..get('/v1/guardians', _listGuardians)
       ..post('/v1/guardians', _createGuardian)
+      ..get('/v1/guardians/{id}', (q) => MockResponse.ok(_guardian(q).toJson()))
+      ..patch('/v1/guardians/{id}', _updateGuardian)
+      ..get('/v1/guardians/{id}/students', _guardianStudents)
       ..post('/v1/guardian-links', _createLink)
       ..patch('/v1/guardian-links/{id}', _updateLink)
       ..delete('/v1/guardian-links/{id}', _deleteLink)
@@ -280,6 +283,66 @@ class StudentsMockHandlers implements MockApiModule {
     ),
   );
 
+  GuardianModel _guardian(MockRequest req) {
+    final g = _guardians[req.params['id']];
+    if (g == null || g.deletedAt != null) {
+      throw const MockApiException.notFound();
+    }
+    return g;
+  }
+
+  MockResponse _updateGuardian(MockRequest req) {
+    final current = _guardian(req);
+    final patch = req.jsonBody;
+    MockValidator(patch)
+      ..check(
+        'fullName',
+        patch['fullName'] is! String ||
+            (patch['fullName'] as String).trim().length >= 3,
+        'Indique o nome completo',
+      )
+      ..check(
+        'phone',
+        patch['phone'] is! String ||
+            (patch['phone'] as String).trim().isNotEmpty,
+        'Indique o telefone',
+      )
+      ..throwIfInvalid();
+    final updated = GuardianModel.fromJson({
+      ...current.toJson(),
+      ...patch,
+      'id': current.id,
+      'createdAt': current.createdAt.toIso8601String(),
+      'updatedAt': DateTime.now().toUtc().toIso8601String(),
+    });
+    _guardians[current.id] = updated;
+    return MockResponse.ok(updated.toJson());
+  }
+
+  MockResponse _guardianStudents(MockRequest req) {
+    final g = _guardian(req);
+    final items = <Map<String, dynamic>>[];
+    for (final l in _links.values) {
+      if (l.guardianId != g.id || l.deletedAt != null) continue;
+      final s = _students[l.studentId];
+      if (s == null || s.deletedAt != null) continue;
+      items.add({'student': s.toJson(), 'link': l.toJson()});
+    }
+    return MockResponse.ok(items);
+  }
+
+  /// `validUntil` (UTC) é opcional; se vier, tem de ser uma data válida.
+  void _validateLinkDates(Map<String, dynamic> body) {
+    final date = body['validUntil'];
+    MockValidator(body)
+      ..check(
+        'validUntil',
+        date == null || (date is String && DateTime.tryParse(date) != null),
+        'Data de validade inválida',
+      )
+      ..throwIfInvalid();
+  }
+
   MockResponse _createGuardian(MockRequest req) {
     final body = Map<String, dynamic>.of(req.jsonBody);
     MockValidator(body)
@@ -305,6 +368,7 @@ class StudentsMockHandlers implements MockApiModule {
       ..required('guardianId')
       ..required('relationship')
       ..throwIfInvalid();
+    _validateLinkDates(body);
     if (!_students.containsKey(body['studentId']) ||
         !_guardians.containsKey(body['guardianId'])) {
       throw const MockApiException.notFound('Aluno ou encarregado inexistente');
@@ -336,6 +400,7 @@ class StudentsMockHandlers implements MockApiModule {
     if (current == null || current.deletedAt != null) {
       throw const MockApiException.notFound();
     }
+    _validateLinkDates(req.jsonBody);
     final merged = {
       ...current.toJson(),
       ...req.jsonBody,
