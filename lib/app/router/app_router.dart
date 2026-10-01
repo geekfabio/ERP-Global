@@ -29,6 +29,9 @@ String safeRedirectTarget(String? from) {
 /// Perfis que só usam o portal (sem painel de gestão).
 const portalOnlyRoles = {'encarregado', 'aluno'};
 
+/// Perfis docentes: abrem na vista do professor (`/portal/teacher`).
+const teacherRoles = {'professor', 'diretor_turma'};
+
 /// Decide o redirect global. Sem sessão só existe `/login`; com sessão, as rotas
 /// de módulo exigem alguma permissão do módulo (senão `/forbidden`).
 String? appRedirect(Ref ref, GoRouterState state) {
@@ -70,6 +73,11 @@ String? appRedirect(Ref ref, GoRouterState state) {
       enabled.contains('guardian_portal') &&
       session.roles.every(portalOnlyRoles.contains)) {
     return '/portal';
+  }
+  if ((location == '/dashboard' || location == '/portal') &&
+      enabled.contains('guardian_portal') &&
+      session.roles.every(teacherRoles.contains)) {
+    return '/portal/teacher';
   }
 
   final registry = ref.read(moduleRegistryProvider);

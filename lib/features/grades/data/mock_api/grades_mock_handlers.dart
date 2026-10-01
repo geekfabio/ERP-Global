@@ -15,7 +15,12 @@ import 'report_card_mock_handlers.dart';
 /// Handlers de `/v1/assessment-schemes`. Valida pesos, escala e unicidade
 /// por classe/curso como o servidor faria.
 class GradesMockHandlers implements MockApiModule {
-  GradesMockHandlers({this.permissions, this.termLookup, this.now}) {
+  GradesMockHandlers({
+    this.permissions,
+    this.termLookup,
+    this.access,
+    this.now,
+  }) {
     _reset();
   }
 
@@ -23,12 +28,16 @@ class GradesMockHandlers implements MockApiModule {
 
   /// Estado dos trimestres (módulo académico), para o lançamento de notas.
   final GradeTermLookup? termLookup;
+
+  /// Restrição às disciplinas atribuídas ao professor (módulo académico).
+  final GradeEntryAccess? access;
   final DateTime Function()? now;
 
   late final GradeEntryMockHandlers _entries = GradeEntryMockHandlers(
     schemes: () => _rows.values,
     permissions: permissions,
     termLookup: termLookup,
+    access: access,
     now: now,
   );
 

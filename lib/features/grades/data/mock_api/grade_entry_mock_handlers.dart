@@ -21,6 +21,11 @@ class GradeTermInfo {
 
 typedef GradeTermLookup = FutureOr<GradeTermInfo?> Function(String termId);
 
+/// Diz se o utilizador lecciona a disciplina na turma (o servidor real resolve
+/// pelas atribuições do professor).
+typedef GradeEntryAccess =
+    FutureOr<bool> Function(String classroomId, String subjectId);
+
 /// Handlers de `/v1/grade-sheets` (lançamento de notas): valida a escala,
 /// bloqueia trimestre fechado/prazo terminado, exige `approve` + justificação
 /// para editar com a folha bloqueada e guarda o log de alterações.
@@ -29,6 +34,7 @@ class GradeEntryMockHandlers implements MockApiModule {
     required this.schemes,
     this.permissions,
     this.termLookup,
+    this.access,
     DateTime Function()? now,
   }) : _now = now ?? DateTime.now;
 
@@ -36,6 +42,10 @@ class GradeEntryMockHandlers implements MockApiModule {
   final Iterable<AssessmentSchemeModel> Function() schemes;
   final PermissionService Function()? permissions;
   final GradeTermLookup? termLookup;
+
+  /// Restrição às disciplinas atribuídas; `null` = sem restrição. Quem aprova
+  /// (`approve`) vê todas as turmas.
+  final GradeEntryAccess? access;
   final DateTime Function() _now;
 
   /// `classroom|subject|term|student → componente → nota`.
@@ -62,6 +72,15 @@ class GradeEntryMockHandlers implements MockApiModule {
 
   static String _slot(Map<String, dynamic> k, String student) =>
       '${k['classroomId']}|${k['subjectId']}|${k['termId']}|$student';
+
+  Future<void> _requireAccess(Map<String, dynamic> k) async {
+    if (access == null || _can(gradeEntryApprovePermission)) return;
+    if (!await access!('${k['classroomId']}', '${k['subjectId']}')) {
+      throw const MockApiException.forbidden(
+        'Disciplina não atribuída ao professor nesta turma',
+      );
+    }
+  }
 
   static void _requireKey(Map<String, dynamic> k) {
     final errors = {
@@ -134,6 +153,7 @@ class GradeEntryMockHandlers implements MockApiModule {
       throw const MockApiException.forbidden();
     }
     _requireKey(q.query);
+    await _requireAccess(q.query);
     return MockResponse.ok((await _sheet(q.query)).toJson());
   }
 
@@ -144,6 +164,7 @@ class GradeEntryMockHandlers implements MockApiModule {
       throw const MockApiException.forbidden();
     }
     _requireKey(body);
+    await _requireAccess(body);
     final sheet = await _sheet(body);
     final List<GradeRowModel> rows;
     try {
@@ -221,13 +242,14 @@ class GradeEntryMockHandlers implements MockApiModule {
     return MockResponse.ok((await _sheet(body)).toJson());
   }
 
-  MockResponse _list(MockRequest q) {
+  Future<MockResponse> _list(MockRequest q) async {
     if (!_can(gradeEntryReadPermission) &&
         !_can(gradeEntryWritePermission) &&
         !_can(gradeEntryApprovePermission)) {
       throw const MockApiException.forbidden();
     }
     _requireKey(q.query);
+    await _requireAccess(q.query);
     final rows = [
       for (final c in _changes.reversed)
         if (c.classroomId == q.query['classroomId'] &&
