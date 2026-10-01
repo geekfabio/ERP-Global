@@ -1,6 +1,7 @@
 import '../../../../core/network/mock/mock_api_registry.dart';
 import '../../../../core/network/mock/mock_types.dart';
 import 'academic_overview_mock_handlers.dart';
+import 'finance_overview_mock_handlers.dart';
 
 /// Intervalo [min, max] do valor simulado de cada widget (dinheiro em cêntimos,
 /// percentagens em pontos). O prefixo do id é o código do módulo.
@@ -41,6 +42,7 @@ class ReportsMockHandlers implements MockApiModule {
   void register(MockApiRegistry r) {
     r.get('/v1/reports/dashboard', _dashboard);
     AcademicOverviewMockHandlers(enabledModules: enabledModules).register(r);
+    FinanceOverviewMockHandlers(enabledModules: enabledModules).register(r);
   }
 
   int _value(String widgetId, String year, String term, String campus) {
