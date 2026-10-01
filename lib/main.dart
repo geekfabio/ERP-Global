@@ -47,6 +47,7 @@ import 'features/portal/data/mock_api/portal_mock_handlers.dart';
 import 'features/portal/presentation/providers/portal_finance_providers.dart';
 import 'features/portal/presentation/providers/portal_providers.dart';
 import 'features/reports/presentation/providers/reports_providers.dart';
+import 'features/settings/data/models/term_model.dart';
 import 'features/settings/presentation/providers/academic_providers.dart';
 import 'features/settings/presentation/providers/rules_providers.dart';
 import 'features/settings/presentation/providers/settings_providers.dart';
@@ -132,6 +133,25 @@ Future<void> main() async {
                 .pupilsForPortalUser,
           ),
         ),
+        // Importação de notas: só aceita trimestres abertos (módulo settings).
+        importTermLookupProvider.overrideWith((ref) {
+          final repository = ref.read(academicRepositoryProvider);
+          return (termRef) async {
+            final years =
+                (await repository.years()).valueOrNull?.items ?? const [];
+            for (final year in years) {
+              final terms =
+                  (await repository.terms(year.id)).valueOrNull ?? const [];
+              for (final t in terms) {
+                if (t.id == termRef ||
+                    t.name.toLowerCase() == termRef.toLowerCase()) {
+                  return t.status == TermStatus.closed;
+                }
+              }
+            }
+            return null;
+          };
+        }),
         // Selector global de ano/trimestre da topbar → anos lectivos do módulo settings.
         periodChoicesProvider.overrideWith(
           (ref) => ref.watch(academicPeriodChoicesProvider.future),
