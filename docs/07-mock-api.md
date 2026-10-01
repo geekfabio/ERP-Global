@@ -67,7 +67,8 @@ Endpoints:
 | POST | `/v1/auth/logout` | invalida refresh token |
 | GET | `/v1/auth/me` | utilizador, perfis, permissões, licença |
 | POST | `/v1/auth/change-password` | utilizador autenticado (obrigatório se `mustChangePassword`) |
-| GET/POST/PATCH | `/v1/users` … | gestão de contas (admin) |
+| GET/POST | `/v1/users` | lista paginada (`q`, `sort=name,-email`) / cria conta com `temporaryPassword` e `mustChangePassword` (só `super_admin` ou `users.account.create`) |
+| GET/PATCH | `/v1/users/{id}` | consulta / edita dados, `roles[]`, `scope`, `isActive` (409 se desactivar ou despromover o último `super_admin` activo) |
 | POST | `/v1/users/{id}/reset-password` | admin gera password temporária |
 
 ### Seed de desenvolvimento (só-dev)

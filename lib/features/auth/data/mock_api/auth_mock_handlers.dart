@@ -3,7 +3,12 @@ import '../../../../core/network/mock/mock_types.dart';
 import '../../../../core/network/mock/mock_validator.dart';
 import '../../../../core/utils/seeded_random.dart';
 import '../data_mocks/auth_mock_data.dart';
-import '../models/auth_profile.dart';
+import '../../../../core/network/mock/mock_query.dart';
+import '../../../../core/utils/seed_generator.dart';
+import '../models/scope_model.dart';
+import '../models/user_model.dart';
+
+part 'users_mock_handlers.dart';
 
 /// Validade do access token (segundos).
 const mockAccessTtlSeconds = 900;
@@ -18,6 +23,7 @@ class AuthMockHandlers implements MockApiModule {
 
   final DateTime Function() _now;
   final SeededRandom _random;
+  final _userIds = SeedGenerator(97);
 
   final Map<String, MockAccount> _accounts = {};
   final Map<String, ({String userId, DateTime expiresAt})> _access = {};
@@ -38,12 +44,9 @@ class AuthMockHandlers implements MockApiModule {
   void setActive(String userId, {required bool active}) {
     final account = _accounts[userId];
     if (account == null) throw const MockApiException.notFound();
-    if (!active && account.profile == AuthProfile.superAdmin) {
+    if (!active && account.isSuperAdmin) {
       final others = _accounts.values.where(
-        (a) =>
-            a.profile == AuthProfile.superAdmin &&
-            a.user.id != userId &&
-            a.user.isActive,
+        (a) => a.isSuperAdmin && a.user.id != userId && a.user.isActive,
       );
       if (others.isEmpty) {
         throw const MockApiException.conflict(
@@ -67,6 +70,7 @@ class AuthMockHandlers implements MockApiModule {
 
   @override
   void register(MockApiRegistry registry) {
+    _registerUsers(registry);
     registry
       ..onReset(_seed)
       ..post('/v1/auth/login', _login)
@@ -146,8 +150,8 @@ class AuthMockHandlers implements MockApiModule {
 
   Map<String, dynamic> _sessionPayload(MockAccount a) => {
     'user': a.user.toJson(),
-    'roles': [authProfileCodes[a.profile]],
-    'permissions': authProfilePermissions[a.profile],
+    'roles': a.roles,
+    'permissions': a.permissions,
     'license': {
       'plan': 'dev',
       'status': 'active',
