@@ -20,7 +20,15 @@ abstract class StudentAccount with _$StudentAccount {
     @UtcDateTimeConverter() DateTime? deletedAt,
     @Default('synced') String syncState,
     required String studentId,
+
+    /// Saldo líquido: `prepaidMinor - outstandingMinor` (negativo = em dívida).
     @MinorUnitConverter() required int balanceMinor,
+
+    /// Crédito pré-pago disponível (pagamentos adiantados ainda por usar).
+    @MinorUnitConverter() @Default(0) int prepaidMinor,
+
+    /// Total em dívida das cobranças abertas.
+    @MinorUnitConverter() @Default(0) int outstandingMinor,
     @Default(<LedgerEntry>[]) List<LedgerEntry> entries,
   }) = _StudentAccount;
 
@@ -36,6 +44,9 @@ abstract class LedgerEntry with _$LedgerEntry {
   const factory LedgerEntry({
     required String id,
     required String referenceId,
+
+    /// `charge` (débito) ou `payment` (crédito).
+    @Default('payment') String kind,
     @UtcDateTimeConverter() required DateTime occurredAt,
     @MinorUnitConverter() required int debitMinor,
     @MinorUnitConverter() required int creditMinor,

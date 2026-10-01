@@ -31,6 +31,7 @@ const _allocation = {'chargeId': _id, 'amountMinor': _amount};
 const _entry = {
   'id': _id,
   'referenceId': _id,
+  'kind': 'payment',
   'occurredAt': _time,
   'debitMinor': 0,
   'creditMinor': _amount,
