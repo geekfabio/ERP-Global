@@ -8,6 +8,7 @@ import 'presentation/pages/portal_grades_page.dart';
 import 'presentation/pages/portal_home_page.dart';
 import 'presentation/pages/portal_justification_page.dart';
 import 'presentation/pages/portal_schedule_page.dart';
+import 'presentation/pages/portal_teacher_page.dart';
 
 /// Rotas do módulo `guardian_portal` (ligadas em `app/router/module_routes.dart`).
 List<RouteBase> portalRoutes() => [
@@ -39,5 +40,9 @@ List<RouteBase> portalRoutes() => [
   GoRoute(
     path: '/portal/cartao',
     builder: (context, state) => const PortalCardPage(),
+  ),
+  GoRoute(
+    path: '/portal/teacher',
+    builder: (context, state) => const PortalTeacherPage(),
   ),
 ];

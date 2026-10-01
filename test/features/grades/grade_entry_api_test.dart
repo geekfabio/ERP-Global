@@ -21,6 +21,7 @@ ApiGradeEntryRepository _repo({
   List<String> permissions = const ['grades.entry.write'],
   GradeTermInfo? term,
   DateTime? now,
+  GradeEntryAccess? access,
 }) => ApiGradeEntryRepository(
   ApiClient.create(
     baseUrl: 'https://api.test',
@@ -30,6 +31,7 @@ ApiGradeEntryRepository _repo({
         GradesMockHandlers(
           permissions: () => PermissionService.fromCodes(permissions),
           termLookup: (_) => term,
+          access: access,
           now: () => now ?? DateTime.utc(2026, 11, 1),
         ),
       ),
@@ -127,5 +129,32 @@ void main() {
   test('guardar sem alterações num trimestre fechado não exige nada', () async {
     final repo = _repo(term: const GradeTermInfo(closed: true));
     expect((await repo.save(_key, const [])).isOk, isTrue);
+  });
+
+  test(
+    'professor só vê e grava nas disciplinas atribuídas (403 fora)',
+    () async {
+      final repo = _repo(access: (classroomId, subjectId) => subjectId == 's1');
+      expect((await repo.save(_key, _rows(15))).isOk, isTrue);
+      const other = GradeSheetKey(
+        classroomId: 'c1',
+        subjectId: 's2',
+        termId: 't1',
+      );
+      expect((await repo.sheet(other)).failureOrNull, _code('FORBIDDEN'));
+      expect(
+        (await repo.save(other, _rows(15))).failureOrNull,
+        _code('FORBIDDEN'),
+      );
+      expect((await repo.changes(other)).failureOrNull, _code('FORBIDDEN'));
+    },
+  );
+
+  test('quem aprova ignora a restrição por atribuição', () async {
+    final repo = _repo(
+      permissions: const ['grades.entry.approve'],
+      access: (classroomId, subjectId) => false,
+    );
+    expect((await repo.sheet(_key)).isOk, isTrue);
   });
 }

@@ -101,11 +101,13 @@ const authProfilePermissions = <AuthProfile, List<String>>{
   ],
   AuthProfile.teacher: [
     'academic.class.read',
+    'portal.teacher.read',
     'grades.entry.write',
     'attendance.record.write',
   ],
   AuthProfile.homeroomTeacher: [
     'academic.class.read',
+    'portal.teacher.read',
     'grades.entry.write',
     'attendance.record.write',
   ],

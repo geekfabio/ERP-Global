@@ -22,8 +22,13 @@ const _allowed = <AuthProfile, Set<String>>{
   AuthProfile.management: {'reports', 'students'},
   AuthProfile.coordination: {'academic', 'grades', 'attendance'},
   AuthProfile.academicOffice: {'students', 'attendance'},
-  AuthProfile.teacher: {'academic', 'grades', 'attendance'},
-  AuthProfile.homeroomTeacher: {'academic', 'grades', 'attendance'},
+  AuthProfile.teacher: {'academic', 'grades', 'attendance', 'guardian_portal'},
+  AuthProfile.homeroomTeacher: {
+    'academic',
+    'grades',
+    'attendance',
+    'guardian_portal',
+  },
   AuthProfile.finance: {'billing'},
   AuthProfile.accountant: {'accounting'},
   AuthProfile.humanResources: {'hr'},
@@ -74,8 +79,14 @@ void main() {
       for (final m in moduleCatalog) {
         router.go(m.path);
         await tester.pumpAndSettle();
+        // Docentes abrem o portal na vista do professor.
+        final home =
+            m.code == 'guardian_portal' &&
+                teacherRoles.contains(authProfileCodes[profile])
+            ? '/portal/teacher'
+            : m.path;
         final expected = _allowed[profile]!.contains(m.code)
-            ? m.path
+            ? home
             : '/forbidden';
         expect(
           router.state.uri.path,

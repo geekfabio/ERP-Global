@@ -5,6 +5,7 @@ import '../../../../core/audit/audit_providers.dart';
 import '../../../../core/errors/result.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/security/permission_providers.dart';
+import '../../../academic/presentation/providers/assignment_providers.dart';
 import '../../../settings/data/models/term_model.dart';
 import '../../../settings/presentation/providers/academic_providers.dart';
 import '../../../students/data/models/student_model.dart';
@@ -31,6 +32,14 @@ final gradeEntryRepositoryProvider = Provider<GradeEntryRepository>(
 final gradesMockHandlersProvider = Provider<GradesMockHandlers>(
   (ref) => GradesMockHandlers(
     permissions: () => ref.read(permissionServiceProvider),
+    access: (classroomId, subjectId) async {
+      final mine = await ref.read(myClassroomsProvider.future);
+      return mine.any(
+        (m) =>
+            m.classroom.id == classroomId &&
+            m.assignments.any((a) => a.subjectId == subjectId),
+      );
+    },
     termLookup: (termId) async {
       final repository = ref.read(academicRepositoryProvider);
       final years = (await repository.years()).valueOrNull?.items ?? const [];
