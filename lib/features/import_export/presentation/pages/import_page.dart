@@ -14,6 +14,7 @@ import '../../../../core/widgets/table/app_data_table.dart';
 import '../../../../core/widgets/table/table_controller.dart';
 import '../../domain/import_engine.dart';
 import '../../domain/import_profile.dart';
+import '../../domain/import_template.dart';
 import '../providers/import_providers.dart';
 
 /// Permissão exigida para gravar (confirmar) uma importação.
@@ -61,7 +62,10 @@ class ImportPage extends ConsumerWidget {
                 child: switch (state.step) {
                   ImportStep.file => _FileStep(
                     profile: state.profile,
+                    profiles: ref.watch(importProfilesProvider),
+                    onSelect: ctrl.selectProfile,
                     onPick: () => _pick(ref),
+                    onTemplate: (ext) => _saveTemplate(ref, state.profile, ext),
                   ),
                   ImportStep.mapping => _MappingStep(state: state, ctrl: ctrl),
                   ImportStep.preview => _PreviewStep(state: state, ctrl: ctrl),
@@ -81,6 +85,27 @@ class ImportPage extends ConsumerWidget {
     ref.read(importControllerProvider.notifier).loadFile(picked.$1, picked.$2);
   }
 
+  Future<void> _saveTemplate(
+    WidgetRef ref,
+    ImportProfile profile,
+    String ext,
+  ) async {
+    final bytes = ext == 'xlsx'
+        ? ImportTemplate.xlsx(profile)
+        : ImportTemplate.csv(profile);
+    try {
+      final saved = await FilePicker.saveFile(
+        fileName: ImportTemplate.fileName(profile, ext),
+        bytes: bytes,
+      );
+      if (saved != null) {
+        ref.read(toastProvider.notifier).success('Modelo guardado.');
+      }
+    } on Object {
+      ref.read(toastProvider.notifier).error('Não foi possível guardar.');
+    }
+  }
+
   static Future<(String, Uint8List)?> _defaultPick() async {
     final files = await FilePicker.pickFiles(
       type: FileType.custom,
@@ -93,15 +118,36 @@ class ImportPage extends ConsumerWidget {
 }
 
 class _FileStep extends StatelessWidget {
-  const _FileStep({required this.profile, required this.onPick});
+  const _FileStep({
+    required this.profile,
+    required this.profiles,
+    required this.onSelect,
+    required this.onPick,
+    required this.onTemplate,
+  });
 
   final ImportProfile profile;
+  final List<ImportProfile> profiles;
+  final ValueChanged<ImportProfile> onSelect;
   final VoidCallback onPick;
+  final ValueChanged<String> onTemplate;
 
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
+      if (profiles.length > 1) ...[
+        SegmentedButton<String>(
+          segments: [
+            for (final p in profiles)
+              ButtonSegment(value: p.id, label: Text(p.label)),
+          ],
+          selected: {profile.id},
+          onSelectionChanged: (s) =>
+              onSelect(profiles.firstWhere((p) => p.id == s.first)),
+        ),
+        const SizedBox(height: AppSpacing.md),
+      ],
       const Text(
         'Escolha um ficheiro .csv ou .xlsx com cabeçalhos na primeira linha. '
         'Nada é gravado antes de confirmar.',
@@ -111,10 +157,28 @@ class _FileStep extends StatelessWidget {
         'Colunas: ${[for (final c in profile.columns) c.required ? '${c.label}*' : c.label].join(', ')}',
       ),
       const SizedBox(height: AppSpacing.lg),
-      AppButton(
-        label: 'Escolher ficheiro',
-        icon: Icons.upload_file,
-        onPressed: onPick,
+      Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
+        children: [
+          AppButton(
+            label: 'Escolher ficheiro',
+            icon: Icons.upload_file,
+            onPressed: onPick,
+          ),
+          AppButton(
+            label: 'Modelo .xlsx',
+            icon: Icons.download,
+            variant: AppButtonVariant.secondary,
+            onPressed: () => onTemplate('xlsx'),
+          ),
+          AppButton(
+            label: 'Modelo .csv',
+            icon: Icons.download,
+            variant: AppButtonVariant.secondary,
+            onPressed: () => onTemplate('csv'),
+          ),
+        ],
       ),
     ],
   );

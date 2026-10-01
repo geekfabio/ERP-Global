@@ -9,6 +9,7 @@ import '../../domain/import_engine.dart';
 import '../../domain/import_profile.dart';
 import '../../domain/import_repository.dart';
 import '../../domain/import_table.dart';
+import '../../domain/profiles/guardians_import_profile.dart';
 import '../../domain/profiles/students_import_profile.dart';
 
 final importRepositoryProvider = Provider<ImportRepository>(
@@ -22,7 +23,7 @@ final importMockHandlersProvider = Provider<ImportMockHandlers>(
 
 /// Perfis disponíveis. Outros módulos acrescentam os seus por `overrideWith`.
 final importProfilesProvider = Provider<List<ImportProfile>>(
-  (ref) => const [StudentsImportProfile()],
+  (ref) => const [StudentsImportProfile(), GuardiansImportProfile()],
 );
 
 enum ImportStep { file, mapping, preview, done }

@@ -8,6 +8,7 @@ class ImportColumn {
     required this.label,
     this.required = false,
     this.aliases = const [],
+    this.example = '',
     this.parse,
   });
 
@@ -20,6 +21,9 @@ class ImportColumn {
 
   /// Cabeçalhos alternativos reconhecidos no mapeamento automático.
   final List<String> aliases;
+
+  /// Valor de exemplo escrito na linha de exemplo dos templates.
+  final String example;
 
   /// Converte o texto num valor normalizado; lança [FormatException] com a
   /// mensagem para o utilizador se for inválido. `null` = texto tal como está.
