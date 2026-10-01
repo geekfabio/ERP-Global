@@ -42,7 +42,9 @@ import 'features/library/presentation/providers/library_providers.dart';
 import 'features/license/presentation/providers/license_providers.dart';
 import 'features/license/presentation/providers/license_usage_providers.dart';
 import 'features/license/data/mock_api/license_mock_handlers.dart';
+import 'features/portal/data/mock_api/portal_finance_mock_handlers.dart';
 import 'features/portal/data/mock_api/portal_mock_handlers.dart';
+import 'features/portal/presentation/providers/portal_finance_providers.dart';
 import 'features/portal/presentation/providers/portal_providers.dart';
 import 'features/reports/presentation/providers/reports_providers.dart';
 import 'features/settings/presentation/providers/academic_providers.dart';
@@ -122,6 +124,14 @@ Future<void> main() async {
             },
           ),
         ),
+        portalFinanceMockHandlersProvider.overrideWith(
+          (ref) => PortalFinanceMockHandlers(
+            authenticate: ref.read(authMockHandlersProvider).authenticate,
+            pupilsFor: ref
+                .read(studentsMockHandlersProvider)
+                .pupilsForPortalUser,
+          ),
+        ),
         // Selector global de ano/trimestre da topbar → anos lectivos do módulo settings.
         periodChoicesProvider.overrideWith(
           (ref) => ref.watch(academicPeriodChoicesProvider.future),
@@ -148,6 +158,7 @@ Future<void> main() async {
             ref.watch(licenseMockHandlersProvider),
             ref.watch(settingsMockHandlersProvider),
             ref.watch(portalMockHandlersProvider),
+            ref.watch(portalFinanceMockHandlersProvider),
             ref.watch(accessMockHandlersProvider),
             ref.watch(academicMockHandlersProvider),
             ref.watch(rulesMockHandlersProvider),

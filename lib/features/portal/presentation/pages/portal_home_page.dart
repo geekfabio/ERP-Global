@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/utils/pt_ao_formatters.dart';
@@ -125,6 +126,7 @@ class _Summary extends ConsumerWidget {
             ),
           if (s.finance case final f?)
             PortalSummaryTile(
+              onTap: () => context.go('/portal/financeiro'),
               icon: Icons.payments_outlined,
               label: 'Em dívida',
               value: PtAoFormatters.currency(outstandingMinor(f)),
@@ -132,6 +134,7 @@ class _Summary extends ConsumerWidget {
             ),
           if (s.card case final c?)
             PortalSummaryTile(
+              onTap: () => context.go('/portal/cartao'),
               icon: Icons.contactless_outlined,
               label: 'Saldo do refeitório',
               value: PtAoFormatters.currency(c.mealBalanceMinor),
