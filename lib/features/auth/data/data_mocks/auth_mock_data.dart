@@ -92,7 +92,11 @@ const authProfilePermissions = <AuthProfile, List<String>>{
   ],
   AuthProfile.teacher: ['academic.class.read', 'grades.entry.write'],
   AuthProfile.homeroomTeacher: ['academic.class.read', 'grades.entry.write'],
-  AuthProfile.finance: ['billing.invoice.read', 'billing.invoice.create'],
+  AuthProfile.finance: [
+    'billing.invoice.read',
+    'billing.invoice.create',
+    'billing.invoice.void',
+  ],
   AuthProfile.accountant: ['accounting.ledger.read', 'accounting.entry.create'],
   AuthProfile.humanResources: ['hr.employee.read', 'hr.employee.update'],
   AuthProfile.cafeteria: ['cafeteria.pos.read', 'cafeteria.pos.create'],

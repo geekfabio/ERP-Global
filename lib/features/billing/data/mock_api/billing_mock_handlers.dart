@@ -39,6 +39,11 @@ class BillingMockHandlers implements MockApiModule {
     _ids = SeedGenerator(530);
   }
 
+  /// Consulta usada pelo módulo de facturação (mesmo estado em memória).
+  Charge? chargeById(String id) => _charges[id];
+
+  FeeItem? feeItemById(String id) => _items[id];
+
   @override
   void register(MockApiRegistry r) {
     r

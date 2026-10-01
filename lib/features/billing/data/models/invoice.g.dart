@@ -19,6 +19,7 @@ _Invoice _$InvoiceFromJson(Map<String, dynamic> json) => _Invoice(
   syncState: json['syncState'] as String? ?? 'synced',
   studentId: json['studentId'] as String,
   number: json['number'] as String?,
+  series: json['series'] as String?,
   issuedAt: _$JsonConverterFromJson<String, DateTime>(
     json['issuedAt'],
     const UtcDateTimeConverter().fromJson,
@@ -31,7 +32,12 @@ _Invoice _$InvoiceFromJson(Map<String, dynamic> json) => _Invoice(
           ?.map((e) => InvoiceLine.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <InvoiceLine>[],
+  taxMinor: json['taxMinor'] == null
+      ? 0
+      : const MinorUnitConverter().fromJson(json['taxMinor']),
   totalMinor: const MinorUnitConverter().fromJson(json['totalMinor']),
+  cancelReason: json['cancelReason'] as String?,
+  creditNoteId: json['creditNoteId'] as String?,
 );
 
 Map<String, dynamic> _$InvoiceToJson(_Invoice instance) => <String, dynamic>{
@@ -47,13 +53,17 @@ Map<String, dynamic> _$InvoiceToJson(_Invoice instance) => <String, dynamic>{
   'syncState': instance.syncState,
   'studentId': instance.studentId,
   'number': instance.number,
+  'series': instance.series,
   'issuedAt': _$JsonConverterToJson<String, DateTime>(
     instance.issuedAt,
     const UtcDateTimeConverter().toJson,
   ),
   'status': _$InvoiceStatusEnumMap[instance.status]!,
   'lines': instance.lines.map((e) => e.toJson()).toList(),
+  'taxMinor': const MinorUnitConverter().toJson(instance.taxMinor),
   'totalMinor': const MinorUnitConverter().toJson(instance.totalMinor),
+  'cancelReason': instance.cancelReason,
+  'creditNoteId': instance.creditNoteId,
 };
 
 Value? _$JsonConverterFromJson<Json, Value>(
@@ -76,6 +86,11 @@ _InvoiceLine _$InvoiceLineFromJson(Map<String, dynamic> json) => _InvoiceLine(
   chargeId: json['chargeId'] as String,
   description: json['description'] as String,
   amountMinor: const MinorUnitConverter().fromJson(json['amountMinor']),
+  taxRateBp: (json['taxRateBp'] as num?)?.toInt() ?? 0,
+  taxMinor: json['taxMinor'] == null
+      ? 0
+      : const MinorUnitConverter().fromJson(json['taxMinor']),
+  exemptionReason: json['exemptionReason'] as String?,
 );
 
 Map<String, dynamic> _$InvoiceLineToJson(_InvoiceLine instance) =>
@@ -83,4 +98,7 @@ Map<String, dynamic> _$InvoiceLineToJson(_InvoiceLine instance) =>
       'chargeId': instance.chargeId,
       'description': instance.description,
       'amountMinor': const MinorUnitConverter().toJson(instance.amountMinor),
+      'taxRateBp': instance.taxRateBp,
+      'taxMinor': const MinorUnitConverter().toJson(instance.taxMinor),
+      'exemptionReason': instance.exemptionReason,
     };
