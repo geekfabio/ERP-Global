@@ -24,7 +24,7 @@ final hrMockHandlersProvider = Provider<HrMockHandlers>(
   (ref) => HrMockHandlers(),
 );
 
-Future<List<T>> _fetchAll<T>(
+Future<List<T>> fetchAllPages<T>(
   AcademicCrudRepository<T> repo, {
   Map<String, String> filters = const {},
 }) async {
@@ -42,24 +42,24 @@ Future<List<T>> _fetchAll<T>(
 }
 
 final positionListProvider = FutureProvider.autoDispose<List<PositionModel>>(
-  (ref) => _fetchAll(ref.watch(positionRepositoryProvider)),
+  (ref) => fetchAllPages(ref.watch(positionRepositoryProvider)),
   retry: (_, _) => null,
 );
 
 final employeeListProvider = FutureProvider.autoDispose<List<EmployeeModel>>(
-  (ref) => _fetchAll(ref.watch(employeeRepositoryProvider)),
+  (ref) => fetchAllPages(ref.watch(employeeRepositoryProvider)),
   retry: (_, _) => null,
 );
 
 final contractListProvider = FutureProvider.autoDispose<List<ContractModel>>(
-  (ref) => _fetchAll(ref.watch(contractRepositoryProvider)),
+  (ref) => fetchAllPages(ref.watch(contractRepositoryProvider)),
   retry: (_, _) => null,
 );
 
 /// Contratos de um funcionário (ficha).
 final employeeContractsProvider = FutureProvider.autoDispose
     .family<List<ContractModel>, String>(
-      (ref, employeeId) => _fetchAll(
+      (ref, employeeId) => fetchAllPages(
         ref.watch(contractRepositoryProvider),
         filters: {'employeeId': employeeId},
       ),
@@ -69,7 +69,7 @@ final employeeContractsProvider = FutureProvider.autoDispose
 /// Nº de atribuições (turma × disciplina) de um docente, vindas do académico.
 final teacherAssignmentCountProvider = FutureProvider.autoDispose
     .family<int, String>(
-      (ref, teacherId) async => (await _fetchAll(
+      (ref, teacherId) async => (await fetchAllPages(
         ref.watch(teachingAssignmentRepositoryProvider),
         filters: {'teacherId': teacherId},
       )).length,
