@@ -1,6 +1,7 @@
 import '../../../core/errors/result.dart';
 import '../../../core/network/api_envelope.dart';
 import '../data/models/academic_models.dart';
+import '../data/models/classroom_models.dart';
 
 /// Contrato CRUD de um recurso da estrutura académica; a UI só conhece isto.
 ///
@@ -27,3 +28,6 @@ typedef GradeRepository = AcademicCrudRepository<GradeModel>;
 typedef CourseRepository = AcademicCrudRepository<CourseModel>;
 typedef SubjectRepository = AcademicCrudRepository<SubjectModel>;
 typedef CurriculumRepository = AcademicCrudRepository<CurriculumItemModel>;
+typedef RoomRepository = AcademicCrudRepository<RoomModel>;
+typedef ShiftRepository = AcademicCrudRepository<ShiftModel>;
+typedef ClassroomRepository = AcademicCrudRepository<ClassroomModel>;

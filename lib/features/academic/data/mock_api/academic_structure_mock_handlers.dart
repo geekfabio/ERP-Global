@@ -4,7 +4,9 @@ import '../../../../core/network/mock/mock_types.dart';
 import '../../../../core/network/mock/mock_validator.dart';
 import '../../../../core/utils/seed_generator.dart';
 import '../data_mocks/academic_seed.dart';
+import '../data_mocks/classroom_seed.dart';
 import '../models/academic_models.dart';
+import '../models/classroom_models.dart';
 
 /// Colecção em memória de um recurso, com as regras do "servidor".
 class _Collection<T> {
@@ -42,7 +44,7 @@ class _Collection<T> {
 }
 
 /// Handlers de `/v1/levels`, `/v1/grades`, `/v1/courses`, `/v1/subjects` e
-/// `/v1/curriculum-items` (docs/07-mock-api.md). Estado mutável em memória;
+/// `/v1/curriculum-items`, `/v1/rooms`, `/v1/shifts` e `/v1/classrooms` (docs/07-mock-api.md). Estado mutável em memória;
 /// `POST /__mock/reset` repõe o seed angolano.
 class AcademicStructureMockHandlers implements MockApiModule {
   AcademicStructureMockHandlers() {
@@ -231,6 +233,174 @@ class AcademicStructureMockHandlers implements MockApiModule {
         },
       );
 
+  late final _Collection<RoomModel> _rooms = _Collection<RoomModel>(
+    fromJson: RoomModel.fromJson,
+    toJson: (v) => v.toJson(),
+    spec: MockListSpec<RoomModel>(
+      searchText: (r) => '${r.code} ${r.name}',
+      sortable: {
+        'code': (r) => r.code,
+        'name': (r) => foldText(r.name),
+        'capacity': (r) => r.capacity,
+      },
+      filterable: {'isActive': (r) => r.isActive},
+      defaultSort: const ['code'],
+    ),
+    validate: (b) {
+      _validateNamed(b, _rooms.rows.values, 'sala', (r) => r.code);
+      _requireInt(b, 'capacity', min: 1, max: 500);
+      // Não reduzir a sala abaixo das vagas das turmas que a usam.
+      final worst = _classrooms.rows.values
+          .where((c) => c.roomId == b['id'])
+          .fold<int>(0, (m, c) => c.capacity > m ? c.capacity : m);
+      if (worst > (b['capacity'] as int)) {
+        throw MockApiException.conflict(
+          'A sala aloja turmas com $worst vagas; capacidade insuficiente',
+        );
+      }
+    },
+    guardDelete: (r) {
+      if (_classrooms.rows.values.any((c) => c.roomId == r.id)) {
+        throw const MockApiException.conflict('A sala está atribuída a turmas');
+      }
+    },
+  );
+
+  static final _time = RegExp(r'^([01]\d|2[0-3]):[0-5]\d$');
+
+  late final _Collection<ShiftModel> _shifts = _Collection<ShiftModel>(
+    fromJson: ShiftModel.fromJson,
+    toJson: (v) => v.toJson(),
+    spec: MockListSpec<ShiftModel>(
+      searchText: (s) => s.name,
+      sortable: {
+        'name': (s) => foldText(s.name),
+        'startTime': (s) => s.startTime,
+      },
+      filterable: {'isActive': (s) => s.isActive},
+      defaultSort: const ['startTime'],
+    ),
+    validate: (b) {
+      final start = '${b['startTime']}';
+      final end = '${b['endTime']}';
+      MockValidator(b)
+        ..required('name')
+        ..check('startTime', _time.hasMatch(start), 'Hora inválida (HH:mm)')
+        ..check('endTime', _time.hasMatch(end), 'Hora inválida (HH:mm)')
+        ..throwIfInvalid();
+      if (end.compareTo(start) <= 0) {
+        throw const MockApiException.validation({
+          'endTime': 'O fim deve ser depois do início',
+        });
+      }
+      final taken = _shifts.rows.values.any(
+        (s) => s.id != b['id'] && foldText(s.name) == foldText('${b['name']}'),
+      );
+      if (taken) {
+        throw const MockApiException.conflict(
+          'Já existe um turno com este nome',
+        );
+      }
+    },
+    guardDelete: (s) {
+      if (_classrooms.rows.values.any((c) => c.shiftId == s.id)) {
+        throw const MockApiException.conflict(
+          'O turno está atribuído a turmas',
+        );
+      }
+    },
+  );
+
+  late final _Collection<ClassroomModel>
+  _classrooms = _Collection<ClassroomModel>(
+    fromJson: ClassroomModel.fromJson,
+    toJson: (v) => v.toJson(),
+    spec: MockListSpec<ClassroomModel>(
+      sortable: {
+        'name': (c) => foldText(c.name),
+        'grade': (c) => _grades.rows[c.gradeId]?.order ?? 0,
+        'capacity': (c) => c.capacity,
+        'enrolledCount': (c) => c.enrolledCount,
+      },
+      filterable: {
+        'academicYearId': (c) => c.academicYearId,
+        'gradeId': (c) => c.gradeId,
+        'courseId': (c) => c.courseId,
+        'shiftId': (c) => c.shiftId,
+        'roomId': (c) => c.roomId,
+      },
+      defaultSort: const ['grade', 'name'],
+    ),
+    validate: (b) {
+      final grade = _grades.rows[b['gradeId']];
+      final course = _courses.rows[b['courseId']];
+      final room = _rooms.rows[b['roomId']];
+      MockValidator(b)
+        ..required('name')
+        ..required(
+          'academicYearId',
+          'A turma tem de pertencer a um ano lectivo',
+        )
+        ..check('gradeId', grade != null, 'Classe inválida')
+        ..check('courseId', course != null, 'Curso inválido')
+        ..check(
+          'shiftId',
+          _shifts.rows.containsKey(b['shiftId']),
+          'Turno inválido',
+        )
+        ..check('roomId', room != null, 'Sala inválida')
+        ..throwIfInvalid();
+      _requireInt(b, 'capacity', min: 1, max: 500);
+      final capacity = b['capacity'] as int;
+      final enrolled = (b['enrolledCount'] as int?) ?? 0;
+      MockValidator(b)
+        ..check(
+          'gradeId',
+          course!.levelIds.contains(grade!.levelId),
+          'A classe não pertence aos ciclos do curso',
+        )
+        ..check(
+          'capacity',
+          capacity <= room!.capacity,
+          'Excede a capacidade da sala (${room.capacity})',
+        )
+        ..check(
+          'capacity',
+          capacity >= enrolled,
+          'Inferior aos alunos já matriculados ($enrolled)',
+        )
+        ..throwIfInvalid();
+      bool same(ClassroomModel c) =>
+          c.id != b['id'] && c.academicYearId == b['academicYearId'];
+      if (_classrooms.rows.values.any(
+        (c) =>
+            same(c) &&
+            c.gradeId == b['gradeId'] &&
+            c.courseId == b['courseId'] &&
+            c.shiftId == b['shiftId'] &&
+            foldText(c.name) == foldText('${b['name']}'),
+      )) {
+        throw const MockApiException.conflict(
+          'Já existe uma turma com esta designação nesta classe, curso e turno',
+        );
+      }
+      if (_classrooms.rows.values.any(
+        (c) => same(c) && c.roomId == b['roomId'] && c.shiftId == b['shiftId'],
+      )) {
+        throw const MockApiException.conflict(
+          'A sala já está ocupada por outra turma neste turno',
+        );
+      }
+    },
+    guardDelete: (c) {
+      if (c.enrolledCount > 0) {
+        throw const MockApiException.conflict(
+          'A turma tem alunos matriculados',
+        );
+      }
+    },
+  );
+
   void _reset() {
     final s = buildAcademicSeed();
     _ids = SeedGenerator(280);
@@ -252,6 +422,19 @@ class AcademicStructureMockHandlers implements MockApiModule {
     for (final v in s.curriculum) {
       _curriculum.rows[v.id] = v;
     }
+    _rooms.rows.clear();
+    _shifts.rows.clear();
+    _classrooms.rows.clear();
+    final cs = buildClassroomSeed(s);
+    for (final v in cs.rooms) {
+      _rooms.rows[v.id] = v;
+    }
+    for (final v in cs.shifts) {
+      _shifts.rows[v.id] = v;
+    }
+    for (final v in cs.classrooms) {
+      _classrooms.rows[v.id] = v;
+    }
   }
 
   @override
@@ -262,6 +445,9 @@ class AcademicStructureMockHandlers implements MockApiModule {
     _mount(r, '/v1/courses', _courses);
     _mount(r, '/v1/subjects', _subjects);
     _mount(r, '/v1/curriculum-items', _curriculum);
+    _mount(r, '/v1/rooms', _rooms);
+    _mount(r, '/v1/shifts', _shifts);
+    _mount(r, '/v1/classrooms', _classrooms);
   }
 
   void _mount<T>(MockApiRegistry r, String path, _Collection<T> c) {
@@ -328,6 +514,7 @@ class AcademicStructureMockHandlers implements MockApiModule {
     LevelModel(:final id) => id,
     CourseModel(:final id) => id,
     SubjectModel(:final id) => id,
+    RoomModel(:final id) => id,
     _ => '',
   };
 

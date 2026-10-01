@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/theme/app_tokens.dart';
+import '../widgets/classroom_tabs.dart';
 import '../widgets/curriculum_tab.dart';
 import '../widgets/structure_tabs.dart';
 
-/// Académico: ciclos, classes, cursos, disciplinas e currículo.
+/// Académico: ciclos, classes, cursos, disciplinas, currículo, salas, turnos e turmas.
 class AcademicPage extends StatelessWidget {
   const AcademicPage({super.key});
 
   @override
   Widget build(BuildContext context) => DefaultTabController(
-    length: 5,
+    length: 8,
     child: Align(
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
@@ -36,6 +37,9 @@ class AcademicPage extends StatelessWidget {
                   Tab(text: 'Cursos'),
                   Tab(text: 'Disciplinas'),
                   Tab(text: 'Currículo'),
+                  Tab(text: 'Salas'),
+                  Tab(text: 'Turnos'),
+                  Tab(text: 'Turmas'),
                 ],
               ),
               const Expanded(
@@ -46,6 +50,9 @@ class AcademicPage extends StatelessWidget {
                     CoursesTab(),
                     SubjectsTab(),
                     CurriculumTab(),
+                    RoomsTab(),
+                    ShiftsTab(),
+                    ClassroomsTab(),
                   ],
                 ),
               ),
