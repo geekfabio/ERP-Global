@@ -78,11 +78,18 @@ void main() {
 
   test('rejeita dias futuros e datas inválidas (422)', () async {
     final repo = _repo();
+    // "Agora" do teste é 2026-10-01 (UTC): 2 dias à frente é futuro de certeza.
     final future = await repo.save(
-      const AttendanceSheetKey(classroomId: 'c1', date: '2026-10-02'),
+      const AttendanceSheetKey(classroomId: 'c1', date: '2026-10-03'),
       [_row('a', AttendanceStatus.present)],
     );
     expect(future.failureOrNull, _code('VALIDATION_ERROR'));
+    // Cliente em UTC+1 já está no dia seguinte à data UTC do servidor: aceita.
+    final tomorrowUtc = await repo.save(
+      const AttendanceSheetKey(classroomId: 'c1', date: '2026-10-02'),
+      [_row('a', AttendanceStatus.present)],
+    );
+    expect(tomorrowUtc.failureOrNull, isNull);
     final bad = await repo.sheet(
       const AttendanceSheetKey(classroomId: 'c1', date: 'x'),
     );
