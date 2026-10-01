@@ -19,6 +19,7 @@ import 'features/billing/presentation/providers/cash_providers.dart';
 import 'features/billing/presentation/providers/invoice_providers.dart';
 import 'features/billing/presentation/providers/debt_providers.dart';
 import 'features/billing/presentation/providers/payment_providers.dart';
+import 'features/cafeteria/presentation/providers/wallet_providers.dart';
 import 'features/cards/presentation/providers/card_providers.dart';
 import 'features/communication/presentation/providers/communication_providers.dart';
 import 'features/import_export/presentation/providers/export_providers.dart';
@@ -118,6 +119,7 @@ Future<void> main() async {
             ref.watch(communicationMockHandlersProvider),
             ref.watch(importMockHandlersProvider),
             ref.watch(cardsMockHandlersProvider),
+            ref.watch(walletMockHandlersProvider),
             ref.watch(hrMockHandlersProvider),
             ref.watch(payrollMockHandlersProvider),
             ref.watch(inventoryMockHandlersProvider),
