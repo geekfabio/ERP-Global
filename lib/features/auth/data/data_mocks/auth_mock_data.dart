@@ -97,8 +97,6 @@ const authProfilePermissions = <AuthProfile, List<String>>{
     'students.record.update',
     'students.health.read',
     'students.health.update',
-    'grades.document.read',
-    'grades.document.request',
     'attendance.record.all',
   ],
   AuthProfile.teacher: [
