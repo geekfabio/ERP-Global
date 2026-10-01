@@ -27,6 +27,7 @@ import 'features/license/presentation/providers/license_usage_providers.dart';
 import 'features/license/data/mock_api/license_mock_handlers.dart';
 import 'features/portal/data/mock_api/portal_mock_handlers.dart';
 import 'features/portal/presentation/providers/portal_providers.dart';
+import 'features/reports/presentation/providers/reports_providers.dart';
 import 'features/settings/presentation/providers/academic_providers.dart';
 import 'features/settings/presentation/providers/rules_providers.dart';
 import 'features/settings/presentation/providers/settings_providers.dart';
@@ -45,6 +46,9 @@ Future<void> main() async {
         // O `core` não conhece `features/`: liga as permissões à sessão de auth.
         sessionPermissionsProvider.overrideWith(
           (ref) => ref.watch(currentSessionProvider)?.permissions,
+        ),
+        sessionRolesProvider.overrideWith(
+          (ref) => ref.watch(currentSessionProvider)?.roles ?? const [],
         ),
         // Quem pratica as acções auditadas: o utilizador da sessão de auth.
         auditActorProvider.overrideWith((ref) {
@@ -113,6 +117,7 @@ Future<void> main() async {
             ref.watch(accessMockHandlersProvider),
             ref.watch(academicMockHandlersProvider),
             ref.watch(rulesMockHandlersProvider),
+            ref.watch(reportsMockHandlersProvider),
           ],
         ),
       ],
