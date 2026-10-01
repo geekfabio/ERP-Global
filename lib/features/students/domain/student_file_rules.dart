@@ -3,12 +3,16 @@ import '../data/models/student_document_model.dart';
 import '../data/models/student_enums.dart';
 import '../data/models/student_summaries_model.dart';
 
+bool _isVoided(EnrollmentModel e) =>
+    e.status == EnrollmentStatus.cancelled ||
+    e.status == EnrollmentStatus.rejected;
+
 /// Ids das matrículas que são repetência: o aluno já tinha frequentado a mesma
 /// classe num ano anterior (matrículas anuladas não contam).
 Set<String> repeatedEnrollmentIds(List<EnrollmentModel> enrollments) {
   final valid = [
     for (final e in enrollments)
-      if (e.status != EnrollmentStatus.cancelled) e,
+      if (!_isVoided(e)) e,
   ]..sort((a, b) => a.enrolledOn.compareTo(b.enrolledOn));
   final seen = <String, String>{}; // classe → ano em que foi frequentada
   final repeated = <String>{};
@@ -24,7 +28,7 @@ Set<String> repeatedEnrollmentIds(List<EnrollmentModel> enrollments) {
 EnrollmentModel? currentEnrollment(List<EnrollmentModel> enrollments) {
   EnrollmentModel? best;
   for (final e in enrollments) {
-    if (e.status == EnrollmentStatus.cancelled) continue;
+    if (_isVoided(e)) continue;
     if (best == null || e.enrolledOn.isAfter(best.enrolledOn)) best = e;
   }
   return best;

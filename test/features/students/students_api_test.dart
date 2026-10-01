@@ -445,7 +445,7 @@ void main() {
         final created = (await env.enrollments.create(
           next('01JENR0000000000000000002'),
         )).getOrThrow();
-        expect(created.status, EnrollmentStatus.pending);
+        expect(created.status, EnrollmentStatus.application);
         final confirmed = (await env.enrollments.update(
           created.copyWith(
             status: EnrollmentStatus.confirmed,

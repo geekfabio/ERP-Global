@@ -7,6 +7,7 @@ import '../../domain/student_duplicates.dart';
 import '../data_mocks/student_summaries_seed.dart';
 import '../data_mocks/students_seed.dart';
 import '../models/enrollment_model.dart';
+import 'enrollment_flow_mock_handlers.dart';
 import '../models/guardian_model.dart';
 import '../models/student_document_model.dart';
 import '../models/student_model.dart';
@@ -22,6 +23,11 @@ class StudentsMockHandlers implements MockApiModule {
   final int seed;
   final int count;
   final _summaries = StudentSummariesSeed();
+  late final _flow = EnrollmentFlowMockHandlers(
+    students: () => _students,
+    enrollments: () => _enrollments,
+    documents: () => _documents,
+  );
 
   late Map<String, StudentModel> _students;
   late Map<String, GuardianModel> _guardians;
@@ -38,6 +44,7 @@ class StudentsMockHandlers implements MockApiModule {
     _enrollments = {for (final x in s.enrollments) x.id: x};
     _documents = {};
     _occurrences = {};
+    _flow.reset();
   }
 
   /// Alunos não removidos (consumo da licença).
@@ -142,6 +149,7 @@ class StudentsMockHandlers implements MockApiModule {
       ..get('/v1/enrollments', _listEnrollments)
       ..post('/v1/enrollments', _createEnrollment)
       ..patch('/v1/enrollments/{id}', _updateEnrollment);
+    _flow.register(r);
   }
 
   // ---- Alunos ---------------------------------------------------------

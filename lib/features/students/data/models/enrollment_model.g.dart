@@ -28,7 +28,7 @@ _EnrollmentModel _$EnrollmentModelFromJson(
   type: $enumDecode(_$EnrollmentTypeEnumMap, json['type']),
   status:
       $enumDecodeNullable(_$EnrollmentStatusEnumMap, json['status']) ??
-      EnrollmentStatus.pending,
+      EnrollmentStatus.application,
   enrolledOn: const DateOnlyConverter().fromJson(json['enrolledOn'] as String),
   feeMinor: (json['feeMinor'] as num?)?.toInt() ?? 0,
   feePaid: json['feePaid'] as bool? ?? false,
@@ -74,8 +74,11 @@ const _$EnrollmentTypeEnumMap = {
 };
 
 const _$EnrollmentStatusEnumMap = {
-  EnrollmentStatus.pending: 'pending',
+  EnrollmentStatus.application: 'application',
+  EnrollmentStatus.underReview: 'under_review',
+  EnrollmentStatus.approved: 'approved',
   EnrollmentStatus.confirmed: 'confirmed',
+  EnrollmentStatus.rejected: 'rejected',
   EnrollmentStatus.cancelled: 'cancelled',
   EnrollmentStatus.completed: 'completed',
 };

@@ -30,7 +30,7 @@ abstract class EnrollmentModel with _$EnrollmentModel {
     /// N.º de chamada na turma.
     int? rollNumber,
     required EnrollmentType type,
-    @Default(EnrollmentStatus.pending) EnrollmentStatus status,
+    @Default(EnrollmentStatus.application) EnrollmentStatus status,
     @DateOnlyConverter() required DateTime enrolledOn,
 
     /// Taxa de matrícula na menor unidade (cêntimos); nunca `double`.

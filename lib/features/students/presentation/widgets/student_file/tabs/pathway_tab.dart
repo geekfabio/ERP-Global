@@ -105,7 +105,10 @@ class _EnrollmentRow extends StatelessWidget {
               status: switch (e.status) {
                 EnrollmentStatus.confirmed ||
                 EnrollmentStatus.completed => BadgeStatus.success,
-                EnrollmentStatus.pending => BadgeStatus.warning,
+                EnrollmentStatus.application ||
+                EnrollmentStatus.underReview ||
+                EnrollmentStatus.approved => BadgeStatus.warning,
+                EnrollmentStatus.rejected ||
                 EnrollmentStatus.cancelled => BadgeStatus.danger,
               },
             ),
