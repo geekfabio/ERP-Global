@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../../core/audit/audit_routes.dart';
+import '../../features/academic/academic_routes.dart';
 import '../../features/accounting/accounting_routes.dart';
 import '../../features/access_control/access_control_routes.dart';
 import '../../features/auth/auth_routes.dart';
@@ -25,6 +26,7 @@ final Map<String, List<RouteBase> Function()> featureModuleRoutes = {
     ...licenseRoutes(),
     ...settingsRoutes(),
   ],
+  'academic': academicRoutes,
   'accounting': accountingRoutes,
   'access_control': accessControlRoutes,
   'cards': cardsRoutes,
