@@ -5,6 +5,7 @@ import '../../domain/reports_repository.dart';
 import '../models/academic_overview.dart';
 import '../models/dashboard_metric.dart';
 import '../models/finance_overview.dart';
+import '../models/operations_overview.dart';
 
 class ApiReportsRepository implements ReportsRepository {
   ApiReportsRepository(this._client);
@@ -67,6 +68,23 @@ class ApiReportsRepository implements ReportsRepository {
           ApiEnvelope.data(response)! as Map<String, dynamic>,
         );
       });
+
+  @override
+  Future<Result<OperationsOverview>> operationsOverview(
+    OperationsOverviewQuery q,
+  ) => Result.guard(() async {
+    final response = await _client.dio.get<dynamic>(
+      '/v1/reports/operations-overview',
+      queryParameters: {
+        'yearId': q.yearId,
+        if (q.termId != null) 'termId': q.termId,
+        if (q.campusId != null) 'campusId': q.campusId,
+      },
+    );
+    return OperationsOverview.fromJson(
+      ApiEnvelope.data(response)! as Map<String, dynamic>,
+    );
+  });
 
   @override
   Future<Result<List<CampusOption>>> campuses() => Result.guard(() async {
