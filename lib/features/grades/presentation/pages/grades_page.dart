@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/errors/failure.dart';
@@ -50,9 +51,21 @@ class _GradesPageState extends ConsumerState<GradesPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Lançamento de notas',
-                style: Theme.of(context).textTheme.headlineSmall,
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Lançamento de notas',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                  TextButton.icon(
+                    key: const Key('grades_report_cards'),
+                    onPressed: () => context.go('/grades/report-cards'),
+                    icon: const Icon(Icons.description_outlined),
+                    label: const Text('Boletins'),
+                  ),
+                ],
               ),
               const SizedBox(height: AppSpacing.md),
               Expanded(
