@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/errors/failure.dart';
@@ -58,6 +59,16 @@ class EnrollmentFlowPage extends ConsumerWidget {
                   child: Text(
                     'Matrículas',
                     style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ),
+                Can(
+                  permission: enrollmentUpdatePermission,
+                  child: IconButton(
+                    key: const Key('enrollment_renewal_link'),
+                    tooltip: 'Renovação em massa',
+                    icon: const Icon(Icons.upgrade),
+                    onPressed: () =>
+                        context.go('/students/enrollments/renewal'),
                   ),
                 ),
                 Can(
