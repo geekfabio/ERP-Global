@@ -9,8 +9,12 @@ import '../../domain/import_engine.dart';
 import '../../domain/import_profile.dart';
 import '../../domain/import_repository.dart';
 import '../../domain/import_table.dart';
+import '../../domain/profiles/classes_import_profile.dart';
+import '../../domain/profiles/grades_import_profile.dart';
 import '../../domain/profiles/guardians_import_profile.dart';
+import '../../domain/profiles/payments_import_profile.dart';
 import '../../domain/profiles/students_import_profile.dart';
+import '../../domain/profiles/teachers_import_profile.dart';
 
 final importRepositoryProvider = Provider<ImportRepository>(
   (ref) => ApiImportRepository(ref.watch(apiClientProvider)),
@@ -18,12 +22,23 @@ final importRepositoryProvider = Provider<ImportRepository>(
 
 /// Handlers mock do módulo, registados em `main.dart` (só com mock activo).
 final importMockHandlersProvider = Provider<ImportMockHandlers>(
-  (ref) => ImportMockHandlers(),
+  (ref) => ImportMockHandlers(termLookup: ref.watch(importTermLookupProvider)),
 );
+
+/// Estado dos trimestres para validar a importação de notas. O módulo
+/// académico liga-o em `main.dart` (os módulos não se importam entre si).
+final importTermLookupProvider = Provider<ImportTermLookup?>((ref) => null);
 
 /// Perfis disponíveis. Outros módulos acrescentam os seus por `overrideWith`.
 final importProfilesProvider = Provider<List<ImportProfile>>(
-  (ref) => const [StudentsImportProfile(), GuardiansImportProfile()],
+  (ref) => const [
+    StudentsImportProfile(),
+    GuardiansImportProfile(),
+    TeachersImportProfile(),
+    ClassesImportProfile(),
+    GradesImportProfile(),
+    PaymentsImportProfile(),
+  ],
 );
 
 enum ImportStep { file, mapping, preview, done }

@@ -137,14 +137,17 @@ class _FileStep extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       if (profiles.length > 1) ...[
-        SegmentedButton<String>(
-          segments: [
+        Wrap(
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.sm,
+          children: [
             for (final p in profiles)
-              ButtonSegment(value: p.id, label: Text(p.label)),
+              ChoiceChip(
+                label: Text(p.label),
+                selected: p.id == profile.id,
+                onSelected: (_) => onSelect(p),
+              ),
           ],
-          selected: {profile.id},
-          onSelectionChanged: (s) =>
-              onSelect(profiles.firstWhere((p) => p.id == s.first)),
         ),
         const SizedBox(height: AppSpacing.md),
       ],

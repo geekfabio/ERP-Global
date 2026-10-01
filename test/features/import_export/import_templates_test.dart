@@ -2,8 +2,12 @@ import 'package:erp_global/features/import_export/domain/import_engine.dart';
 import 'package:erp_global/features/import_export/domain/import_profile.dart';
 import 'package:erp_global/features/import_export/domain/import_table.dart';
 import 'package:erp_global/features/import_export/domain/import_template.dart';
+import 'package:erp_global/features/import_export/domain/profiles/classes_import_profile.dart';
+import 'package:erp_global/features/import_export/domain/profiles/grades_import_profile.dart';
 import 'package:erp_global/features/import_export/domain/profiles/guardians_import_profile.dart';
+import 'package:erp_global/features/import_export/domain/profiles/payments_import_profile.dart';
 import 'package:erp_global/features/import_export/domain/profiles/students_import_profile.dart';
+import 'package:erp_global/features/import_export/domain/profiles/teachers_import_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -11,6 +15,10 @@ void main() {
   const profiles = <ImportProfile>[
     StudentsImportProfile(),
     GuardiansImportProfile(),
+    TeachersImportProfile(),
+    ClassesImportProfile(),
+    GradesImportProfile(),
+    PaymentsImportProfile(),
   ];
 
   for (final p in profiles) {
