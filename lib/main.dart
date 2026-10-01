@@ -1,10 +1,10 @@
-import 'features/import_export/presentation/providers/import_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
 import 'core/audit/audit_providers.dart';
 import 'core/audit/audit_service.dart';
+import 'core/export/export_contract.dart';
 import 'core/modules/license_gate.dart';
 import 'core/network/api_client.dart';
 import 'core/notifications/notification_service.dart';
@@ -15,6 +15,8 @@ import 'features/auth/presentation/providers/auth_providers.dart';
 import 'features/auth/presentation/providers/auth_state.dart';
 import 'features/cards/presentation/providers/card_providers.dart';
 import 'features/communication/presentation/providers/communication_providers.dart';
+import 'features/import_export/presentation/providers/export_providers.dart';
+import 'features/import_export/presentation/providers/import_providers.dart';
 import 'features/license/presentation/providers/license_providers.dart';
 import 'features/students/presentation/providers/student_providers.dart';
 
@@ -50,6 +52,10 @@ Future<void> main() async {
         // Contrato de notificações do core → implementação do módulo communication.
         notificationServiceProvider.overrideWith(
           (ref) => ref.watch(communicationNotificationServiceProvider),
+        ),
+        // Contrato de exportação do core → serviço do módulo import_export.
+        exportHandlerProvider.overrideWith(
+          (ref) => ref.watch(exportRunnerProvider),
         ),
         // Módulos com API mock; só têm efeito com `AppConfig.useMockApi`.
         mockApiModulesProvider.overrideWith(
