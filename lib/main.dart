@@ -17,6 +17,7 @@ import 'features/cards/presentation/providers/card_providers.dart';
 import 'features/communication/presentation/providers/communication_providers.dart';
 import 'features/import_export/presentation/providers/export_providers.dart';
 import 'features/import_export/presentation/providers/import_providers.dart';
+import 'features/inventory/presentation/providers/inventory_providers.dart';
 import 'features/license/presentation/providers/license_providers.dart';
 import 'features/students/presentation/providers/student_providers.dart';
 
@@ -67,6 +68,7 @@ Future<void> main() async {
             ref.watch(communicationMockHandlersProvider),
             ref.watch(importMockHandlersProvider),
             ref.watch(cardsMockHandlersProvider),
+            ref.watch(inventoryMockHandlersProvider),
           ],
         ),
       ],
