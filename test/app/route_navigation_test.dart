@@ -91,9 +91,8 @@ void main() {
     tester,
   ) async {
     final (router, _) = await _boot(tester, overrides: signedOutOverrides());
-    final paths = _staticPaths(
-      router.configuration.routes,
-    ).where((p) => !publicPaths.contains(p)).take(12);
+    final all = _staticPaths(router.configuration.routes);
+    final paths = all.where((p) => !publicPaths.contains(p)).take(12);
     for (final path in paths) {
       router.go(path);
       await _settle(tester);
@@ -115,9 +114,10 @@ void main() {
         tester,
         overrides: signedInOverrides(gate: gate),
       );
-      final studentPaths = _staticPaths(
-        router.configuration.routes,
-      ).where((p) => p == '/students' || p.startsWith('/students/'));
+      final all = _staticPaths(router.configuration.routes);
+      final studentPaths = all.where(
+        (p) => p == '/students' || p.startsWith('/students/'),
+      );
       expect(studentPaths, isNotEmpty);
       for (final path in studentPaths) {
         router.go(path);
@@ -142,9 +142,10 @@ void main() {
         permissions: ['portal.child.read'],
       ),
     );
-    final restricted = _staticPaths(
-      router.configuration.routes,
-    ).where((p) => p.startsWith('/students/') || p.startsWith('/academic/'));
+    final all = _staticPaths(router.configuration.routes);
+    final restricted = all.where(
+      (p) => p.startsWith('/students/') || p.startsWith('/academic/'),
+    );
     expect(restricted, isNotEmpty);
     for (final path in restricted) {
       router.go(path);
