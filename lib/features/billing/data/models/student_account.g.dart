@@ -21,6 +21,12 @@ _StudentAccount _$StudentAccountFromJson(
   syncState: json['syncState'] as String? ?? 'synced',
   studentId: json['studentId'] as String,
   balanceMinor: const MinorUnitConverter().fromJson(json['balanceMinor']),
+  prepaidMinor: json['prepaidMinor'] == null
+      ? 0
+      : const MinorUnitConverter().fromJson(json['prepaidMinor']),
+  outstandingMinor: json['outstandingMinor'] == null
+      ? 0
+      : const MinorUnitConverter().fromJson(json['outstandingMinor']),
   entries:
       (json['entries'] as List<dynamic>?)
           ?.map((e) => LedgerEntry.fromJson(e as Map<String, dynamic>))
@@ -42,6 +48,10 @@ Map<String, dynamic> _$StudentAccountToJson(_StudentAccount instance) =>
       'syncState': instance.syncState,
       'studentId': instance.studentId,
       'balanceMinor': const MinorUnitConverter().toJson(instance.balanceMinor),
+      'prepaidMinor': const MinorUnitConverter().toJson(instance.prepaidMinor),
+      'outstandingMinor': const MinorUnitConverter().toJson(
+        instance.outstandingMinor,
+      ),
       'entries': instance.entries.map((e) => e.toJson()).toList(),
     };
 
@@ -58,6 +68,7 @@ Json? _$JsonConverterToJson<Json, Value>(
 _LedgerEntry _$LedgerEntryFromJson(Map<String, dynamic> json) => _LedgerEntry(
   id: json['id'] as String,
   referenceId: json['referenceId'] as String,
+  kind: json['kind'] as String? ?? 'payment',
   occurredAt: const UtcDateTimeConverter().fromJson(
     json['occurredAt'] as String,
   ),
@@ -69,6 +80,7 @@ Map<String, dynamic> _$LedgerEntryToJson(_LedgerEntry instance) =>
     <String, dynamic>{
       'id': instance.id,
       'referenceId': instance.referenceId,
+      'kind': instance.kind,
       'occurredAt': const UtcDateTimeConverter().toJson(instance.occurredAt),
       'debitMinor': const MinorUnitConverter().toJson(instance.debitMinor),
       'creditMinor': const MinorUnitConverter().toJson(instance.creditMinor),

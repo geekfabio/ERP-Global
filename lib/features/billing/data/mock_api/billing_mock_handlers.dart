@@ -44,6 +44,22 @@ class BillingMockHandlers implements MockApiModule {
 
   FeeItem? feeItemById(String id) => _items[id];
 
+  /// Cobranças de um aluno (usado pelos pagamentos e conta corrente).
+  List<Charge> chargesOf(String studentId) => [
+    for (final c in _charges.values)
+      if (c.studentId == studentId && c.deletedAt == null) c,
+  ];
+
+  /// Actualiza o estado de uma cobrança após alocação de pagamentos.
+  void setChargeStatus(String id, ChargeStatus status) {
+    final c = _charges[id];
+    if (c == null || c.status == status) return;
+    _charges[id] = c.copyWith(
+      status: status,
+      updatedAt: DateTime.now().toUtc(),
+    );
+  }
+
   @override
   void register(MockApiRegistry r) {
     r

@@ -112,6 +112,17 @@ class _BillingPageState extends ConsumerState<BillingPage> {
                     ),
                   ),
                   Can(
+                    permission: 'billing.payment.read',
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: AppSpacing.sm),
+                      child: AppButton(
+                        label: 'Pagamentos',
+                        icon: Icons.payments_outlined,
+                        onPressed: () => context.go('/billing/payments'),
+                      ),
+                    ),
+                  ),
+                  Can(
                     permission: 'billing.invoice.create',
                     child: Wrap(
                       spacing: AppSpacing.sm,

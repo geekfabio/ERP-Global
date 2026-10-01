@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 
 import 'presentation/pages/billing_page.dart';
 import 'presentation/pages/invoices_page.dart';
+import 'presentation/pages/payments_page.dart';
 
 /// Rotas do módulo `billing` (ligadas em `app/router/module_routes.dart`).
 List<RouteBase> billingRoutes() => [
@@ -9,5 +10,9 @@ List<RouteBase> billingRoutes() => [
   GoRoute(
     path: '/billing/invoices',
     builder: (context, state) => const InvoicesPage(),
+  ),
+  GoRoute(
+    path: '/billing/payments',
+    builder: (context, state) => const PaymentsPage(),
   ),
 ];
