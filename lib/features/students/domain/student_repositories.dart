@@ -1,6 +1,7 @@
 import '../../../core/errors/result.dart';
 import '../../../core/network/api_envelope.dart';
 import '../data/models/enrollment_model.dart';
+import '../data/models/enrollment_rules_model.dart';
 import '../data/models/guardian_model.dart';
 import '../data/models/student_document_model.dart';
 import '../data/models/student_enums.dart';
@@ -127,6 +128,33 @@ abstract interface class EnrollmentRepository {
 
   Future<Result<EnrollmentModel>> create(EnrollmentModel enrollment);
   Future<Result<EnrollmentModel>> update(EnrollmentModel enrollment);
+
+  /// Avança/recusa/anula a matrícula. O servidor aplica as regras (idade,
+  /// documentos, vagas) e devolve 422 `VALIDATION_ERROR` com os campos em
+  /// falta, ou 409 `CONFLICT` numa transição inválida.
+  Future<Result<EnrollmentModel>> transition(
+    String id,
+    EnrollmentStatus to, {
+    String? classroomId,
+  });
+
+  /// Atribui turma (valida vagas) e dá o n.º de chamada.
+  Future<Result<EnrollmentModel>> assignClassroom(
+    String id,
+    String classroomId,
+  );
+
+  /// Vagas por turma da classe no ano lectivo.
+  Future<Result<List<ClassroomVacancy>>> vacancies({
+    required String gradeId,
+    required String academicYearId,
+  });
+}
+
+/// Regras de matrícula (idade mínima, vagas, documentos obrigatórios).
+abstract interface class EnrollmentRulesRepository {
+  Future<Result<EnrollmentRulesModel>> get();
+  Future<Result<EnrollmentRulesModel>> save(EnrollmentRulesModel rules);
 }
 
 /// Documentos entregues no cadastro do aluno.

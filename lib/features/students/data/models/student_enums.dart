@@ -53,8 +53,18 @@ enum GuardianRelationship {
 @JsonEnum(fieldRename: FieldRename.snake)
 enum EnrollmentType { newEnrollment, renewal, transfer, reentry }
 
+/// Estados da matrícula: candidatura → em análise → aprovada → confirmada
+/// (→ concluída); `rejected` e `cancelled` são finais.
 @JsonEnum(fieldRename: FieldRename.snake)
-enum EnrollmentStatus { pending, confirmed, cancelled, completed }
+enum EnrollmentStatus {
+  application,
+  underReview,
+  approved,
+  confirmed,
+  rejected,
+  cancelled,
+  completed,
+}
 
 @JsonEnum(fieldRename: FieldRename.snake)
 enum StudentDocumentType {

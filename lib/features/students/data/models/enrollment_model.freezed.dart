@@ -230,7 +230,7 @@ return $default(_that.id,_that.institutionId,_that.campusId,_that.createdAt,_tha
 
 @JsonSerializable(explicitToJson: true)
 class _EnrollmentModel implements EnrollmentModel {
-  const _EnrollmentModel({required this.id, required this.institutionId, this.campusId, @UtcDateTimeConverter() required this.createdAt, @UtcDateTimeConverter() required this.updatedAt, @UtcDateTimeConverter() this.deletedAt, this.syncState = 'synced', required this.studentId, required this.academicYearId, required this.gradeId, this.classroomId, this.shiftId, this.rollNumber, required this.type, this.status = EnrollmentStatus.pending, @DateOnlyConverter() required this.enrolledOn, this.feeMinor = 0, this.feePaid = false, this.notes});
+  const _EnrollmentModel({required this.id, required this.institutionId, this.campusId, @UtcDateTimeConverter() required this.createdAt, @UtcDateTimeConverter() required this.updatedAt, @UtcDateTimeConverter() this.deletedAt, this.syncState = 'synced', required this.studentId, required this.academicYearId, required this.gradeId, this.classroomId, this.shiftId, this.rollNumber, required this.type, this.status = EnrollmentStatus.application, @DateOnlyConverter() required this.enrolledOn, this.feeMinor = 0, this.feePaid = false, this.notes});
   factory _EnrollmentModel.fromJson(Map<String, dynamic> json) => _$EnrollmentModelFromJson(json);
 
 @override final  String id;

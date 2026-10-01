@@ -127,7 +127,7 @@ void main() {
         }),
       );
       expect(e.type, EnrollmentType.newEnrollment);
-      expect(e.status, EnrollmentStatus.pending);
+      expect(e.status, EnrollmentStatus.application);
       expect(e.feeMinor, isA<int>());
       expect(e.feeMinor, 1500000);
       expect(e.enrolledOn, DateTime.utc(2026, 1, 15));

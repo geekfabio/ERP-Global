@@ -42,7 +42,10 @@ String enrollmentTypeLabel(EnrollmentType t) => switch (t) {
 };
 
 String enrollmentStatusLabel(EnrollmentStatus s) => switch (s) {
-  EnrollmentStatus.pending => 'Pendente',
+  EnrollmentStatus.application => 'Candidatura',
+  EnrollmentStatus.underReview => 'Em análise',
+  EnrollmentStatus.approved => 'Aprovada',
+  EnrollmentStatus.rejected => 'Rejeitada',
   EnrollmentStatus.confirmed => 'Confirmada',
   EnrollmentStatus.cancelled => 'Anulada',
   EnrollmentStatus.completed => 'Concluída',

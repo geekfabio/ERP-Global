@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import 'presentation/pages/enrollment_flow_page.dart';
 import 'presentation/pages/student_file_page.dart';
 import 'presentation/pages/student_wizard_page.dart';
 import 'presentation/pages/students_list_page.dart';
@@ -13,6 +14,10 @@ List<RouteBase> studentsRoutes() => [
       GoRoute(
         path: 'new',
         builder: (context, state) => const StudentWizardPage(),
+      ),
+      GoRoute(
+        path: 'enrollments',
+        builder: (context, state) => const EnrollmentFlowPage(),
       ),
       GoRoute(
         path: ':id',

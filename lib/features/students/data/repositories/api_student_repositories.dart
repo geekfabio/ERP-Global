@@ -6,6 +6,7 @@ import '../../../../core/network/api_envelope.dart';
 import '../../domain/student_duplicates.dart';
 import '../../domain/student_repositories.dart';
 import '../models/enrollment_model.dart';
+import '../models/enrollment_rules_model.dart';
 import '../models/guardian_model.dart';
 import '../models/student_document_model.dart';
 import '../models/student_enums.dart';
@@ -273,6 +274,65 @@ class ApiEnrollmentRepository implements EnrollmentRepository {
           data: enrollment.toJson(),
         );
         return ApiEnvelope.object(response, EnrollmentModel.fromJson);
+      });
+
+  @override
+  Future<Result<EnrollmentModel>> transition(
+    String id,
+    EnrollmentStatus to, {
+    String? classroomId,
+  }) => Result.guard(() async {
+    final response = await _client.dio.post<dynamic>(
+      '/v1/enrollments/$id/transition',
+      data: {'to': _wire(to), 'classroomId': ?classroomId},
+    );
+    return ApiEnvelope.object(response, EnrollmentModel.fromJson);
+  });
+
+  @override
+  Future<Result<EnrollmentModel>> assignClassroom(
+    String id,
+    String classroomId,
+  ) => Result.guard(() async {
+    final response = await _client.dio.post<dynamic>(
+      '/v1/enrollments/$id/assign-classroom',
+      data: {'classroomId': classroomId},
+    );
+    return ApiEnvelope.object(response, EnrollmentModel.fromJson);
+  });
+
+  @override
+  Future<Result<List<ClassroomVacancy>>> vacancies({
+    required String gradeId,
+    required String academicYearId,
+  }) => Result.guard(() async {
+    final response = await _client.dio.get<dynamic>(
+      '/v1/enrollment-vacancies',
+      queryParameters: {'gradeId': gradeId, 'academicYearId': academicYearId},
+    );
+    return _list(response, ClassroomVacancy.fromJson);
+  });
+}
+
+class ApiEnrollmentRulesRepository implements EnrollmentRulesRepository {
+  ApiEnrollmentRulesRepository(this._client);
+
+  final ApiClient _client;
+
+  @override
+  Future<Result<EnrollmentRulesModel>> get() => Result.guard(() async {
+    final response = await _client.dio.get<dynamic>('/v1/enrollment-rules');
+    return ApiEnvelope.object(response, EnrollmentRulesModel.fromJson);
+  });
+
+  @override
+  Future<Result<EnrollmentRulesModel>> save(EnrollmentRulesModel rules) =>
+      Result.guard(() async {
+        final response = await _client.dio.put<dynamic>(
+          '/v1/enrollment-rules',
+          data: rules.toJson(),
+        );
+        return ApiEnvelope.object(response, EnrollmentRulesModel.fromJson);
       });
 }
 
