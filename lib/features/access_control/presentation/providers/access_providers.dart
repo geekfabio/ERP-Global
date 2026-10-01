@@ -2,10 +2,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_envelope.dart';
+import '../../../../core/modules/license_gate.dart';
+import '../../../../core/notifications/notification_service.dart';
+import '../../data/devices/mock_access_device_adapter.dart';
 import '../../data/mock_api/access_mock_handlers.dart';
+import '../../data/models/access_log_model.dart';
 import '../../data/models/access_models.dart';
+import '../../data/repositories/api_access_log_repository.dart';
 import '../../data/repositories/api_access_repositories.dart';
+import '../../domain/access_device_adapter.dart';
+import '../../domain/access_log_repository.dart';
 import '../../domain/access_repositories.dart';
+import '../../domain/gate_service.dart';
 
 final zoneRepositoryProvider = Provider<ZoneRepository>(
   (ref) => ApiZoneRepository(ref.watch(apiClientProvider)),
@@ -72,3 +80,39 @@ final campusNamesProvider = FutureProvider.autoDispose<Map<String, String>>((
   final result = await ref.watch(zoneRepositoryProvider).campuses();
   return result.when(ok: (v) => v, err: (_) => const {});
 });
+
+final accessLogRepositoryProvider = Provider<AccessLogRepository>(
+  (ref) => ApiAccessLogRepository(ref.watch(apiClientProvider)),
+);
+
+final accessHolderResolverProvider = Provider<AccessHolderResolver>(
+  (ref) => ApiAccessHolderResolver(ref.watch(apiClientProvider)),
+);
+
+/// Leitor/torniquete; sem hardware usa-se o simulador local (sem cloud).
+final accessDeviceAdapterProvider = Provider<AccessDeviceAdapter>((ref) {
+  final adapter = MockAccessDeviceAdapter();
+  ref.onDispose(adapter.dispose);
+  return adapter;
+});
+
+/// Só avisa encarregados se o módulo `communication` estiver activo.
+final gateServiceProvider = Provider<GateService>((ref) {
+  final communication = ref
+      .watch(enabledModulesProvider)
+      .contains('communication');
+  return GateService(
+    adapter: ref.watch(accessDeviceAdapterProvider),
+    holders: ref.watch(accessHolderResolverProvider),
+    logs: ref.watch(accessLogRepositoryProvider),
+    notifier: communication ? ref.watch(notificationServiceProvider) : null,
+  );
+});
+
+/// Últimos registos de acesso (mais recentes primeiro).
+final accessLogListProvider = FutureProvider.autoDispose<List<AccessLogModel>>((
+  ref,
+) async {
+  final repo = ref.watch(accessLogRepositoryProvider);
+  return (await repo.list(pageSize: 50)).getOrThrow().items;
+}, retry: (_, _) => null);

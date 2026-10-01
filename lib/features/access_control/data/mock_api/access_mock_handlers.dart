@@ -4,6 +4,7 @@ import '../../../../core/network/mock/mock_types.dart';
 import '../../../../core/network/mock/mock_validator.dart';
 import '../../../../core/utils/seed_generator.dart';
 import '../data_mocks/access_seed.dart';
+import '../models/access_log_model.dart';
 import '../models/access_models.dart';
 
 /// Handlers de `/v1/zones`, `/v1/access-rules` e `/v1/access-devices`
@@ -18,6 +19,7 @@ class AccessMockHandlers implements MockApiModule {
   late Map<String, ZoneModel> _zones;
   late Map<String, AccessRuleModel> _rules;
   late Map<String, AccessDeviceModel> _devices;
+  late Map<String, AccessLogModel> _logs;
   late SeedGenerator _ids;
 
   void _reset() {
@@ -26,6 +28,7 @@ class AccessMockHandlers implements MockApiModule {
     _zones = {for (final z in s.zones) z.id: z};
     _rules = {for (final r in s.rules) r.id: r};
     _devices = {for (final d in s.devices) d.id: d};
+    _logs = {};
   }
 
   String _newId() => _ids.ulid(DateTime.now().toUtc());
@@ -45,7 +48,9 @@ class AccessMockHandlers implements MockApiModule {
       ..get('/v1/access-devices', _listDevices)
       ..post('/v1/access-devices', _createDevice)
       ..put('/v1/access-devices/{id}', _updateDevice)
-      ..delete('/v1/access-devices/{id}', _deleteDevice);
+      ..delete('/v1/access-devices/{id}', _deleteDevice)
+      ..get('/v1/access-logs', _listLogs)
+      ..post('/v1/access-logs', _createLog);
   }
 
   static MockResponse _deleted() => MockResponse.ok({'deleted': true});
@@ -291,5 +296,61 @@ class AccessMockHandlers implements MockApiModule {
       throw const MockApiException.notFound();
     }
     return _deleted();
+  }
+
+  // ---- Registos de acesso -----------------------------------------------
+
+  late final _logSpec = MockListSpec<AccessLogModel>(
+    searchText: (l) => '${l.holderName ?? ''} ${l.cardUid}',
+    sortable: {'occurredAt': (l) => l.occurredAt},
+    filterable: {
+      'zoneId': (l) => l.zoneId,
+      'allowed': (l) => '${l.allowed}',
+      'direction': (l) => l.direction.name,
+    },
+    defaultSort: const ['-occurredAt'],
+  );
+
+  MockResponse _listLogs(MockRequest req) => mockPaginate(
+    _logs.values,
+    req,
+    toJson: (l) => l.toJson(),
+    spec: _logSpec,
+  );
+
+  MockResponse _createLog(MockRequest req) {
+    final body = req.jsonBody;
+    MockValidator(body)
+      ..required('zoneId')
+      ..required('cardUid')
+      ..required('reason')
+      ..check('allowed', body['allowed'] is bool, 'Campo obrigatório')
+      ..check(
+        'direction',
+        body['direction'] == null ||
+            GateDirection.values.any((d) => d.name == body['direction']),
+        'Sentido inválido',
+      )
+      ..check(
+        'occurredAt',
+        DateTime.tryParse('${body['occurredAt']}') != null,
+        'Data inválida',
+      )
+      ..throwIfInvalid();
+    _requireZone('${body['zoneId']}');
+    final deviceId = body['deviceId'] as String?;
+    if (deviceId != null && !_devices.containsKey(deviceId)) {
+      throw MockApiException.validation({
+        'deviceId': 'Dispositivo inexistente',
+      });
+    }
+    final log = AccessLogModel.fromJson({...body, 'id': _newId()});
+    _logs[log.id] = log;
+    if (deviceId != null) {
+      _devices[deviceId] = _devices[deviceId]!.copyWith(
+        lastSeenAt: log.occurredAt,
+      );
+    }
+    return MockResponse.created(log.toJson());
   }
 }
