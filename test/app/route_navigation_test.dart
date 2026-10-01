@@ -63,16 +63,10 @@ List<String> _staticPaths(List<RouteBase> routes, [String parent = '']) {
 void main() {
   const publicPaths = {'/splash', '/login'};
 
-  /// Rotas com defeito conhecido no estado de carregamento (SkeletonList dentro
-  /// de um ListView: "Null check" no layout). Fora do âmbito de #91; ver PR.
-  const knownBroken = {'/grades/statistics'};
-
   Future<void> openAllStaticRoutes(WidgetTester tester) async {
     final (router, _) = await _boot(tester, overrides: signedInOverrides());
     final all = _staticPaths(router.configuration.routes);
-    final paths = all.toSet()
-      ..removeAll(publicPaths)
-      ..removeAll(knownBroken);
+    final paths = all.toSet()..removeAll(publicPaths);
     // Garante que o teste cobre mais do que as raízes dos módulos.
     expect(paths.length, greaterThan(moduleCatalog.length));
     for (final path in paths) {

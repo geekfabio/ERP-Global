@@ -19,6 +19,7 @@ class SkeletonList extends StatelessWidget {
       enabled: true,
       enableSwitchAnimation: false,
       child: ListView.builder(
+        shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: itemCount,
         itemBuilder: (_, i) => const ListTile(
