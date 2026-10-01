@@ -39,6 +39,10 @@ class StudentsMockHandlers implements MockApiModule {
     _occurrences = {};
   }
 
+  /// Alunos não removidos (consumo da licença).
+  int get activeStudentCount =>
+      _students.values.where((s) => s.deletedAt == null).length;
+
   /// Matrícula mais recente (não cancelada) do aluno, para filtros por classe/turma.
   EnrollmentModel? _current(String studentId) {
     EnrollmentModel? best;

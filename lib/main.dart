@@ -19,6 +19,8 @@ import 'features/import_export/presentation/providers/export_providers.dart';
 import 'features/import_export/presentation/providers/import_providers.dart';
 import 'features/inventory/presentation/providers/inventory_providers.dart';
 import 'features/license/presentation/providers/license_providers.dart';
+import 'features/license/presentation/providers/license_usage_providers.dart';
+import 'features/license/data/mock_api/license_mock_handlers.dart';
 import 'features/students/presentation/providers/student_providers.dart';
 
 Future<void> main() async {
@@ -58,6 +60,18 @@ Future<void> main() async {
         exportHandlerProvider.overrideWith(
           (ref) => ref.watch(exportRunnerProvider),
         ),
+        // Consumo da licença = dados dos módulos de alunos e de auth.
+        licenseMockHandlersProvider.overrideWith(
+          (ref) => LicenseMockHandlers(
+            students: () =>
+                ref.read(studentsMockHandlersProvider).activeStudentCount,
+            users: () => ref
+                .read(authMockHandlersProvider)
+                .accounts
+                .where((a) => a.user.isActive)
+                .length,
+          ),
+        ),
         // Módulos com API mock; só têm efeito com `AppConfig.useMockApi`.
         mockApiModulesProvider.overrideWith(
           (ref) => [
@@ -69,6 +83,7 @@ Future<void> main() async {
             ref.watch(importMockHandlersProvider),
             ref.watch(cardsMockHandlersProvider),
             ref.watch(inventoryMockHandlersProvider),
+            ref.watch(licenseMockHandlersProvider),
           ],
         ),
       ],
