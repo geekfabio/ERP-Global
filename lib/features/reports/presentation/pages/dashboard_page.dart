@@ -64,6 +64,12 @@ class DashboardPage extends ConsumerWidget {
                     icon: const Icon(Icons.account_balance_outlined),
                     onPressed: () => context.go('/reports/finance'),
                   ),
+                IconButton(
+                  key: const ValueKey('open_operations_dashboard'),
+                  tooltip: 'Operações',
+                  icon: const Icon(Icons.dashboard_customize_outlined),
+                  onPressed: () => context.go('/reports/operations'),
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),

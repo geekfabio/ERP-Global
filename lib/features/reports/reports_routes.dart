@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'presentation/pages/academic_dashboard_page.dart';
 import 'presentation/pages/dashboard_page.dart';
 import 'presentation/pages/finance_dashboard_page.dart';
+import 'presentation/pages/operations_dashboard_page.dart';
 
 /// Rotas do módulo `reports` (ligadas em `app/router/module_routes.dart`).
 List<RouteBase> reportsRoutes() => [
@@ -14,5 +15,9 @@ List<RouteBase> reportsRoutes() => [
   GoRoute(
     path: '/reports/finance',
     builder: (context, state) => const FinanceDashboardPage(),
+  ),
+  GoRoute(
+    path: '/reports/operations',
+    builder: (context, state) => const OperationsDashboardPage(),
   ),
 ];
