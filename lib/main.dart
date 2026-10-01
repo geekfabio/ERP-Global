@@ -13,6 +13,7 @@ import 'core/sync/sync_providers.dart';
 import 'core/utils/pt_ao_formatters.dart';
 import 'features/auth/presentation/providers/auth_providers.dart';
 import 'features/auth/presentation/providers/auth_state.dart';
+import 'features/cards/presentation/providers/card_providers.dart';
 import 'features/communication/presentation/providers/communication_providers.dart';
 import 'features/license/presentation/providers/license_providers.dart';
 import 'features/students/presentation/providers/student_providers.dart';
@@ -59,6 +60,7 @@ Future<void> main() async {
             ref.watch(syncMockHandlersProvider),
             ref.watch(communicationMockHandlersProvider),
             ref.watch(importMockHandlersProvider),
+            ref.watch(cardsMockHandlersProvider),
           ],
         ),
       ],
