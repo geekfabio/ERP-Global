@@ -97,7 +97,13 @@ const authProfilePermissions = <AuthProfile, List<String>>{
   AuthProfile.humanResources: ['hr.employee.read', 'hr.employee.update'],
   AuthProfile.cafeteria: ['cafeteria.pos.read', 'cafeteria.pos.create'],
   AuthProfile.security: ['access.log.read', 'access.log.create'],
-  AuthProfile.librarian: ['library.loan.read', 'library.loan.create'],
+  AuthProfile.librarian: [
+    'library.loan.read',
+    'library.loan.create',
+    'library.book.create',
+    'library.book.update',
+    'library.fine.pay',
+  ],
   AuthProfile.guardian: ['portal.child.read'],
   AuthProfile.student: ['portal.self.read'],
 };
