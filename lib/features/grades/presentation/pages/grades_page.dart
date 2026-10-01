@@ -72,6 +72,12 @@ class _GradesPageState extends ConsumerState<GradesPage> {
                     label: const Text('Pautas'),
                   ),
                   IconButton(
+                    key: const Key('grades_documents'),
+                    tooltip: 'Certificados',
+                    onPressed: () => context.go('/grades/documents'),
+                    icon: const Icon(Icons.workspace_premium_outlined),
+                  ),
+                  IconButton(
                     key: const Key('grades_statistics'),
                     tooltip: 'Estatísticas',
                     onPressed: () => context.go('/grades/statistics'),
