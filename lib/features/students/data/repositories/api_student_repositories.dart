@@ -134,6 +134,42 @@ class ApiGuardianRepository implements GuardianRepository {
       });
 
   @override
+  Future<Result<GuardianModel>> get(String id) => Result.guard(() async {
+    final response = await _client.dio.get<dynamic>('/v1/guardians/$id');
+    return ApiEnvelope.object(response, GuardianModel.fromJson);
+  });
+
+  @override
+  Future<Result<GuardianModel>> update(GuardianModel guardian) =>
+      Result.guard(() async {
+        final response = await _client.dio.patch<dynamic>(
+          '/v1/guardians/${guardian.id}',
+          data: guardian.toJson(),
+        );
+        return ApiEnvelope.object(response, GuardianModel.fromJson);
+      });
+
+  @override
+  Future<Result<List<GuardianPupil>>> pupilsOf(String guardianId) =>
+      Result.guard(() async {
+        final response = await _client.dio.get<dynamic>(
+          '/v1/guardians/$guardianId/students',
+        );
+        final data = ApiEnvelope.data(response)! as List;
+        return [
+          for (final item in data.cast<Map<String, dynamic>>())
+            GuardianPupil(
+              student: StudentModel.fromJson(
+                item['student'] as Map<String, dynamic>,
+              ),
+              link: GuardianLinkModel.fromJson(
+                item['link'] as Map<String, dynamic>,
+              ),
+            ),
+        ];
+      });
+
+  @override
   Future<Result<List<StudentGuardian>>> forStudent(String studentId) =>
       Result.guard(() async {
         final response = await _client.dio.get<dynamic>(

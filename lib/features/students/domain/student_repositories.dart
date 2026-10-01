@@ -81,6 +81,14 @@ class StudentGuardian {
   final GuardianLinkModel link;
 }
 
+/// Educando com o seu vínculo a um encarregado (vista do encarregado).
+class GuardianPupil {
+  const GuardianPupil({required this.student, required this.link});
+
+  final StudentModel student;
+  final GuardianLinkModel link;
+}
+
 abstract interface class GuardianRepository {
   Future<Result<PagedList<GuardianModel>>> list({
     int page = 1,
@@ -89,6 +97,11 @@ abstract interface class GuardianRepository {
   });
 
   Future<Result<GuardianModel>> create(GuardianModel guardian);
+  Future<Result<GuardianModel>> get(String id);
+  Future<Result<GuardianModel>> update(GuardianModel guardian);
+
+  /// Educandos de um encarregado, com o vínculo de cada um.
+  Future<Result<List<GuardianPupil>>> pupilsOf(String guardianId);
 
   /// Encarregados de um aluno, com parentesco e responsabilidades.
   Future<Result<List<StudentGuardian>>> forStudent(String studentId);
