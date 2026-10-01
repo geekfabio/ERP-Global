@@ -49,3 +49,15 @@ enum NoticeKind { preDue, postDue }
 /// Estado de um acordo de pagamento (calculado a partir dos pagamentos).
 @JsonEnum(fieldRename: FieldRename.snake)
 enum AgreementStatus { active, completed, broken, cancelled }
+
+/// Tipo de desconto: percentagem (pontos base) ou valor fixo por cobrança.
+@JsonEnum(fieldRename: FieldRename.snake)
+enum DiscountKind { percentage, fixed }
+
+/// Motivo do desconto ou bolsa.
+@JsonEnum(fieldRename: FieldRename.snake)
+enum DiscountReason { sibling, merit, scholarship, other }
+
+/// Estado do desconto: só os aprovados se reflectem na cobrança.
+@JsonEnum(fieldRename: FieldRename.snake)
+enum DiscountStatus { pending, approved, rejected, revoked }
