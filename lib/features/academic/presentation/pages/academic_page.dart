@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/theme/app_tokens.dart';
+import '../widgets/assignment_tab.dart';
 import '../widgets/classroom_tabs.dart';
 import '../widgets/curriculum_tab.dart';
 import '../widgets/structure_tabs.dart';
@@ -12,7 +13,7 @@ class AcademicPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DefaultTabController(
-    length: 9,
+    length: 10,
     child: Align(
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
@@ -42,6 +43,7 @@ class AcademicPage extends StatelessWidget {
                   Tab(text: 'Turnos'),
                   Tab(text: 'Turmas'),
                   Tab(text: 'Professores'),
+                  Tab(text: 'Atribuições'),
                 ],
               ),
               const Expanded(
@@ -56,6 +58,7 @@ class AcademicPage extends StatelessWidget {
                     ShiftsTab(),
                     ClassroomsTab(),
                     TeachersTab(),
+                    AssignmentsTab(),
                   ],
                 ),
               ),

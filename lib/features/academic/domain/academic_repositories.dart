@@ -1,6 +1,7 @@
 import '../../../core/errors/result.dart';
 import '../../../core/network/api_envelope.dart';
 import '../data/models/academic_models.dart';
+import '../data/models/assignment_models.dart';
 import '../data/models/classroom_models.dart';
 import '../data/models/teacher_models.dart';
 
@@ -33,3 +34,6 @@ typedef RoomRepository = AcademicCrudRepository<RoomModel>;
 typedef ShiftRepository = AcademicCrudRepository<ShiftModel>;
 typedef ClassroomRepository = AcademicCrudRepository<ClassroomModel>;
 typedef TeacherRepository = AcademicCrudRepository<TeacherModel>;
+typedef TeachingAssignmentRepository =
+    AcademicCrudRepository<TeachingAssignmentModel>;
+typedef HomeroomRepository = AcademicCrudRepository<HomeroomModel>;

@@ -20,6 +20,7 @@ import 'features/communication/presentation/providers/communication_providers.da
 import 'features/import_export/presentation/providers/export_providers.dart';
 import 'features/import_export/presentation/providers/import_providers.dart';
 import 'features/academic/presentation/providers/academic_structure_providers.dart';
+import 'features/academic/presentation/providers/assignment_providers.dart';
 import 'features/accounting/presentation/providers/accounting_providers.dart';
 import 'features/access_control/presentation/providers/access_providers.dart';
 import 'features/grades/presentation/providers/grades_providers.dart';
@@ -124,6 +125,7 @@ Future<void> main() async {
             ref.watch(reportsMockHandlersProvider),
             ref.watch(academicStructureMockHandlersProvider),
             ref.watch(teacherMockHandlersProvider),
+            ref.watch(assignmentMockHandlersProvider),
             ref.watch(gradesMockHandlersProvider),
             ref.watch(billingMockHandlersProvider),
           ],
