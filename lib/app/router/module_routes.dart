@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../../core/audit/audit_routes.dart';
+import '../../features/cards/cards_routes.dart';
 import '../../features/communication/communication_routes.dart';
 import '../../features/guardians/guardians_routes.dart';
 import '../../features/import_export/import_export_routes.dart';
@@ -10,6 +11,7 @@ import '../../features/students/students_routes.dart';
 /// módulos ainda sem entrada aqui mostram o placeholder "em construção".
 final Map<String, List<RouteBase> Function()> featureModuleRoutes = {
   'core': coreRoutes,
+  'cards': cardsRoutes,
   'communication': communicationRoutes,
   'guardians': guardiansRoutes,
   'students': studentsRoutes,
