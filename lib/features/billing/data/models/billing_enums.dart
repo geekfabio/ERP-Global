@@ -41,3 +41,11 @@ enum CashSessionStatus { open, closed }
 /// pagamento), reforço (entrada) ou sangria (saída).
 @JsonEnum(fieldRename: FieldRename.snake)
 enum CashMovementType { cashPayment, supply, withdrawal }
+
+/// Aviso de cobrança: lembrete antes do vencimento ou aviso de atraso.
+@JsonEnum(fieldRename: FieldRename.snake)
+enum NoticeKind { preDue, postDue }
+
+/// Estado de um acordo de pagamento (calculado a partir dos pagamentos).
+@JsonEnum(fieldRename: FieldRename.snake)
+enum AgreementStatus { active, completed, broken, cancelled }

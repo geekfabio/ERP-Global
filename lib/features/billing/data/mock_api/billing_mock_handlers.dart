@@ -31,7 +31,11 @@ class BillingMockHandlers implements MockApiModule {
   late Map<String, String> _penalties;
   late SeedGenerator _ids;
 
+  /// Aluno → turma (recebida ao gerar as cobranças da matrícula).
+  late Map<String, String> _classrooms;
+
   void _reset() {
+    _classrooms = {};
     _items = {for (final i in buildFeeItemSeed()) i.id: i};
     _charges = {};
     _byEnrollment = {};
@@ -49,6 +53,15 @@ class BillingMockHandlers implements MockApiModule {
     for (final c in _charges.values)
       if (c.studentId == studentId && c.deletedAt == null) c,
   ];
+
+  /// Todas as cobranças activas (usado pela cobrança/devedores).
+  List<Charge> allCharges() => [
+    for (final c in _charges.values)
+      if (c.deletedAt == null) c,
+  ];
+
+  /// Turma do aluno, se conhecida (filtro de devedores por turma).
+  String? classroomOf(String studentId) => _classrooms[studentId];
 
   /// Actualiza o estado de uma cobrança após alocação de pagamentos.
   void setChargeStatus(String id, ChargeStatus status) {
@@ -252,6 +265,8 @@ class BillingMockHandlers implements MockApiModule {
       ..required('academicYearId')
       ..required('gradeId')
       ..throwIfInvalid();
+    final classroomId = b['classroomId'];
+    if (classroomId is String) _classrooms['${b['studentId']}'] = classroomId;
     final existing = _byEnrollment['${b['enrollmentId']}'];
     if (existing != null) {
       return MockResponse.ok([
