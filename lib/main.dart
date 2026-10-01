@@ -18,6 +18,7 @@ import 'features/cards/presentation/providers/card_providers.dart';
 import 'features/communication/presentation/providers/communication_providers.dart';
 import 'features/import_export/presentation/providers/export_providers.dart';
 import 'features/import_export/presentation/providers/import_providers.dart';
+import 'features/academic/presentation/providers/academic_structure_providers.dart';
 import 'features/accounting/presentation/providers/accounting_providers.dart';
 import 'features/access_control/presentation/providers/access_providers.dart';
 import 'features/inventory/presentation/providers/inventory_providers.dart';
@@ -119,6 +120,7 @@ Future<void> main() async {
             ref.watch(academicMockHandlersProvider),
             ref.watch(rulesMockHandlersProvider),
             ref.watch(reportsMockHandlersProvider),
+            ref.watch(academicStructureMockHandlersProvider),
           ],
         ),
       ],
