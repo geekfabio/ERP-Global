@@ -113,13 +113,10 @@ class _BillingPageState extends ConsumerState<BillingPage> {
                   ),
                   Can(
                     permission: 'billing.payment.read',
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: AppSpacing.sm),
-                      child: AppButton(
-                        label: 'Pagamentos',
-                        icon: Icons.payments_outlined,
-                        onPressed: () => context.go('/billing/payments'),
-                      ),
+                    child: IconButton(
+                      tooltip: 'Pagamentos',
+                      icon: const Icon(Icons.payments_outlined),
+                      onPressed: () => context.go('/billing/payments'),
                     ),
                   ),
                   Can(
