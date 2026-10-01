@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../data/models/student_model.dart';
+import 'tabs/attendance_tab.dart';
+import 'tabs/card_tab.dart';
 import 'tabs/discipline_tab.dart';
 import 'tabs/documents_tab.dart';
 import 'tabs/enrollment_tab.dart';
+import 'tabs/finance_tab.dart';
+import 'tabs/grades_tab.dart';
 import 'tabs/guardians_tab.dart';
 import 'tabs/health_tab.dart';
 import 'tabs/identification_tab.dart';
 import 'tabs/pathway_tab.dart';
+import 'tabs/timeline_tab.dart';
 
 /// Descreve um separador da ficha do aluno. Para acrescentar um separador
 /// (issues #35/#36) basta juntar um [StudentFileTab] a [defaultStudentFileTabs]:
@@ -40,7 +45,8 @@ class StudentFileTab {
   final Widget Function(BuildContext context, StudentModel student) builder;
 }
 
-/// Separadores 1–5, 9 e 10 (#34, #35). #36 acrescenta 6, 7, 8, 11 e 12.
+/// Separadores da ficha (#34, #35, #36), pela ordem do docs/03. Os que vêm de
+/// outros módulos (`module`) só aparecem se o módulo estiver licenciado.
 final defaultStudentFileTabs = <StudentFileTab>[
   StudentFileTab(
     id: 'identification',
@@ -78,6 +84,30 @@ final defaultStudentFileTabs = <StudentFileTab>[
     builder: (_, s) => EnrollmentTab(student: s),
   ),
   StudentFileTab(
+    id: 'grades',
+    label: 'Notas',
+    icon: Icons.grading_outlined,
+    readPermission: 'grades.entry.read',
+    module: 'grades',
+    builder: (_, s) => GradesTab(student: s),
+  ),
+  StudentFileTab(
+    id: 'attendance',
+    label: 'Assiduidade',
+    icon: Icons.fact_check_outlined,
+    readPermission: 'attendance.record.read',
+    module: 'attendance',
+    builder: (_, s) => AttendanceTab(student: s),
+  ),
+  StudentFileTab(
+    id: 'finance',
+    label: 'Financeiro',
+    icon: Icons.payments_outlined,
+    readPermission: 'billing.invoice.read',
+    module: 'billing',
+    builder: (_, s) => FinanceTab(student: s),
+  ),
+  StudentFileTab(
     id: 'discipline',
     label: 'Disciplina',
     icon: Icons.gavel_outlined,
@@ -90,6 +120,21 @@ final defaultStudentFileTabs = <StudentFileTab>[
     icon: Icons.folder_outlined,
     readPermission: 'students.record.read',
     builder: (_, s) => DocumentsTab(student: s),
+  ),
+  StudentFileTab(
+    id: 'card',
+    label: 'Cartão',
+    icon: Icons.credit_card_outlined,
+    readPermission: 'cards.card.read',
+    module: 'cards',
+    builder: (_, s) => CardTab(student: s),
+  ),
+  StudentFileTab(
+    id: 'timeline',
+    label: 'Histórico',
+    icon: Icons.history_outlined,
+    readPermission: 'students.audit.read',
+    builder: (_, s) => TimelineTab(student: s),
   ),
 ];
 

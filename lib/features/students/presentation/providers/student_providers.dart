@@ -48,3 +48,7 @@ final studentDocumentRepositoryProvider = Provider<StudentDocumentRepository>(
 final occurrenceRepositoryProvider = Provider<OccurrenceRepository>(
   (ref) => ApiOccurrenceRepository(ref.watch(apiClientProvider)),
 );
+
+final studentSummaryRepositoryProvider = Provider<StudentSummaryRepository>(
+  (ref) => ApiStudentSummaryRepository(ref.watch(apiClientProvider)),
+);

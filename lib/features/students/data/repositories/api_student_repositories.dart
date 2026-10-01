@@ -11,6 +11,7 @@ import '../models/student_document_model.dart';
 import '../models/student_enums.dart';
 import '../models/student_model.dart';
 import '../models/student_occurrence_model.dart';
+import '../models/student_summaries_model.dart';
 
 /// `snake_case` como no JSON (`newEnrollment` → `new_enrollment`).
 String _wire(Enum e) =>
@@ -344,4 +345,37 @@ class ApiOccurrenceRepository implements OccurrenceRepository {
   Future<Result<void>> delete(String id) => Result.guard(() async {
     await _client.dio.delete<dynamic>('/v1/student-occurrences/$id');
   });
+}
+
+class ApiStudentSummaryRepository implements StudentSummaryRepository {
+  ApiStudentSummaryRepository(this._client);
+
+  final ApiClient _client;
+
+  Future<Result<T>> _get<T>(
+    String studentId,
+    String part,
+    T Function(Map<String, dynamic>) fromJson,
+  ) => Result.guard(() async {
+    final response = await _client.dio.get<dynamic>(
+      '/v1/students/$studentId/$part',
+    );
+    return ApiEnvelope.object(response, fromJson);
+  });
+
+  @override
+  Future<Result<StudentGradesSummary>> grades(String studentId) =>
+      _get(studentId, 'grades', StudentGradesSummary.fromJson);
+
+  @override
+  Future<Result<StudentAttendanceSummary>> attendance(String studentId) =>
+      _get(studentId, 'attendance', StudentAttendanceSummary.fromJson);
+
+  @override
+  Future<Result<StudentFinanceSummary>> finance(String studentId) =>
+      _get(studentId, 'finance', StudentFinanceSummary.fromJson);
+
+  @override
+  Future<Result<StudentCardSummary>> card(String studentId) =>
+      _get(studentId, 'card', StudentCardSummary.fromJson);
 }
