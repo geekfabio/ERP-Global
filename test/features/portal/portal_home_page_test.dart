@@ -8,7 +8,6 @@ import 'package:erp_global/features/auth/data/repositories/api_auth_repository.d
 import 'package:erp_global/features/auth/data/repositories/session_storage.dart';
 import 'package:erp_global/features/portal/data/mock_api/portal_mock_handlers.dart';
 import 'package:erp_global/features/portal/presentation/pages/portal_home_page.dart';
-import 'package:erp_global/features/portal/presentation/providers/portal_providers.dart';
 import 'package:erp_global/features/students/data/mock_api/students_mock_handlers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
