@@ -15,6 +15,16 @@ class SyncMockHandlers implements MockApiModule {
 
   final Map<String, Map<String, Map<String, dynamic>>> _store = {};
 
+  /// Configuração de sincronização da instituição (`/v1/sync/settings`).
+  Map<String, dynamic> _settings = _defaultSettings();
+
+  static Map<String, dynamic> _defaultSettings() => {
+    'mode': 'localOnly',
+    'auto': true,
+    'intervalMinutes': 15,
+    'lastSyncAt': null,
+  };
+
   /// Estado do servidor para [entity]/[id] (útil em testes e fixtures).
   Map<String, dynamic>? record(String entity, String id) => _store[entity]?[id];
 
@@ -28,9 +38,42 @@ class SyncMockHandlers implements MockApiModule {
   @override
   void register(MockApiRegistry r) {
     r
-      ..onReset(_store.clear)
+      ..onReset(() {
+        _store.clear();
+        _settings = _defaultSettings();
+      })
+      ..get('/v1/sync/settings', (_) => MockResponse.ok(_settings))
+      ..put('/v1/sync/settings', _putSettings)
       ..post('/v1/sync/push', _push)
       ..get('/v1/sync/{entity}/{id}', _get);
+  }
+
+  MockResponse _putSettings(MockRequest req) {
+    final body = req.jsonBody;
+    final mode = body['mode'];
+    final interval = body['intervalMinutes'];
+    MockValidator(body)
+      ..required('mode')
+      ..check(
+        'mode',
+        mode == null ||
+            ['localOnly', 'cloudBackup', 'cloudSync'].contains(mode),
+        'Modo inválido',
+      )
+      ..check(
+        'intervalMinutes',
+        interval == null || (interval is int && interval >= 1),
+        'Intervalo inválido',
+      )
+      ..throwIfInvalid();
+    return MockResponse.ok(
+      _settings = {
+        'mode': mode,
+        'auto': body['auto'] as bool? ?? true,
+        'intervalMinutes': interval ?? 15,
+        'lastSyncAt': body['lastSyncAt'],
+      },
+    );
   }
 
   MockResponse _get(MockRequest req) {

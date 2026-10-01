@@ -1,6 +1,9 @@
 import 'package:erp_global/core/modules/license_gate.dart';
 import 'package:erp_global/core/modules/module_catalog.dart';
+import 'package:erp_global/core/errors/result.dart';
 import 'package:erp_global/core/security/permission_providers.dart';
+import 'package:erp_global/core/sync/sync_providers.dart';
+import 'package:erp_global/core/sync/sync_settings.dart';
 import 'package:erp_global/features/auth/data/models/auth_session.dart';
 import 'package:erp_global/features/auth/presentation/providers/auth_state.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -35,6 +38,22 @@ class FixedAuthNotifier extends AuthNotifier {
 LicenseGate get fullLicenseGate =>
     LicenseGate(enabledModules: {for (final m in moduleCatalog) m.code});
 
+/// Configuração de sync em memória e instantânea (sem pedidos nem timers),
+/// para testes que montam o shell com a licença `cloud_sync`.
+class _MemorySyncSettings implements SyncSettingsRepository {
+  SyncSettings _value = const SyncSettings();
+
+  @override
+  Future<Result<SyncSettings>> load() async => Ok(_value);
+
+  @override
+  Future<Result<SyncSettings>> save(SyncSettings settings) async =>
+      Ok(_value = settings);
+}
+
+Override syncSettingsOverride() =>
+    syncSettingsRepositoryProvider.overrideWithValue(_MemorySyncSettings());
+
 /// Fixa o estado da licença.
 Override licenseOverride([LicenseGate? gate]) =>
     licenseGateProvider.overrideWithValue(gate ?? fullLicenseGate);
@@ -54,6 +73,7 @@ List<Override> signedInOverrides({
     (ref) => ref.watch(currentSessionProvider)?.permissions,
   ),
   licenseOverride(gate),
+  syncSettingsOverride(),
 ];
 
 /// Sem sessão (mostra `/login`).
@@ -63,10 +83,12 @@ List<Override> signedOutOverrides() => [
     (ref) => ref.watch(currentSessionProvider)?.permissions,
   ),
   licenseOverride(),
+  syncSettingsOverride(),
 ];
 
 /// Só as permissões (sem router/auth), para testar menu e widgets; licença completa.
 List<Override> permissionsOnly(List<String> codes, {LicenseGate? gate}) => [
   sessionPermissionsProvider.overrideWithValue(codes),
   licenseOverride(gate),
+  syncSettingsOverride(),
 ];
