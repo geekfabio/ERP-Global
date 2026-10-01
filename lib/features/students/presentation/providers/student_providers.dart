@@ -6,17 +6,27 @@ import '../../../../core/network/api_client.dart';
 import '../../data/mock_api/students_mock_handlers.dart';
 import '../../data/repositories/api_student_repositories.dart';
 import '../../data/repositories/drift_student_repository.dart';
+import '../../data/repositories/fallback_student_repository.dart';
 import '../../domain/student_repositories.dart';
 
 /// Troca API/Mock ↔ Drift por configuração (`AppConfig.useLocalDb`); a UI só
 /// conhece [StudentRepository].
 final useLocalDbProvider = Provider<bool>((ref) => AppConfig.useLocalDb);
 
-final studentRepositoryProvider = Provider<StudentRepository>(
-  (ref) => ref.watch(useLocalDbProvider)
-      ? DriftStudentRepository(ref.watch(appDatabaseProvider))
-      : ApiStudentRepository(ref.watch(apiClientProvider)),
-);
+/// Com `AppConfig.localFallback`, a API cai para o Drift quando está offline.
+final localFallbackProvider = Provider<bool>((ref) => AppConfig.localFallback);
+
+final studentRepositoryProvider = Provider<StudentRepository>((ref) {
+  if (ref.watch(useLocalDbProvider)) {
+    return DriftStudentRepository(ref.watch(appDatabaseProvider));
+  }
+  final remote = ApiStudentRepository(ref.watch(apiClientProvider));
+  if (!ref.watch(localFallbackProvider)) return remote;
+  return FallbackStudentRepository(
+    remote: remote,
+    local: DriftStudentRepository(ref.watch(appDatabaseProvider)),
+  );
+});
 
 final guardianRepositoryProvider = Provider<GuardianRepository>(
   (ref) => ApiGuardianRepository(ref.watch(apiClientProvider)),
