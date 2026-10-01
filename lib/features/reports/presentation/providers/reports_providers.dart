@@ -1,13 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/academic/period_context.dart';
+import '../../../../core/errors/failure.dart';
 import '../../../../core/modules/license_gate.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/security/permission_providers.dart';
 import '../../data/mock_api/reports_mock_handlers.dart';
 import '../../data/models/dashboard_metric.dart';
+import '../../data/models/report_models.dart';
 import '../../data/repositories/api_reports_repository.dart';
 import '../../domain/dashboard_widget.dart';
+import '../../domain/report_catalog.dart';
 import '../../domain/reports_repository.dart';
 
 final reportsRepositoryProvider = Provider<ReportsRepository>(
@@ -135,3 +138,34 @@ final dashboardMetricsProvider =
           .getOrThrow();
       return {for (final m in rows) m.widgetId: m};
     }, retry: (_, _) => null);
+
+/// Relatórios do catálogo visíveis: módulo licenciado ∩ permissão de leitura,
+/// e só com acesso ao catálogo (`reports.report.read`).
+final catalogReportsProvider = Provider<List<ReportDefinition>>((ref) {
+  final permissions = ref.watch(permissionServiceProvider);
+  if (!permissions.canAny(reportsCatalogPermission)) return const [];
+  return visibleReports(permissions, ref.watch(enabledModulesProvider));
+});
+
+/// Pedido de execução; igualdade por valor para servir de chave de provider.
+typedef ReportRunKey = ({String reportId, String? campusId});
+
+final reportRunProvider = FutureProvider.autoDispose
+    .family<ReportResult, ReportRunKey>((ref, key) async {
+      final report = reportById(key.reportId);
+      final permissions = ref.watch(permissionServiceProvider);
+      if (report == null || !canRunReport(permissions, report, key.campusId)) {
+        throw PermissionFailure();
+      }
+      final result = await ref
+          .watch(reportsRepositoryProvider)
+          .runReport(key.reportId, campusId: key.campusId);
+      return result.getOrThrow();
+    }, retry: (_, _) => null);
+
+final reportSchedulesProvider =
+    FutureProvider.autoDispose<List<ReportSchedule>>(
+      (ref) async =>
+          (await ref.watch(reportsRepositoryProvider).schedules()).getOrThrow(),
+      retry: (_, _) => null,
+    );

@@ -6,6 +6,7 @@ import '../models/academic_overview.dart';
 import '../models/dashboard_metric.dart';
 import '../models/finance_overview.dart';
 import '../models/operations_overview.dart';
+import '../models/report_models.dart';
 
 class ApiReportsRepository implements ReportsRepository {
   ApiReportsRepository(this._client);
@@ -93,5 +94,64 @@ class ApiReportsRepository implements ReportsRepository {
       queryParameters: {'pageSize': 100},
     );
     return ApiEnvelope.page(response, CampusOption.fromJson).items;
+  });
+
+  @override
+  Future<Result<ReportResult>> runReport(String reportId, {String? campusId}) =>
+      Result.guard(() async {
+        final response = await _client.dio.get<dynamic>(
+          '/v1/reports/catalog/$reportId/run',
+          queryParameters: {'campusId': ?campusId},
+        );
+        return ReportResult.fromJson(
+          ApiEnvelope.data(response)! as Map<String, dynamic>,
+        );
+      });
+
+  @override
+  Future<Result<List<ReportSchedule>>> schedules() => Result.guard(() async {
+    final response = await _client.dio.get<dynamic>('/v1/reports/schedules');
+    return (ApiEnvelope.data(response)! as List)
+        .cast<Map<String, dynamic>>()
+        .map(ReportSchedule.fromJson)
+        .toList(growable: false);
+  });
+
+  @override
+  Future<Result<ReportSchedule>> createSchedule({
+    required String reportId,
+    required ScheduleFrequency frequency,
+    required String format,
+    String? campusId,
+  }) => Result.guard(() async {
+    final response = await _client.dio.post<dynamic>(
+      '/v1/reports/schedules',
+      data: {
+        'reportId': reportId,
+        'frequency': frequency.name,
+        'format': format,
+        'campusId': ?campusId,
+      },
+    );
+    return ReportSchedule.fromJson(
+      ApiEnvelope.data(response)! as Map<String, dynamic>,
+    );
+  });
+
+  @override
+  Future<Result<ReportSchedule>> setScheduleActive(String id, bool active) =>
+      Result.guard(() async {
+        final response = await _client.dio.patch<dynamic>(
+          '/v1/reports/schedules/$id',
+          data: {'active': active},
+        );
+        return ReportSchedule.fromJson(
+          ApiEnvelope.data(response)! as Map<String, dynamic>,
+        );
+      });
+
+  @override
+  Future<Result<void>> deleteSchedule(String id) => Result.guard(() async {
+    await _client.dio.delete<dynamic>('/v1/reports/schedules/$id');
   });
 }

@@ -3,6 +3,7 @@ import '../data/models/academic_overview.dart';
 import '../data/models/dashboard_metric.dart';
 import '../data/models/finance_overview.dart';
 import '../data/models/operations_overview.dart';
+import '../data/models/report_models.dart';
 
 /// Contrato dos dashboards; a UI só conhece esta interface.
 abstract interface class ReportsRepository {
@@ -21,4 +22,20 @@ abstract interface class ReportsRepository {
   );
 
   Future<Result<List<CampusOption>>> campuses();
+
+  /// Dados de um relatório do catálogo; 403 fora do âmbito ou da licença.
+  Future<Result<ReportResult>> runReport(String reportId, {String? campusId});
+
+  Future<Result<List<ReportSchedule>>> schedules();
+
+  Future<Result<ReportSchedule>> createSchedule({
+    required String reportId,
+    required ScheduleFrequency frequency,
+    required String format,
+    String? campusId,
+  });
+
+  Future<Result<ReportSchedule>> setScheduleActive(String id, bool active);
+
+  Future<Result<void>> deleteSchedule(String id);
 }

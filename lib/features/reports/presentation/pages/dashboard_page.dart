@@ -7,9 +7,11 @@ import '../../../../core/academic/period_context.dart';
 import '../../../../core/modules/license_gate.dart';
 import '../../../../core/utils/pt_ao_formatters.dart';
 import '../../../../core/widgets/cards/app_cards.dart';
+import '../../../../core/widgets/permissions/can.dart';
 import '../../../../core/widgets/states/app_states.dart';
 import '../../data/models/dashboard_metric.dart';
 import '../../domain/dashboard_widget.dart';
+import '../../domain/report_catalog.dart';
 import '../providers/reports_providers.dart';
 import '../widgets/dashboard_filters_bar.dart';
 
@@ -69,6 +71,15 @@ class DashboardPage extends ConsumerWidget {
                   tooltip: 'Operações',
                   icon: const Icon(Icons.dashboard_customize_outlined),
                   onPressed: () => context.go('/reports/operations'),
+                ),
+                Can(
+                  permission: reportsCatalogPermission,
+                  child: IconButton(
+                    key: const ValueKey('open_report_catalog'),
+                    tooltip: 'Catálogo de relatórios',
+                    icon: const Icon(Icons.assignment_outlined),
+                    onPressed: () => context.go('/reports/catalog'),
+                  ),
                 ),
               ],
             ),
