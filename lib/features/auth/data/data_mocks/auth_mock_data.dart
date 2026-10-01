@@ -100,6 +100,8 @@ const authProfilePermissions = <AuthProfile, List<String>>{
     'billing.payment.create',
     'billing.cash.read',
     'billing.cash.create',
+    'billing.debtor.read',
+    'billing.debtor.manage',
   ],
   AuthProfile.accountant: ['accounting.ledger.read', 'accounting.entry.create'],
   AuthProfile.humanResources: ['hr.employee.read', 'hr.employee.update'],

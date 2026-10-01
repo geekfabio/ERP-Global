@@ -102,13 +102,10 @@ class _BillingPageState extends ConsumerState<BillingPage> {
                   ),
                   Can(
                     permission: 'billing.invoice.read',
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: AppSpacing.sm),
-                      child: AppButton(
-                        label: 'Facturas',
-                        icon: Icons.receipt_long_outlined,
-                        onPressed: () => context.go('/billing/invoices'),
-                      ),
+                    child: IconButton(
+                      tooltip: 'Facturas',
+                      icon: const Icon(Icons.receipt_long_outlined),
+                      onPressed: () => context.go('/billing/invoices'),
                     ),
                   ),
                   Can(
@@ -117,6 +114,14 @@ class _BillingPageState extends ConsumerState<BillingPage> {
                       tooltip: 'Pagamentos',
                       icon: const Icon(Icons.payments_outlined),
                       onPressed: () => context.go('/billing/payments'),
+                    ),
+                  ),
+                  Can(
+                    permission: 'billing.debtor.read',
+                    child: IconButton(
+                      tooltip: 'Devedores',
+                      icon: const Icon(Icons.money_off_outlined),
+                      onPressed: () => context.go('/billing/debtors'),
                     ),
                   ),
                   Can(

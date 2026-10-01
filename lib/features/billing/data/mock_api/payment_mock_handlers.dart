@@ -89,6 +89,9 @@ class PaymentMockHandlers implements MockApiModule {
   MockResponse _immutable(MockRequest req) =>
       throw const MockApiException.conflict('Pagamento registado é imutável');
 
+  /// Todos os pagamentos (usado pela cobrança/devedores).
+  List<Payment> allPayments() => _payments.values.toList();
+
   Iterable<Payment> _paymentsOf(String studentId) =>
       _payments.values.where((p) => p.studentId == studentId);
 

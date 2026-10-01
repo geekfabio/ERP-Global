@@ -95,6 +95,7 @@ class ApiBillingPlanRepository implements BillingPlanRepository {
         'studentId': event.studentId,
         'academicYearId': event.academicYearId,
         'gradeId': event.gradeId,
+        'classroomId': event.classroomId,
         'enrollmentFeeMinor': event.feeMinor,
         'startYear': event.occurredAt.month >= 8
             ? event.occurredAt.year
