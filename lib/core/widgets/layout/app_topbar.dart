@@ -64,12 +64,15 @@ class AppTopbar extends ConsumerWidget implements PreferredSizeWidget {
             icon: const Icon(Icons.search),
             onPressed: () {},
           ),
-        _PeriodMenu(
-          tooltip: 'Ano lectivo',
-          label: period.year,
-          options: _years,
-          onSelected: ref.read(periodProvider.notifier).setYear,
-        ),
+        // Em ecrã compacto o espaço vai para o indicador de sync (o trimestre
+        // já estava escondido).
+        if (!compact)
+          _PeriodMenu(
+            tooltip: 'Ano lectivo',
+            label: period.year,
+            options: _years,
+            onSelected: ref.read(periodProvider.notifier).setYear,
+          ),
         if (!compact)
           _PeriodMenu(
             tooltip: 'Trimestre',
