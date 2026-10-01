@@ -67,3 +67,7 @@ enum StudentDocumentType {
   contract,
   other,
 }
+
+/// Natureza de uma ocorrência disciplinar.
+@JsonEnum(fieldRename: FieldRename.snake)
+enum OccurrenceType { praise, warning, incident }

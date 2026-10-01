@@ -247,6 +247,8 @@ void main() {
         ),
       );
       expect(find.byKey(const Key('student_tab_extra')), findsOneWidget);
+      // Com muitos separadores a barra desloca-se.
+      await tester.ensureVisible(find.byKey(const Key('student_tab_extra')));
       await tester.tap(find.byKey(const Key('student_tab_extra')));
       await tester.pumpAndSettle();
       expect(find.text('EXTRA ${_student.processNumber}'), findsOneWidget);
