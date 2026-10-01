@@ -5,6 +5,7 @@ import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_envelope.dart';
 import '../../domain/academic_repositories.dart';
 import '../models/academic_models.dart';
+import '../models/assignment_models.dart';
 import '../models/classroom_models.dart';
 import '../models/teacher_models.dart';
 
@@ -125,5 +126,20 @@ TeacherRepository apiTeacherRepository(ApiClient c) => ApiAcademicRepository(
   c,
   '/v1/teachers',
   fromJson: TeacherModel.fromJson,
+  toJson: (v) => v.toJson(),
+);
+
+TeachingAssignmentRepository apiTeachingAssignmentRepository(ApiClient c) =>
+    ApiAcademicRepository(
+      c,
+      '/v1/teaching-assignments',
+      fromJson: TeachingAssignmentModel.fromJson,
+      toJson: (v) => v.toJson(),
+    );
+
+HomeroomRepository apiHomeroomRepository(ApiClient c) => ApiAcademicRepository(
+  c,
+  '/v1/homerooms',
+  fromJson: HomeroomModel.fromJson,
   toJson: (v) => v.toJson(),
 );
