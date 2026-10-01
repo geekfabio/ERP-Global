@@ -3,6 +3,8 @@ import '../data/models/access_models.dart';
 /// Motivo de uma decisão de acesso.
 enum AccessReason {
   granted,
+  unknownCard,
+  cardBlocked,
   zoneInactive,
   noRule,
   outsideSchedule,

@@ -6,6 +6,7 @@ import 'package:erp_global/core/utils/pt_ao_formatters.dart';
 import 'package:erp_global/core/widgets/feedback/toasts.dart';
 import 'package:erp_global/features/access_control/data/mock_api/access_mock_handlers.dart';
 import 'package:erp_global/features/access_control/presentation/pages/access_control_page.dart';
+import 'package:erp_global/features/cards/data/mock_api/cards_mock_handlers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,7 +18,9 @@ Future<void> _pump(WidgetTester tester, List<String> permissions) async {
   final container = ProviderContainer(
     overrides: [
       sessionPermissionsProvider.overrideWithValue(permissions),
-      mockApiModulesProvider.overrideWith((ref) => [AccessMockHandlers()]),
+      mockApiModulesProvider.overrideWith(
+        (ref) => [AccessMockHandlers(), CardsMockHandlers()],
+      ),
       apiClientProvider.overrideWith(
         (ref) => ApiClient.create(
           baseUrl: 'https://api.test',
@@ -91,5 +94,27 @@ void main() {
   testWidgets('só leitura: sem botões de criação', (tester) async {
     await _pump(tester, ['access.zone.read']);
     expect(find.text('Nova zona'), findsNothing);
+  });
+
+  testWidgets('portaria: cartão desconhecido é negado e fica registado', (
+    tester,
+  ) async {
+    await _pump(tester, ['access.*']);
+    await tester.tap(find.text('Portaria'));
+    await tester.pumpAndSettle();
+    expect(find.text('Sem registos de acesso'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('gate_device')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Torniquete 1 · Portaria principal').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('gate_uid')), 'NAO-EXISTE');
+    await tester.tap(find.text('Simular leitura'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('gate_result')), findsOneWidget);
+    expect(find.textContaining('Cartão desconhecido'), findsWidgets);
+    expect(find.text('Sem registos de acesso'), findsNothing);
+    expect(find.byKey(const Key('gate_logs')), findsOneWidget);
   });
 }

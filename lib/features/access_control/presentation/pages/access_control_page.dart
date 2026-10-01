@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/theme/app_tokens.dart';
 import '../widgets/devices_tab.dart';
+import '../widgets/gate_tab.dart';
 import '../widgets/rules_tab.dart';
 import '../widgets/simulator_tab.dart';
 import '../widgets/zones_tab.dart';
@@ -12,7 +13,7 @@ class AccessControlPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DefaultTabController(
-    length: 4,
+    length: 5,
     child: Align(
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
@@ -37,6 +38,7 @@ class AccessControlPage extends StatelessWidget {
                   Tab(text: 'Regras'),
                   Tab(text: 'Dispositivos'),
                   Tab(text: 'Testar acesso'),
+                  Tab(text: 'Portaria'),
                 ],
               ),
               const Expanded(
@@ -46,6 +48,7 @@ class AccessControlPage extends StatelessWidget {
                     RulesTab(),
                     DevicesTab(),
                     SimulatorTab(),
+                    GateTab(),
                   ],
                 ),
               ),

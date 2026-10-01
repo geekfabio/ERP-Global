@@ -41,6 +41,8 @@ BadgeStatus activeBadge(bool active) =>
 
 String reasonLabel(AccessReason r) => switch (r) {
   AccessReason.granted => 'Acesso permitido',
+  AccessReason.unknownCard => 'Cartão desconhecido',
+  AccessReason.cardBlocked => 'Cartão bloqueado ou substituído',
   AccessReason.zoneInactive => 'Zona inactiva',
   AccessReason.noRule => 'Sem regra para este tipo de pessoa',
   AccessReason.outsideSchedule => 'Fora do horário permitido',
