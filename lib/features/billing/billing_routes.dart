@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'presentation/pages/billing_page.dart';
 import 'presentation/pages/cash_page.dart';
 import 'presentation/pages/debtors_page.dart';
+import 'presentation/pages/discounts_page.dart';
 import 'presentation/pages/invoices_page.dart';
 import 'presentation/pages/payments_page.dart';
 import 'presentation/pages/reports_page.dart';
@@ -22,6 +23,10 @@ List<RouteBase> billingRoutes() => [
   GoRoute(
     path: '/billing/debtors',
     builder: (context, state) => const DebtorsPage(),
+  ),
+  GoRoute(
+    path: '/billing/discounts',
+    builder: (context, state) => const DiscountsPage(),
   ),
   GoRoute(
     path: '/billing/reports',

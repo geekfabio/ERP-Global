@@ -21,6 +21,11 @@ class BillingMockHandlers implements MockApiModule {
 
   final LateFeeRules Function() _rules;
 
+  /// Desconto (menor unidade) a aplicar a uma cobrança nova; ligado ao módulo
+  /// de descontos aprovados (nulo = sem descontos).
+  int Function(String studentId, FeeType type, DateTime due, int amountMinor)?
+  discountPolicy;
+
   late Map<String, FeeItem> _items;
   late Map<String, Charge> _charges;
 
@@ -62,6 +67,28 @@ class BillingMockHandlers implements MockApiModule {
 
   /// Turma do aluno, se conhecida (filtro de devedores por turma).
   String? classroomOf(String studentId) => _classrooms[studentId];
+
+  /// Recalcula o desconto das cobranças por pagar do aluno (as já pagas ou
+  /// parcialmente pagas, as multas e as anuladas não mudam). Idempotente.
+  void reapplyDiscounts(String studentId) {
+    final policy = discountPolicy;
+    if (policy == null) return;
+    final penalties = _penalties.values.toSet();
+    for (final c in chargesOf(studentId)) {
+      final item = _items[c.feeItemId];
+      if (item == null ||
+          c.status != ChargeStatus.pending ||
+          penalties.contains(c.id)) {
+        continue;
+      }
+      final discount = policy(studentId, item.type, c.dueDate, c.amountMinor);
+      if (discount == c.discountMinor) continue;
+      _charges[c.id] = c.copyWith(
+        discountMinor: discount,
+        updatedAt: DateTime.now().toUtc(),
+      );
+    }
+  }
 
   /// Actualiza o estado de uma cobrança após alocação de pagamentos.
   void setChargeStatus(String id, ChargeStatus status) {
@@ -252,6 +279,9 @@ class BillingMockHandlers implements MockApiModule {
       feeItemId: item.id,
       dueDate: due,
       amountMinor: amount,
+      discountMinor:
+          discountPolicy?.call('${b['studentId']}', item.type, due, amount) ??
+          0,
     );
     _charges[c.id] = c;
     return c;
