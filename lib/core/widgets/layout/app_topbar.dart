@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme/app_tokens.dart';
 import '../../academic/period_context.dart';
+import '../../security/session_actions.dart';
 import '../../sync/sync_indicator.dart';
 
 /// Barra superior: pesquisa global, período, notificações e menu do utilizador.
@@ -62,18 +63,55 @@ class AppTopbar extends ConsumerWidget implements PreferredSizeWidget {
           icon: const Icon(Icons.notifications_outlined),
           onPressed: () {},
         ),
-        PopupMenuButton<String>(
-          tooltip: 'Menu do utilizador',
-          icon: const CircleAvatar(child: Icon(Icons.person_outline)),
-          itemBuilder: (_) => const [
-            PopupMenuItem(value: 'profile', child: Text('O meu perfil')),
-            PopupMenuItem(value: 'logout', child: Text('Terminar sessão')),
-          ],
-        ),
+        _UserMenu(onLogout: ref.watch(sessionLogoutProvider)),
         const SizedBox(width: AppSpacing.sm),
       ],
     );
   }
+}
+
+/// Menu do utilizador. "Terminar sessão" só existe com a sessão ligada ao
+/// `core` (`sessionLogoutProvider`) e pede confirmação antes de sair.
+class _UserMenu extends StatelessWidget {
+  const _UserMenu({required this.onLogout});
+
+  final Future<void> Function()? onLogout;
+
+  Future<void> _confirmAndLogout(BuildContext context) async {
+    final logout = onLogout;
+    if (logout == null) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Terminar sessão'),
+        content: const Text('Quer mesmo sair da sua conta?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Terminar sessão'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) await logout();
+  }
+
+  @override
+  Widget build(BuildContext context) => PopupMenuButton<String>(
+    tooltip: 'Menu do utilizador',
+    icon: const CircleAvatar(child: Icon(Icons.person_outline)),
+    onSelected: (value) {
+      if (value == 'logout') _confirmAndLogout(context);
+    },
+    itemBuilder: (_) => [
+      if (onLogout != null)
+        const PopupMenuItem(value: 'logout', child: Text('Terminar sessão')),
+    ],
+  );
 }
 
 class _PeriodMenu extends StatelessWidget {
