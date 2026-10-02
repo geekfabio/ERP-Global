@@ -27,6 +27,9 @@ const _ranges = <String, (int, int)>{
   'library.active_loans': (18, 64),
 };
 
+/// Pontos da série de tendência de cada indicador.
+const _trendPoints = 7;
+
 /// FNV-1a: valores estáveis para o mesmo widget + filtros (seed determinístico).
 int _hash(String text) {
   var h = 0x811c9dc5;
@@ -222,9 +225,16 @@ class ReportsMockHandlers implements MockApiModule {
       if (licensed != null && !licensed.contains(id.split('.').first)) {
         throw const MockApiException.moduleNotLicensed();
       }
+      final value = _value(id, yearId, termId, campusId);
       metrics.add({
         'widgetId': id,
-        'value': _value(id, yearId, termId, campusId),
+        'value': value,
+        // Últimos pontos (determinísticos), a terminar no valor actual.
+        'trend': [
+          for (var k = 0; k < _trendPoints - 1; k++)
+            _value(id, yearId, '$termId#$k', campusId),
+          value,
+        ],
         if (compareYear != null)
           'previous': _value(id, compareYear, compareTerm ?? '', campusId),
       });

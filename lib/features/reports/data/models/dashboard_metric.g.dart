@@ -11,6 +11,11 @@ _DashboardMetric _$DashboardMetricFromJson(Map<String, dynamic> json) =>
       widgetId: json['widgetId'] as String,
       value: (json['value'] as num).toInt(),
       previous: (json['previous'] as num?)?.toInt(),
+      trend:
+          (json['trend'] as List<dynamic>?)
+              ?.map((e) => (e as num).toInt())
+              .toList() ??
+          const <int>[],
     );
 
 Map<String, dynamic> _$DashboardMetricToJson(_DashboardMetric instance) =>
@@ -18,6 +23,7 @@ Map<String, dynamic> _$DashboardMetricToJson(_DashboardMetric instance) =>
       'widgetId': instance.widgetId,
       'value': instance.value,
       'previous': instance.previous,
+      'trend': instance.trend,
     };
 
 _CampusOption _$CampusOptionFromJson(Map<String, dynamic> json) =>

@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DashboardMetric {
 
- String get widgetId; int get value; int? get previous;
+ String get widgetId; int get value; int? get previous; List<int> get trend;
 /// Create a copy of DashboardMetric
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $DashboardMetricCopyWith<DashboardMetric> get copyWith => _$DashboardMetricCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DashboardMetric&&(identical(other.widgetId, widgetId) || other.widgetId == widgetId)&&(identical(other.value, value) || other.value == value)&&(identical(other.previous, previous) || other.previous == previous));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DashboardMetric&&(identical(other.widgetId, widgetId) || other.widgetId == widgetId)&&(identical(other.value, value) || other.value == value)&&(identical(other.previous, previous) || other.previous == previous)&&const DeepCollectionEquality().equals(other.trend, trend));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,widgetId,value,previous);
+int get hashCode => Object.hash(runtimeType,widgetId,value,previous,const DeepCollectionEquality().hash(trend));
 
 @override
 String toString() {
-  return 'DashboardMetric(widgetId: $widgetId, value: $value, previous: $previous)';
+  return 'DashboardMetric(widgetId: $widgetId, value: $value, previous: $previous, trend: $trend)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $DashboardMetricCopyWith<$Res>  {
   factory $DashboardMetricCopyWith(DashboardMetric value, $Res Function(DashboardMetric) _then) = _$DashboardMetricCopyWithImpl;
 @useResult
 $Res call({
- String widgetId, int value, int? previous
+ String widgetId, int value, int? previous, List<int> trend
 });
 
 
@@ -66,12 +66,13 @@ class _$DashboardMetricCopyWithImpl<$Res>
 
 /// Create a copy of DashboardMetric
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? widgetId = null,Object? value = null,Object? previous = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? widgetId = null,Object? value = null,Object? previous = freezed,Object? trend = null,}) {
   return _then(DashboardMetric(
 widgetId: null == widgetId ? _self.widgetId : widgetId // ignore: cast_nullable_to_non_nullable
 as String,value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
 as int,previous: freezed == previous ? _self.previous : previous // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,trend: null == trend ? _self.trend : trend // ignore: cast_nullable_to_non_nullable
+as List<int>,
   ));
 }
 
@@ -156,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String widgetId,  int value,  int? previous)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String widgetId,  int value,  int? previous,  List<int> trend)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DashboardMetric() when $default != null:
-return $default(_that.widgetId,_that.value,_that.previous);case _:
+return $default(_that.widgetId,_that.value,_that.previous,_that.trend);case _:
   return orElse();
 
 }
@@ -177,10 +178,10 @@ return $default(_that.widgetId,_that.value,_that.previous);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String widgetId,  int value,  int? previous)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String widgetId,  int value,  int? previous,  List<int> trend)  $default,) {final _that = this;
 switch (_that) {
 case _DashboardMetric():
-return $default(_that.widgetId,_that.value,_that.previous);case _:
+return $default(_that.widgetId,_that.value,_that.previous,_that.trend);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +198,10 @@ return $default(_that.widgetId,_that.value,_that.previous);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String widgetId,  int value,  int? previous)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String widgetId,  int value,  int? previous,  List<int> trend)?  $default,) {final _that = this;
 switch (_that) {
 case _DashboardMetric() when $default != null:
-return $default(_that.widgetId,_that.value,_that.previous);case _:
+return $default(_that.widgetId,_that.value,_that.previous,_that.trend);case _:
   return null;
 
 }
@@ -212,12 +213,19 @@ return $default(_that.widgetId,_that.value,_that.previous);case _:
 @JsonSerializable()
 
 class _DashboardMetric implements DashboardMetric {
-  const _DashboardMetric({required this.widgetId, required this.value, this.previous});
+  const _DashboardMetric({required this.widgetId, required this.value, this.previous,  List<int> trend = const <int>[]}): _trend = trend;
   factory _DashboardMetric.fromJson(Map<String, dynamic> json) => _$DashboardMetricFromJson(json);
 
 @override final  String widgetId;
 @override final  int value;
 @override final  int? previous;
+ final  List<int> _trend;
+@override@JsonKey() List<int> get trend {
+  if (_trend is EqualUnmodifiableListView) return _trend;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_trend);
+}
+
 
 /// Create a copy of DashboardMetric
 /// with the given fields replaced by the non-null parameter values.
@@ -232,16 +240,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DashboardMetric&&(identical(other.widgetId, widgetId) || other.widgetId == widgetId)&&(identical(other.value, value) || other.value == value)&&(identical(other.previous, previous) || other.previous == previous));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DashboardMetric&&(identical(other.widgetId, widgetId) || other.widgetId == widgetId)&&(identical(other.value, value) || other.value == value)&&(identical(other.previous, previous) || other.previous == previous)&&const DeepCollectionEquality().equals(other._trend, _trend));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,widgetId,value,previous);
+int get hashCode => Object.hash(runtimeType,widgetId,value,previous,const DeepCollectionEquality().hash(_trend));
 
 @override
 String toString() {
-  return 'DashboardMetric(widgetId: $widgetId, value: $value, previous: $previous)';
+  return 'DashboardMetric(widgetId: $widgetId, value: $value, previous: $previous, trend: $trend)';
 }
 
 
@@ -252,7 +260,7 @@ abstract mixin class _$DashboardMetricCopyWith<$Res> implements $DashboardMetric
   factory _$DashboardMetricCopyWith(_DashboardMetric value, $Res Function(_DashboardMetric) _then) = __$DashboardMetricCopyWithImpl;
 @override @useResult
 $Res call({
- String widgetId, int value, int? previous
+ String widgetId, int value, int? previous, List<int> trend
 });
 
 
@@ -269,12 +277,13 @@ class __$DashboardMetricCopyWithImpl<$Res>
 
 /// Create a copy of DashboardMetric
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? widgetId = null,Object? value = null,Object? previous = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? widgetId = null,Object? value = null,Object? previous = freezed,Object? trend = null,}) {
   return _then(_DashboardMetric(
 widgetId: null == widgetId ? _self.widgetId : widgetId // ignore: cast_nullable_to_non_nullable
 as String,value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
 as int,previous: freezed == previous ? _self.previous : previous // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,trend: null == trend ? _self._trend : trend // ignore: cast_nullable_to_non_nullable
+as List<int>,
   ));
 }
 

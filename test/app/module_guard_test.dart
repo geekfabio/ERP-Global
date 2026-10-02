@@ -277,6 +277,10 @@ void main() {
       );
       router.go(m.path);
       await t.pumpAndSettle();
+      // Sair do painel agenda o dispose (timer de 0 ms) dos providers que o
+      // painel observava; avançar o relógio deixa-o correr (`pump()` sem
+      // duração não avança o tempo fictício).
+      await t.pump(const Duration(milliseconds: 1));
       expect(router.state.uri.path, '/not-licensed', reason: m.code);
       expect(find.text('Módulo não licenciado'), findsOneWidget);
     }

@@ -5,12 +5,15 @@ part 'dashboard_metric.g.dart';
 
 /// Valor de um widget no período pedido (e no de comparação, se houver).
 /// Dinheiro em cêntimos; percentagens em pontos inteiros (0–100).
+/// [trend]: valores recentes (o último é [value]) para o mini-gráfico; vazio
+/// se o servidor não o enviar.
 @freezed
 abstract class DashboardMetric with _$DashboardMetric {
   const factory DashboardMetric({
     required String widgetId,
     required int value,
     int? previous,
+    @Default(<int>[]) List<int> trend,
   }) = _DashboardMetric;
 
   factory DashboardMetric.fromJson(Map<String, dynamic> json) =>

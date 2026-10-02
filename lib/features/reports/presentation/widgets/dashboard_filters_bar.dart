@@ -8,7 +8,8 @@ import '../../domain/dashboard_widget.dart';
 import '../providers/reports_providers.dart';
 
 /// Filtros globais: ano, trimestre (partilhados com o selector da topbar),
-/// campus, comparação e, para o super_admin, o perfil a visualizar.
+/// campus, comparação e, para o super_admin, o perfil a visualizar. Ano e
+/// trimestre só aparecem aqui quando a topbar os esconde (ecrã compacto).
 class DashboardFiltersBar extends ConsumerWidget {
   const DashboardFiltersBar({super.key});
 
@@ -25,34 +26,38 @@ class DashboardFiltersBar extends ConsumerWidget {
         .contains('super_admin');
     final period$ = ref.read(periodProvider.notifier);
     final filters$ = ref.read(dashboardFiltersProvider.notifier);
+    final periodInTopbar =
+        MediaQuery.sizeOf(context).width >= AppBreakpoints.medium;
     return Wrap(
       spacing: AppSpacing.md,
       runSpacing: AppSpacing.md,
       children: [
-        DropdownMenu<String>(
-          key: ValueKey('year_${period.year?.id}'),
-          label: const Text('Ano lectivo'),
-          initialSelection: period.year?.id,
-          dropdownMenuEntries: [
-            for (final y in choices.years)
-              DropdownMenuEntry(value: y.id, label: y.label),
-          ],
-          onSelected: (id) {
-            if (id != null) period$.setYear(id);
-          },
-        ),
-        DropdownMenu<String>(
-          key: ValueKey('term_${period.year?.id}_${period.term?.id}'),
-          label: const Text('Trimestre'),
-          initialSelection: period.term?.id,
-          dropdownMenuEntries: [
-            for (final t in period.year?.terms ?? const <PeriodTerm>[])
-              DropdownMenuEntry(value: t.id, label: t.label),
-          ],
-          onSelected: (id) {
-            if (id != null) period$.setTerm(id);
-          },
-        ),
+        if (!periodInTopbar) ...[
+          DropdownMenu<String>(
+            key: ValueKey('year_${period.year?.id}'),
+            label: const Text('Ano lectivo'),
+            initialSelection: period.year?.id,
+            dropdownMenuEntries: [
+              for (final y in choices.years)
+                DropdownMenuEntry(value: y.id, label: y.label),
+            ],
+            onSelected: (id) {
+              if (id != null) period$.setYear(id);
+            },
+          ),
+          DropdownMenu<String>(
+            key: ValueKey('term_${period.year?.id}_${period.term?.id}'),
+            label: const Text('Trimestre'),
+            initialSelection: period.term?.id,
+            dropdownMenuEntries: [
+              for (final t in period.year?.terms ?? const <PeriodTerm>[])
+                DropdownMenuEntry(value: t.id, label: t.label),
+            ],
+            onSelected: (id) {
+              if (id != null) period$.setTerm(id);
+            },
+          ),
+        ],
         DropdownMenu<String?>(
           key: ValueKey('campus_${filters.campusId}_${campuses.length}'),
           label: const Text('Campus'),

@@ -7,6 +7,8 @@ import 'package:erp_global/core/sync/sync_settings.dart';
 import 'package:erp_global/features/auth/data/models/auth_session.dart';
 import 'package:erp_global/features/auth/presentation/providers/auth_state.dart';
 import 'package:erp_global/features/reports/presentation/providers/reports_providers.dart';
+import 'package:erp_global/features/reports/presentation/providers/academic_overview_providers.dart';
+import 'package:erp_global/features/reports/presentation/providers/finance_overview_providers.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 
 AuthSession fakeSession({
@@ -78,6 +80,9 @@ List<Override> signedInOverrides({
   // `/dashboard` é o dashboard real: sem isto fazia pedidos mock com latência
   // real e deixava timers pendentes no fim dos testes de router.
   dashboardMetricsProvider.overrideWith((ref) async => const {}),
+  // Idem para os gráficos do painel (receita mensal e alunos por classe).
+  financeOverviewProvider.overrideWith((ref) async => null),
+  academicOverviewProvider.overrideWith((ref) async => null),
 ];
 
 /// Sem sessão (mostra `/login`).
