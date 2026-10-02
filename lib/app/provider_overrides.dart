@@ -9,6 +9,7 @@ import '../core/modules/license_gate.dart';
 import '../core/network/api_client.dart';
 import '../core/notifications/notification_service.dart';
 import '../core/security/permission_providers.dart';
+import '../core/security/session_actions.dart';
 import '../core/sync/sync_providers.dart';
 import '../features/auth/presentation/providers/auth_providers.dart';
 import '../features/auth/presentation/providers/auth_state.dart';
@@ -76,6 +77,11 @@ List<Override> buildAppOverrides() => [
   // Liga o gate de licença do core ao serviço de licenciamento.
   licenseGateProvider.overrideWith(
     (ref) => ref.watch(licenseGateFromServiceProvider),
+  ),
+  // "Terminar sessão" da topbar (core) → sessão de auth.
+  sessionLogoutProvider.overrideWith(
+    (ref) =>
+        () => ref.read(authStateProvider.notifier).logout(),
   ),
   // Contrato de notificações do core → implementação do módulo communication.
   notificationServiceProvider.overrideWith(
