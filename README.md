@@ -16,6 +16,7 @@ O projecto será desenvolvido em **Flutter** no frontend, com backend atribuído
 | [docs/05 — Orquestração de agentes](docs/05-orquestracao-agentes.md) | Como Claude Code e Codex trabalham por issues pequenas |
 | [docs/06 — Modelo de dados](docs/06-modelo-de-dados.md) | Entidades e relações |
 | [docs/07 — Mock API e login](docs/07-mock-api.md) | API simulada (Dio), contrato, seed, autenticação só-login |
+| [docs/adr-fiscal](docs/adr-fiscal.md) | ADR (proposta): numeração fiscal, SAF-T e assinatura de documentos |
 | [AGENTS.md](AGENTS.md) / [CLAUDE.md](CLAUDE.md) | Regras para agentes |
 
 ## Princípios
