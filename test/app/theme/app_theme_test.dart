@@ -8,6 +8,8 @@ import 'package:erp_global/app/theme/theme_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:erp_global/features/auth/data/repositories/session_storage.dart';
+import 'package:erp_global/features/auth/presentation/providers/auth_providers.dart';
 
 double _lum(Color c) {
   double ch(double v) =>
@@ -64,7 +66,11 @@ void main() {
   });
 
   testWidgets('trocar tema claro/escuro em runtime', (tester) async {
-    final container = ProviderContainer();
+    final container = ProviderContainer(
+      overrides: [
+        sessionStorageProvider.overrideWithValue(InMemorySessionStorage()),
+      ],
+    );
     addTearDown(container.dispose);
     await tester.pumpWidget(
       UncontrolledProviderScope(
