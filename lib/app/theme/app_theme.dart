@@ -29,16 +29,56 @@ abstract final class AppTheme {
     );
     final inputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppRadius.input),
+      borderSide: BorderSide(color: scheme.outlineVariant),
     );
+    // Superfícies em dois níveis: fundo da página ligeiramente tingido e
+    // cartões planos com contorno subtil (mais legível que sombras).
+    final light = brightness == Brightness.light;
+    final pageBackground = light
+        ? scheme.surfaceContainerLow
+        : scheme.surfaceContainerLowest;
+    final cardColor = light
+        ? scheme.surfaceContainerLowest
+        : scheme.surfaceContainer;
     return base.copyWith(
       materialTapTargetSize: MaterialTapTargetSize.padded,
-      extensions: [
-        brightness == Brightness.light ? AppColors.light : AppColors.dark,
-      ],
+      scaffoldBackgroundColor: pageBackground,
+      extensions: [light ? AppColors.light : AppColors.dark],
+      appBarTheme: AppBarTheme(
+        backgroundColor: pageBackground,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: AppElevation.none,
+      ),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: pageBackground,
+      ),
       cardTheme: CardThemeData(
-        elevation: AppElevation.low,
+        elevation: AppElevation.none,
+        color: cardColor,
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.card),
+          side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.6)),
+        ),
+      ),
+      dividerTheme: DividerThemeData(
+        color: scheme.outlineVariant.withValues(alpha: 0.6),
+        space: 1,
+      ),
+      dataTableTheme: DataTableThemeData(
+        headingTextStyle: base.textTheme.labelLarge?.copyWith(
+          color: scheme.onSurfaceVariant,
+        ),
+        dividerThickness: 1,
+      ),
+      searchBarTheme: SearchBarThemeData(
+        elevation: const WidgetStatePropertyAll(AppElevation.none),
+        backgroundColor: WidgetStatePropertyAll(cardColor),
+        side: WidgetStatePropertyAll(BorderSide(color: scheme.outlineVariant)),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.card),
+          ),
         ),
       ),
       dialogTheme: DialogThemeData(
@@ -48,6 +88,8 @@ abstract final class AppTheme {
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: cardColor,
         border: inputBorder,
         enabledBorder: inputBorder,
         focusedBorder: inputBorder.copyWith(

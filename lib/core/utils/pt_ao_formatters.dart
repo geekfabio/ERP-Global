@@ -37,4 +37,11 @@ abstract final class PtAoFormatters {
 
   static String dateTime(DateTime value) =>
       DateFormat('dd/MM/yyyy HH:mm', locale).format(value);
+
+  /// Data por extenso com maiúscula inicial: "Quinta-feira, 2 de outubro de
+  /// 2026".
+  static String longDate(DateTime value) {
+    final text = DateFormat("EEEE, d 'de' MMMM 'de' y", locale).format(value);
+    return text.isEmpty ? text : text[0].toUpperCase() + text.substring(1);
+  }
 }

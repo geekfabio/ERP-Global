@@ -4,12 +4,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_tokens.dart';
 import '../license/license_widgets.dart';
+import 'app_sidebar.dart';
 import 'app_topbar.dart';
 import 'breadcrumbs.dart';
 import 'nav_item.dart';
 
-/// Shell administrativo responsivo: sidebar (expanded), rail (medium) e
-/// drawer (compact). Breakpoints em [AppBreakpoints].
+/// Shell administrativo responsivo: sidebar a toda a altura (expanded), rail
+/// (medium) e drawer (compact). A topbar fica fixa; só o conteúdo faz scroll.
+/// Breakpoints em [AppBreakpoints].
 class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.location, required this.child});
 
@@ -26,9 +28,11 @@ class AppShell extends ConsumerWidget {
       children: [
         const LicenseBannerBar(),
         Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.sm,
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.xl,
+            AppSpacing.sm,
+            AppSpacing.xl,
+            0,
           ),
           child: Breadcrumbs(location: location, items: items),
         ),
@@ -68,7 +72,28 @@ class AppShell extends ConsumerWidget {
       );
     }
 
-    final extended = width > AppBreakpoints.expanded;
+    if (width > AppBreakpoints.expanded) {
+      return Scaffold(
+        body: Row(
+          children: [
+            AppSidebar(items: items, selectedIndex: selected, onSelected: go),
+            const VerticalDivider(width: 1),
+            Expanded(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: const AppTopbar().preferredSize.height,
+                    child: const AppTopbar(),
+                  ),
+                  Expanded(child: content),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: const AppTopbar(),
       body: Row(
@@ -80,12 +105,9 @@ class AppShell extends ConsumerWidget {
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: IntrinsicHeight(
                   child: NavigationRail(
-                    extended: extended,
                     selectedIndex: selected < 0 ? null : selected,
                     onDestinationSelected: go,
-                    labelType: extended
-                        ? NavigationRailLabelType.none
-                        : NavigationRailLabelType.all,
+                    labelType: NavigationRailLabelType.all,
                     destinations: [
                       for (final i in items)
                         NavigationRailDestination(

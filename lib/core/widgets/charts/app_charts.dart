@@ -2,12 +2,15 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/theme/app_tokens.dart';
+import '../../utils/pt_ao_formatters.dart';
 
 List<FlSpot> _spots(List<double> values) => [
   for (final (i, v) in values.indexed) FlSpot(i.toDouble(), v),
 ];
 
 /// Gráfico de linha. [labels] (opcional) rotula o eixo X; [semanticLabel] descreve-o.
+/// [referenceValues] (opcional) desenha uma série de referência no mesmo eixo
+/// (ex.: previsto vs. cobrado), tracejada e neutra para não depender só da cor.
 class AppLineChart extends StatelessWidget {
   const AppLineChart({
     super.key,
@@ -15,12 +18,14 @@ class AppLineChart extends StatelessWidget {
     required this.semanticLabel,
     this.labels,
     this.height = 200,
+    this.referenceValues,
   });
 
   final List<double> values;
   final String semanticLabel;
   final List<String>? labels;
   final double height;
+  final List<double>? referenceValues;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +39,12 @@ class AppLineChart extends StatelessWidget {
           duration: animate ? AppMotion.page : Duration.zero,
           curve: AppMotion.curve,
           LineChartData(
+            // Área preenchida: a escala começa em zero para não exagerar a
+            // variação (só sobe abaixo de zero se houver valores negativos).
+            minY: [
+              ...values,
+              ...?referenceValues,
+            ].fold<double>(0, (lo, v) => v < lo ? v : lo),
             gridData: FlGridData(
               drawVerticalLine: false,
               getDrawingHorizontalLine: (_) =>
@@ -42,6 +53,15 @@ class AppLineChart extends StatelessWidget {
             borderData: FlBorderData(show: false),
             titlesData: _titles(context, labels),
             lineBarsData: [
+              if (referenceValues case final reference?)
+                LineChartBarData(
+                  spots: _spots(reference),
+                  isCurved: true,
+                  color: scheme.onSurfaceVariant,
+                  barWidth: 2,
+                  dashArray: const [6, 4],
+                  dotData: const FlDotData(show: false),
+                ),
               LineChartBarData(
                 spots: _spots(values),
                 isCurved: true,
@@ -66,6 +86,25 @@ FlTitlesData _titles(BuildContext context, List<String>? labels) {
   return FlTitlesData(
     topTitles: const AxisTitles(),
     rightTitles: const AxisTitles(),
+    // Valores do eixo em pt-AO; o máximo "solto" (fora do intervalo regular)
+    // é omitido para não se sobrepor à marca anterior.
+    leftTitles: AxisTitles(
+      sideTitles: SideTitles(
+        showTitles: true,
+        reservedSize: 40,
+        getTitlesWidget: (v, meta) {
+          final offGrid = v == meta.max && v % meta.appliedInterval != 0;
+          if (offGrid) return const SizedBox.shrink();
+          return SideTitleWidget(
+            meta: meta,
+            child: Text(
+              PtAoFormatters.number(v, decimalDigits: v % 1 == 0 ? 0 : 1),
+              style: style,
+            ),
+          );
+        },
+      ),
+    ),
     bottomTitles: AxisTitles(
       sideTitles: SideTitles(
         showTitles: labels != null,

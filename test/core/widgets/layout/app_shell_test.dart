@@ -1,4 +1,5 @@
 import 'package:erp_global/core/widgets/layout/app_shell.dart';
+import 'package:erp_global/core/widgets/layout/app_sidebar.dart';
 import 'package:erp_global/core/widgets/layout/nav_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,11 +40,33 @@ Future<void> _pumpAt(WidgetTester tester, Size size) async {
 }
 
 void main() {
-  testWidgets('expanded mostra rail estendida', (tester) async {
+  testWidgets('expanded mostra a sidebar e navega', (tester) async {
     await _pumpAt(tester, const Size(1280, 800));
-    final rail = tester.widget<NavigationRail>(find.byType(NavigationRail));
-    expect(rail.extended, isTrue);
+    expect(find.byType(AppSidebar), findsOneWidget);
+    expect(find.byType(NavigationRail), findsNothing);
     expect(find.byType(NavigationDrawer), findsNothing);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(AppSidebar),
+        matching: find.text('Painel'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('painel'), findsOneWidget);
+  });
+
+  testWidgets('sidebar marca o item da rota actual como seleccionado', (
+    tester,
+  ) async {
+    await _pumpAt(tester, const Size(1280, 800));
+    final alunos = find.descendant(
+      of: find.byType(AppSidebar),
+      matching: find.text('Alunos'),
+    );
+    expect(
+      tester.getSemantics(alunos),
+      isSemantics(isSelected: true, isButton: true),
+    );
   });
 
   testWidgets('medium mostra rail compacta', (tester) async {

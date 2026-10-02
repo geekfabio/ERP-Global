@@ -72,7 +72,12 @@ void main() {
     final box = tester.widget<DecoratedBox>(
       find.byKey(const Key('status_badge_box')),
     );
-    expect((box.decoration as BoxDecoration).color, AppColors.light.success);
+    expect(
+      (box.decoration as BoxDecoration).color,
+      AppColors.light.success.withValues(alpha: 0.12),
+    );
+    final label = tester.widget<Text>(find.text('Pago'));
+    expect(label.style?.color, AppColors.light.success);
   });
 
   test('AppAvatar.initialsOf', () {

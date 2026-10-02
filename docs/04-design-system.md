@@ -29,6 +29,25 @@ Base: **Material 3** com `ColorScheme.fromSeed` + extensões de tema (`ThemeExte
 
 Botões (primário, secundário, texto, perigo, ícone), inputs (texto, password, número/moeda, data, select pesquisável, telefone, upload), cards (KPI, lista, entidade), **DataTable** (ordenação, filtros, paginação, selecção, exportação, colunas configuráveis), formulários em passos (stepper/wizard), modais/bottom-sheets, toasts/snackbars, badges de estado, avatar, tabs, breadcrumbs, empty/loading/error states, skeletons, gráficos (linha, barra, donut, sparkline), timeline, calendário/agenda, sidebar + topbar responsiva (rail em tablet, drawer em mobile), pesquisa global, ecrã "módulo não licenciado".
 
+### Componentes de página (reutilizar antes de criar novos)
+
+| Componente | Ficheiro | Uso |
+|---|---|---|
+| `PageHeader` | `layout/page_header.dart` | Título, subtítulo, linha de data e acções (passam para baixo em ecrã estreito) |
+| `PageAction`, `PageActionButton`, `OverflowActionsMenu` | `layout/page_actions.dart` | Acções de página: principal cheia, restantes com contorno, secundárias em "⋯" |
+| `FilterPanel` | `layout/filter_panel.dart` | Pesquisa + filtros de listagens; recolhe em "Filtros (n)" no mobile |
+| `FilterSelect<T>` | `inputs/filter_select.dart` | Selector com "Todos", ícone e tooltip quando desactivado |
+| `ResponsiveGrid` | `layout/responsive_grid.dart` | Grelha por espaço disponível, cartões da mesma linha com a mesma altura |
+| `ContentSection` | `layout/content_section.dart` | Bloco com título (cabeçalho acessível) |
+| `KpiCard` | `cards/kpi_card.dart` | Indicador: cor do módulo, tendência, progresso, variação (`higherIsBetter`) |
+| `ChartCard`, `ChartLegendKey` | `charts/chart_card.dart` | Moldura de gráfico com legenda (linha sólida/tracejada, não só cor) |
+| `AppPaginator` | `table/app_paginator.dart` | "A mostrar 1–20 de N", itens por página, páginas numeradas |
+| `PersonLabel` | `person_label.dart` | Avatar (foto/iniciais) + nome em tabelas e listas |
+| `StatusBadge` | `status_badge.dart` | Selo tonal com ponto e texto |
+| `AppSidebar` | `layout/app_sidebar.dart` | Navegação em ecrãs largos (> 1024 px) |
+
+As páginas só compõem: estado e regras na página/providers, apresentação nos componentes da feature (`features/<modulo>/presentation/widgets/`), que por sua vez usam estes.
+
 Bibliotecas sólidas recomendadas: `fl_chart` (gráficos), `data_table_2` ou `pluto_grid` (tabelas), `flutter_animate`, `skeletonizer`, `responsive_framework`/`flutter_adaptive_scaffold`, `pdf` + `printing`, `intl`, `flutter_form_builder` (ou formulários próprios com validação central).
 
 ## Animações

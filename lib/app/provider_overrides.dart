@@ -11,6 +11,7 @@ import '../core/notifications/notification_service.dart';
 import '../core/security/permission_providers.dart';
 import '../core/security/session_actions.dart';
 import '../core/sync/sync_providers.dart';
+import '../features/auth/presentation/providers/active_role.dart';
 import '../features/auth/presentation/providers/auth_providers.dart';
 import '../features/auth/presentation/providers/auth_state.dart';
 import '../features/billing/presentation/providers/billing_providers.dart';
@@ -78,6 +79,18 @@ List<Override> buildAppOverrides() => [
   licenseGateProvider.overrideWith(
     (ref) => ref.watch(licenseGateFromServiceProvider),
   ),
+  // Nome e perfil activo mostrados na topbar e no painel (core) → auth.
+  sessionUserProvider.overrideWith((ref) {
+    final session = ref.watch(currentSessionProvider);
+    if (session == null) return null;
+    final role =
+        ref.watch(activeRoleProvider) ??
+        (session.roles.isEmpty ? null : session.roles.first);
+    return SessionUser(
+      name: session.user.name,
+      roleLabel: role == null ? null : roleLabels[role] ?? role,
+    );
+  }),
   // "Terminar sessão" da topbar (core) → sessão de auth.
   sessionLogoutProvider.overrideWith(
     (ref) =>
