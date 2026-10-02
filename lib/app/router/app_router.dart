@@ -11,6 +11,7 @@ import '../../core/widgets/layout/app_shell.dart';
 import '../../core/widgets/license/license_widgets.dart';
 import '../../core/widgets/states/app_states.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
+import 'dashboard_home.dart';
 import 'module_routes.dart';
 import '../../features/auth/presentation/providers/active_role.dart';
 import '../../features/auth/presentation/providers/auth_state.dart';
@@ -131,7 +132,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             path: '/dashboard',
-            builder: (context, state) => const Center(child: Text('Painel')),
+            builder: (context, state) => const DashboardHome(),
           ),
           GoRoute(
             path: '/not-licensed',

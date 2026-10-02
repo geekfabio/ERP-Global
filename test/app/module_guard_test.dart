@@ -44,6 +44,9 @@ Future<(GoRouter, ProviderContainer)> _boot(
   );
   if (settle) {
     await tester.pumpAndSettle();
+    // `/dashboard` é o dashboard real: deixa terminar a latência (simulada)
+    // dos pedidos mock, senão ficam timers pendentes no fim do teste.
+    await tester.pump(const Duration(seconds: 2));
   } else {
     // /splash tem um spinner infinito: não "assenta".
     await tester.pump(const Duration(milliseconds: 200));
