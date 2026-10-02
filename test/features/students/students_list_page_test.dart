@@ -107,11 +107,33 @@ Future<void> _select(WidgetTester tester, String key, String option) async {
 
 StudentQuery _q(ProviderContainer c) => c.read(studentListQueryProvider);
 
+/// Resumo do paginador ("A mostrar 1–20 de 60 alunos").
+Finder _total(int n) => find.textContaining('de $n alunos');
+
+/// Botão da página actual (destacado) no paginador.
+Finder _currentPage(int n) => find.widgetWithText(FilledButton, '$n');
+
+Future<void> _tapVisible(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
+  await tester.pumpAndSettle();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
 class _FlakyRepo implements StudentRepository {
+  /// Pedidos da página (o resumo pede contagens com `pageSize: 1`).
   int calls = 0;
 
   @override
   Future<Result<PagedList<StudentModel>>> list(StudentQuery query) async {
+    if (query.pageSize == 1) {
+      return Ok(
+        PagedList(
+          items: const [],
+          meta: const PageMeta(page: 1, pageSize: 1, total: 0),
+        ),
+      );
+    }
     calls++;
     return calls == 1
         ? Err(NetworkFailure())
@@ -200,8 +222,9 @@ void main() {
     testWidgets('mostra a primeira página, estados e total', (tester) async {
       await _pump(tester);
       expect(find.text('Alunos'), findsOneWidget);
-      expect(find.text('60 alunos'), findsOneWidget);
-      expect(find.text('1 / 3'), findsOneWidget);
+      expect(find.text('A mostrar 1–20 de 60 alunos'), findsOneWidget);
+      expect(_currentPage(1), findsOneWidget);
+      expect(find.widgetWithText(TextButton, '3'), findsOneWidget);
       expect(find.text('Processo'), findsOneWidget);
       expect(find.textContaining('2026/'), findsWidgets);
     });
@@ -224,7 +247,7 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(find.text('Título do registo'), findsWidgets); // skeleton
       await tester.pumpAndSettle();
-      expect(find.text('60 alunos'), findsOneWidget);
+      expect(_total(60), findsOneWidget);
     });
 
     testWidgets('pesquisa com debounce filtra no servidor', (tester) async {
@@ -239,7 +262,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 350));
       await tester.pumpAndSettle();
       expect(_q(c).q, first.processNumber);
-      expect(find.text('1 alunos'), findsOneWidget);
+      expect(_total(1), findsOneWidget);
       expect(find.text(first.fullName), findsOneWidget);
     });
 
@@ -296,7 +319,7 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'Limpar filtros'));
       await tester.pumpAndSettle();
       expect(_q(c).q, isNull);
-      expect(find.text('60 alunos'), findsOneWidget);
+      expect(_total(60), findsOneWidget);
     });
 
     testWidgets('ordenar ao tocar no cabeçalho e paginar', (tester) async {
@@ -304,13 +327,15 @@ void main() {
       await tester.tap(find.text('Nome'));
       await tester.pumpAndSettle();
       expect(_q(c).sort, ['-fullName']);
-      await tester.tap(find.byTooltip('Página seguinte'));
-      await tester.pumpAndSettle();
+      await _tapVisible(tester, find.byTooltip('Página seguinte'));
       expect(_q(c).page, 2);
-      expect(find.text('2 / 3'), findsOneWidget);
-      await tester.tap(find.byTooltip('Página anterior'));
-      await tester.pumpAndSettle();
+      expect(_currentPage(2), findsOneWidget);
+      expect(find.text('A mostrar 21–40 de 60 alunos'), findsOneWidget);
+      await _tapVisible(tester, find.byTooltip('Página anterior'));
       expect(_q(c).page, 1);
+      // Ir directamente para uma página pelo número.
+      await _tapVisible(tester, find.widgetWithText(TextButton, '3'));
+      expect(_q(c).page, 3);
     });
 
     testWidgets('abrir a ficha ao tocar na linha', (tester) async {
@@ -325,6 +350,18 @@ void main() {
       await _pump(tester, size: const Size(400, 900));
       expect(find.byType(DataTable), findsNothing);
       expect(find.byType(Card), findsWidgets);
+    });
+
+    testWidgets('em compact os filtros recolhem e mostram quantos há', (
+      tester,
+    ) async {
+      final c = await _pump(tester, size: const Size(400, 1400));
+      expect(find.byKey(const Key('filter_status')), findsNothing);
+      await tester.tap(find.byKey(const Key('toggle_filters')));
+      await tester.pumpAndSettle();
+      await _select(tester, 'filter_status', 'Inactivo');
+      expect(_q(c).status, StudentStatus.inactive);
+      expect(find.text('Filtros (1)'), findsOneWidget);
     });
 
     testWidgets('exportar entrega a página visível e as colunas permitidas', (
@@ -406,8 +443,7 @@ void main() {
         tester,
         overrides: _overrides(permissions: ['students.record.read']),
       );
-      await tester.tap(find.byTooltip('Acções').first);
-      await tester.pumpAndSettle();
+      await _tapVisible(tester, find.byTooltip('Acções').first);
       expect(find.text('Ver ficha'), findsOneWidget);
       expect(find.text('Remover'), findsNothing);
     });
@@ -420,8 +456,7 @@ void main() {
         overrides: _overrides(permissions: ['students.*']),
       );
       final first = (await c.read(studentListProvider.future)).items.first;
-      await tester.tap(find.byTooltip('Acções').first);
-      await tester.pumpAndSettle();
+      await _tapVisible(tester, find.byTooltip('Acções').first);
       await tester.tap(find.text('Remover'));
       await tester.pumpAndSettle();
       expect(find.textContaining(first.fullName), findsWidgets);
@@ -429,16 +464,15 @@ void main() {
       // Cancelar não remove.
       await tester.tap(find.text('Cancelar'));
       await tester.pumpAndSettle();
-      expect(find.text('60 alunos'), findsOneWidget);
+      expect(_total(60), findsOneWidget);
 
-      await tester.tap(find.byTooltip('Acções').first);
-      await tester.pumpAndSettle();
+      await _tapVisible(tester, find.byTooltip('Acções').first);
       await tester.tap(find.text('Remover'));
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(FilledButton, 'Remover'));
       await tester.pumpAndSettle();
       expect(find.text('Aluno removido'), findsOneWidget);
-      expect(find.text('59 alunos'), findsOneWidget);
+      expect(_total(59), findsOneWidget);
       expect(find.text(first.fullName), findsNothing);
     });
   });

@@ -8,13 +8,12 @@ import '../../../../core/security/permission_providers.dart';
 import '../../../../core/widgets/app_avatar.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/states/app_states.dart';
-import '../../../../core/widgets/status_badge.dart';
 import '../../data/models/student_model.dart';
 import '../pdf/student_pdf_templates.dart';
 import '../providers/student_file_providers.dart';
 import '../providers/student_pdf_providers.dart';
+import '../widgets/student_display.dart';
 import '../widgets/student_file/student_file_tab.dart';
-import 'students_list_page.dart';
 
 /// Ficha do aluno: cabeçalho (foto, nome, estado, n.º de processo) e separadores
 /// registados em [studentFileTabsProvider]. Cada separador só aparece com a
@@ -157,10 +156,7 @@ class _Header extends ConsumerWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Text('Processo n.º ${student.processNumber}'),
-                    StatusBadge(
-                      label: studentStatusLabel(student.status),
-                      status: studentStatusBadge(student.status),
-                    ),
+                    StudentStatusBadge(student.status),
                   ],
                 ),
               ],

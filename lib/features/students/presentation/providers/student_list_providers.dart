@@ -104,3 +104,67 @@ final studentListProvider = FutureProvider.autoDispose<PagedList<StudentModel>>(
   // "Tentar novamente" (o utilizador decide quando repetir).
   retry: (_, _) => null,
 );
+
+/// Resumo da listagem com os filtros em vigor: total, divisão por género e
+/// alunos activos.
+class StudentListStats {
+  const StudentListStats({
+    required this.total,
+    required this.male,
+    required this.female,
+    required this.active,
+  });
+
+  final int total;
+  final int male;
+  final int female;
+  final int active;
+}
+
+/// Contagens via `meta.total` (pedidos de 1 item, em paralelo): funciona com
+/// qualquer implementação do repository. Respeita os filtros (um filtro de
+/// género/estado incompatível dá 0 sem pedido) e ignora página e ordenação.
+final studentListStatsProvider = FutureProvider.autoDispose<StudentListStats>((
+  ref,
+) async {
+  final f = ref.watch(
+    studentListQueryProvider.select(
+      (q) => (
+        q: q.q,
+        status: q.status,
+        gender: q.gender,
+        gradeId: q.gradeId,
+        classroomId: q.classroomId,
+      ),
+    ),
+  );
+  final repo = ref.watch(studentRepositoryProvider);
+  Future<int> count({Gender? gender, StudentStatus? status}) async {
+    if (f.gender != null && gender != null && f.gender != gender) return 0;
+    if (f.status != null && status != null && f.status != status) return 0;
+    final result = await repo.list(
+      StudentQuery(
+        pageSize: 1,
+        q: f.q,
+        status: status ?? f.status,
+        gender: gender ?? f.gender,
+        gradeId: f.gradeId,
+        classroomId: f.classroomId,
+      ),
+    );
+    return result.getOrThrow().meta.total;
+  }
+
+  final [total, male, female, active] = await Future.wait([
+    count(),
+    count(gender: Gender.male),
+    count(gender: Gender.female),
+    count(status: StudentStatus.active),
+  ]);
+  return StudentListStats(
+    total: total,
+    male: male,
+    female: female,
+    active: active,
+  );
+}, retry: (_, _) => null);

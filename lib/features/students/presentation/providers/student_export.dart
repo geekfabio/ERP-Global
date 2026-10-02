@@ -2,7 +2,7 @@ import '../../../../core/export/export_contract.dart';
 import '../../../../core/utils/pt_ao_formatters.dart';
 import '../../data/models/student_enums.dart';
 import '../../data/models/student_model.dart';
-import '../pages/students_list_page.dart';
+import '../widgets/student_display.dart';
 
 /// Permissão que dá acesso ao botão e ao serviço de exportação de alunos.
 const studentsExportPermission = 'students.record.export';
