@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +9,7 @@ import '../../../../core/widgets/feedback/toasts.dart';
 import '../../../academic/presentation/providers/academic_structure_providers.dart';
 import '../../../academic/presentation/providers/assignment_providers.dart';
 import '../../../settings/presentation/providers/academic_providers.dart';
-import '../../../settings/presentation/providers/settings_providers.dart';
+import '../../../settings/presentation/providers/pdf_letterhead_provider.dart';
 import '../../../students/presentation/providers/student_file_providers.dart';
 import '../../../students/presentation/providers/student_pdf_providers.dart';
 import '../../data/models/assessment_scheme_model.dart';
@@ -174,32 +173,7 @@ class ReportCardActions {
   }
 
   Future<PdfLetterhead> letterhead() async {
-    try {
-      final i = await _ref.read(institutionProvider.future);
-      if (i == null) return const PdfLetterhead(institutionName: 'Instituição');
-      return PdfLetterhead(
-        institutionName: i.name,
-        nif: i.nif,
-        address: i.address,
-        phone: i.phone,
-        email: i.email,
-        brandColor: i.brandColor,
-        logo: _decodeLogo(i.logoUrl),
-      );
-    } on Object {
-      return const PdfLetterhead(institutionName: 'Instituição');
-    }
-  }
-
-  static Uint8List? _decodeLogo(String? url) {
-    if (url == null) return null;
-    final comma = url.indexOf(',');
-    if (!url.startsWith('data:image/') || comma < 0) return null;
-    try {
-      return base64Decode(url.substring(comma + 1));
-    } on FormatException {
-      return null;
-    }
+    return _ref.read(institutionPdfLetterheadProvider).load();
   }
 }
 

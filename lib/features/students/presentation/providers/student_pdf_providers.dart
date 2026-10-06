@@ -6,7 +6,7 @@ import '../../../../core/pdf/pdf_file_saver.dart';
 import '../../../../core/pdf/pdf_template.dart';
 import '../../../../core/pdf/pdf_template_engine.dart';
 import '../../../../core/widgets/feedback/toasts.dart';
-import '../../../settings/presentation/providers/settings_providers.dart';
+import '../../../settings/presentation/providers/pdf_letterhead_provider.dart';
 import '../../data/models/enrollment_model.dart';
 import '../../data/models/student_enums.dart';
 import '../../data/models/student_model.dart';
@@ -62,41 +62,24 @@ class StudentPdfService {
     final guardians = await _ref.read(
       studentGuardiansProvider(student.id).future,
     );
-    final institution = await _loadInstitution();
+    final institution = await _ref
+        .read(institutionPdfLetterheadProvider)
+        .load();
     final data = StudentPdfData(
       student: student,
       enrollment: enrollment,
       guardians: guardians,
-      institutionName: institution?.institutionName ?? 'Instituição',
+      institutionName: institution.institutionName,
     );
     final template = kind.template(data);
     final bytes = await _ref
         .read(pdfTemplateEngineProvider)
         .render(
-          letterhead:
-              institution ??
-              const PdfLetterhead(institutionName: 'Instituição'),
+          letterhead: institution,
           template: template,
           generatedAt: DateTime.now(),
         );
     return (data, bytes, template);
-  }
-
-  Future<PdfLetterhead?> _loadInstitution() async {
-    try {
-      final i = await _ref.read(institutionProvider.future);
-      if (i == null) return null;
-      return PdfLetterhead(
-        institutionName: i.name,
-        nif: i.nif,
-        address: i.address,
-        phone: i.phone,
-        email: i.email,
-        brandColor: i.brandColor,
-      );
-    } on Object {
-      return null; // sem acesso às definições: cabeçalho genérico
-    }
   }
 
   Future<void> export(StudentModel student, StudentPdfKind kind) async {

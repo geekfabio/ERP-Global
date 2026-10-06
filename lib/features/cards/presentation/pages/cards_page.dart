@@ -280,6 +280,12 @@ class _CardsTableState extends ConsumerState<_CardsTable> {
       selectable: false,
       emptyText: 'Sem cartões',
       rowActions: [
+        if (p('cards.card.read'))
+          RowAction(
+            label: 'Imprimir PDF',
+            icon: Icons.picture_as_pdf_outlined,
+            onTap: (c) => ref.read(schoolCardPdfServiceProvider).export(c),
+          ),
         if (p('cards.card.block'))
           RowAction(
             label: 'Bloquear',

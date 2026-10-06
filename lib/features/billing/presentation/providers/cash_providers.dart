@@ -2,11 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/api_client.dart';
 import '../../../../core/pdf/pdf_file_saver.dart';
-import '../../../../core/pdf/pdf_template.dart';
 import '../../../../core/pdf/pdf_template_engine.dart';
 import '../../../../core/widgets/feedback/toasts.dart';
 import '../../../auth/presentation/providers/auth_state.dart';
-import '../../../settings/presentation/providers/settings_providers.dart';
+import '../../../settings/presentation/providers/pdf_letterhead_provider.dart';
 import '../../data/mock_api/cash_mock_handlers.dart';
 import '../../data/models/cash_register.dart';
 import '../../data/models/cash_session.dart';
@@ -75,25 +74,6 @@ class CashReportPdfService {
 
   final Ref _ref;
 
-  Future<PdfLetterhead> _letterhead() async {
-    try {
-      final i = await _ref.read(institutionProvider.future);
-      if (i != null) {
-        return PdfLetterhead(
-          institutionName: i.name,
-          nif: i.nif,
-          address: i.address,
-          phone: i.phone,
-          email: i.email,
-          brandColor: i.brandColor,
-        );
-      }
-    } on Object {
-      // sem acesso às definições: cabeçalho genérico
-    }
-    return const PdfLetterhead(institutionName: 'Instituição');
-  }
-
   Future<void> exportClosing(CashSession session) async {
     final toast = _ref.read(toastProvider.notifier);
     try {
@@ -112,7 +92,9 @@ class CashReportPdfService {
       final bytes = await _ref
           .read(cashPdfEngineProvider)
           .render(
-            letterhead: await _letterhead(),
+            letterhead: await _ref
+                .read(institutionPdfLetterheadProvider)
+                .load(),
             template: template,
             generatedAt: DateTime.now(),
           );
