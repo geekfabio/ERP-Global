@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/utils/pt_ao_formatters.dart';
+import '../../../../core/widgets/app_avatar.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/feedback/app_dialogs.dart';
 import '../../../../core/widgets/feedback/toasts.dart';
@@ -228,37 +229,125 @@ class _Contact extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(g.fullName, style: text.headlineSmall),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text('Telefone: ${g.phone}'),
-                  if (g.email != null) Text('E-mail: ${g.email}'),
-                  if (g.idNumber != null) Text('BI: ${g.idNumber}'),
-                  if (g.nif != null) Text('NIF: ${g.nif}'),
-                  if (g.address != null) Text('Morada: ${g.address}'),
-                  if (g.profession != null) Text('Profissão: ${g.profession}'),
-                ],
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppAvatar(name: g.fullName, radius: 32),
+                const SizedBox(width: AppSpacing.lg),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(g.fullName, style: text.headlineSmall),
+                      const SizedBox(height: AppSpacing.xs),
+                      Wrap(
+                        spacing: AppSpacing.sm,
+                        runSpacing: AppSpacing.xs,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text('Encarregado de educação'),
+                          if (g.userId != null)
+                            const StatusBadge(
+                              label: 'Portal activo',
+                              status: BadgeStatus.success,
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Can(
+                  permission: 'students.record.update',
+                  child: AppIconButton(
+                    icon: Icons.edit_outlined,
+                    tooltip: 'Editar encarregado',
+                    onPressed: onEdit,
+                  ),
+                ),
+              ],
             ),
-            Can(
-              permission: 'students.record.update',
-              child: AppIconButton(
-                icon: Icons.edit_outlined,
-                tooltip: 'Editar encarregado',
-                onPressed: onEdit,
-              ),
+            const Divider(height: AppSpacing.xxl),
+            Wrap(
+              spacing: AppSpacing.xl,
+              runSpacing: AppSpacing.md,
+              children: [
+                _ContactValue(
+                  icon: Icons.phone_outlined,
+                  label: 'Telefone',
+                  value: g.phone,
+                ),
+                if (g.email != null)
+                  _ContactValue(
+                    icon: Icons.mail_outline,
+                    label: 'E-mail',
+                    value: g.email!,
+                  ),
+                if (g.idNumber != null)
+                  _ContactValue(
+                    icon: Icons.badge_outlined,
+                    label: 'BI',
+                    value: g.idNumber!,
+                  ),
+                if (g.nif != null)
+                  _ContactValue(
+                    icon: Icons.receipt_long_outlined,
+                    label: 'NIF',
+                    value: g.nif!,
+                  ),
+                if (g.address != null)
+                  _ContactValue(
+                    icon: Icons.location_on_outlined,
+                    label: 'Morada',
+                    value: g.address!,
+                  ),
+                if (g.profession != null)
+                  _ContactValue(
+                    icon: Icons.work_outline,
+                    label: 'Profissão',
+                    value: g.profession!,
+                  ),
+              ],
             ),
           ],
         ),
       ),
     );
   }
+}
+
+class _ContactValue extends StatelessWidget {
+  const _ContactValue({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 220,
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: Theme.of(context).textTheme.labelMedium),
+              Text(value),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _PupilCard extends StatelessWidget {
@@ -282,6 +371,8 @@ class _PupilCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            AppAvatar(name: s.fullName),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
