@@ -586,7 +586,9 @@ mixin _$ContractModel {
  String get id; String get employeeId; ContractType get type;/// `AAAA-MM-DD`.
  String get startDate;/// `AAAA-MM-DD`; obrigatório nos contratos que não são efectivos.
  String? get endDate;/// Salário base mensal em cêntimos.
- int get baseSalary;
+ int get baseSalary;/// Documento do contrato, opcional. O ficheiro é enviado para o storage
+/// pelo backend; a app guarda o nome e a referência devolvida pela API.
+ String? get documentName; String? get documentUrl;
 /// Create a copy of ContractModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -599,16 +601,16 @@ $ContractModelCopyWith<ContractModel> get copyWith => _$ContractModelCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ContractModel&&(identical(other.id, id) || other.id == id)&&(identical(other.employeeId, employeeId) || other.employeeId == employeeId)&&(identical(other.type, type) || other.type == type)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.baseSalary, baseSalary) || other.baseSalary == baseSalary));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ContractModel&&(identical(other.id, id) || other.id == id)&&(identical(other.employeeId, employeeId) || other.employeeId == employeeId)&&(identical(other.type, type) || other.type == type)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.baseSalary, baseSalary) || other.baseSalary == baseSalary)&&(identical(other.documentName, documentName) || other.documentName == documentName)&&(identical(other.documentUrl, documentUrl) || other.documentUrl == documentUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,employeeId,type,startDate,endDate,baseSalary);
+int get hashCode => Object.hash(runtimeType,id,employeeId,type,startDate,endDate,baseSalary,documentName,documentUrl);
 
 @override
 String toString() {
-  return 'ContractModel(id: $id, employeeId: $employeeId, type: $type, startDate: $startDate, endDate: $endDate, baseSalary: $baseSalary)';
+  return 'ContractModel(id: $id, employeeId: $employeeId, type: $type, startDate: $startDate, endDate: $endDate, baseSalary: $baseSalary, documentName: $documentName, documentUrl: $documentUrl)';
 }
 
 
@@ -619,7 +621,7 @@ abstract mixin class $ContractModelCopyWith<$Res>  {
   factory $ContractModelCopyWith(ContractModel value, $Res Function(ContractModel) _then) = _$ContractModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String employeeId, ContractType type, String startDate, String? endDate, int baseSalary
+ String id, String employeeId, ContractType type, String startDate, String? endDate, int baseSalary, String? documentName, String? documentUrl
 });
 
 
@@ -636,7 +638,7 @@ class _$ContractModelCopyWithImpl<$Res>
 
 /// Create a copy of ContractModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? employeeId = null,Object? type = null,Object? startDate = null,Object? endDate = freezed,Object? baseSalary = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? employeeId = null,Object? type = null,Object? startDate = null,Object? endDate = freezed,Object? baseSalary = null,Object? documentName = freezed,Object? documentUrl = freezed,}) {
   return _then(ContractModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,employeeId: null == employeeId ? _self.employeeId : employeeId // ignore: cast_nullable_to_non_nullable
@@ -644,7 +646,9 @@ as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non
 as ContractType,startDate: null == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as String,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
 as String?,baseSalary: null == baseSalary ? _self.baseSalary : baseSalary // ignore: cast_nullable_to_non_nullable
-as int,
+as int,documentName: freezed == documentName ? _self.documentName : documentName // ignore: cast_nullable_to_non_nullable
+as String?,documentUrl: freezed == documentUrl ? _self.documentUrl : documentUrl // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -729,10 +733,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String employeeId,  ContractType type,  String startDate,  String? endDate,  int baseSalary)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String employeeId,  ContractType type,  String startDate,  String? endDate,  int baseSalary,  String? documentName,  String? documentUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ContractModel() when $default != null:
-return $default(_that.id,_that.employeeId,_that.type,_that.startDate,_that.endDate,_that.baseSalary);case _:
+return $default(_that.id,_that.employeeId,_that.type,_that.startDate,_that.endDate,_that.baseSalary,_that.documentName,_that.documentUrl);case _:
   return orElse();
 
 }
@@ -750,10 +754,10 @@ return $default(_that.id,_that.employeeId,_that.type,_that.startDate,_that.endDa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String employeeId,  ContractType type,  String startDate,  String? endDate,  int baseSalary)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String employeeId,  ContractType type,  String startDate,  String? endDate,  int baseSalary,  String? documentName,  String? documentUrl)  $default,) {final _that = this;
 switch (_that) {
 case _ContractModel():
-return $default(_that.id,_that.employeeId,_that.type,_that.startDate,_that.endDate,_that.baseSalary);case _:
+return $default(_that.id,_that.employeeId,_that.type,_that.startDate,_that.endDate,_that.baseSalary,_that.documentName,_that.documentUrl);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -770,10 +774,10 @@ return $default(_that.id,_that.employeeId,_that.type,_that.startDate,_that.endDa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String employeeId,  ContractType type,  String startDate,  String? endDate,  int baseSalary)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String employeeId,  ContractType type,  String startDate,  String? endDate,  int baseSalary,  String? documentName,  String? documentUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _ContractModel() when $default != null:
-return $default(_that.id,_that.employeeId,_that.type,_that.startDate,_that.endDate,_that.baseSalary);case _:
+return $default(_that.id,_that.employeeId,_that.type,_that.startDate,_that.endDate,_that.baseSalary,_that.documentName,_that.documentUrl);case _:
   return null;
 
 }
@@ -785,7 +789,7 @@ return $default(_that.id,_that.employeeId,_that.type,_that.startDate,_that.endDa
 @JsonSerializable()
 
 class _ContractModel implements ContractModel {
-  const _ContractModel({required this.id, required this.employeeId, this.type = ContractType.permanent, required this.startDate, this.endDate, required this.baseSalary});
+  const _ContractModel({required this.id, required this.employeeId, this.type = ContractType.permanent, required this.startDate, this.endDate, required this.baseSalary, this.documentName, this.documentUrl});
   factory _ContractModel.fromJson(Map<String, dynamic> json) => _$ContractModelFromJson(json);
 
 @override final  String id;
@@ -797,6 +801,10 @@ class _ContractModel implements ContractModel {
 @override final  String? endDate;
 /// Salário base mensal em cêntimos.
 @override final  int baseSalary;
+/// Documento do contrato, opcional. O ficheiro é enviado para o storage
+/// pelo backend; a app guarda o nome e a referência devolvida pela API.
+@override final  String? documentName;
+@override final  String? documentUrl;
 
 /// Create a copy of ContractModel
 /// with the given fields replaced by the non-null parameter values.
@@ -811,16 +819,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ContractModel&&(identical(other.id, id) || other.id == id)&&(identical(other.employeeId, employeeId) || other.employeeId == employeeId)&&(identical(other.type, type) || other.type == type)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.baseSalary, baseSalary) || other.baseSalary == baseSalary));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ContractModel&&(identical(other.id, id) || other.id == id)&&(identical(other.employeeId, employeeId) || other.employeeId == employeeId)&&(identical(other.type, type) || other.type == type)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.baseSalary, baseSalary) || other.baseSalary == baseSalary)&&(identical(other.documentName, documentName) || other.documentName == documentName)&&(identical(other.documentUrl, documentUrl) || other.documentUrl == documentUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,employeeId,type,startDate,endDate,baseSalary);
+int get hashCode => Object.hash(runtimeType,id,employeeId,type,startDate,endDate,baseSalary,documentName,documentUrl);
 
 @override
 String toString() {
-  return 'ContractModel(id: $id, employeeId: $employeeId, type: $type, startDate: $startDate, endDate: $endDate, baseSalary: $baseSalary)';
+  return 'ContractModel(id: $id, employeeId: $employeeId, type: $type, startDate: $startDate, endDate: $endDate, baseSalary: $baseSalary, documentName: $documentName, documentUrl: $documentUrl)';
 }
 
 
@@ -831,7 +839,7 @@ abstract mixin class _$ContractModelCopyWith<$Res> implements $ContractModelCopy
   factory _$ContractModelCopyWith(_ContractModel value, $Res Function(_ContractModel) _then) = __$ContractModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String employeeId, ContractType type, String startDate, String? endDate, int baseSalary
+ String id, String employeeId, ContractType type, String startDate, String? endDate, int baseSalary, String? documentName, String? documentUrl
 });
 
 
@@ -848,7 +856,7 @@ class __$ContractModelCopyWithImpl<$Res>
 
 /// Create a copy of ContractModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? employeeId = null,Object? type = null,Object? startDate = null,Object? endDate = freezed,Object? baseSalary = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? employeeId = null,Object? type = null,Object? startDate = null,Object? endDate = freezed,Object? baseSalary = null,Object? documentName = freezed,Object? documentUrl = freezed,}) {
   return _then(_ContractModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,employeeId: null == employeeId ? _self.employeeId : employeeId // ignore: cast_nullable_to_non_nullable
@@ -856,7 +864,9 @@ as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non
 as ContractType,startDate: null == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as String,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
 as String?,baseSalary: null == baseSalary ? _self.baseSalary : baseSalary // ignore: cast_nullable_to_non_nullable
-as int,
+as int,documentName: freezed == documentName ? _self.documentName : documentName // ignore: cast_nullable_to_non_nullable
+as String?,documentUrl: freezed == documentUrl ? _self.documentUrl : documentUrl // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

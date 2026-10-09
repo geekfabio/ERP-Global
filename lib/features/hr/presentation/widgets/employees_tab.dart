@@ -285,7 +285,8 @@ class EmployeeSheet extends ConsumerWidget {
                             Text(
                               '${c.type.label} · ${c.startDate} → '
                               '${c.endDate ?? 'sem termo'} · '
-                              '${PtAoFormatters.currency(c.baseSalary)}',
+                              '${PtAoFormatters.currency(c.baseSalary)}'
+                              '${c.documentName == null ? '' : ' · ${c.documentName}'}',
                             ),
                         ],
                       ),

@@ -270,6 +270,12 @@ class HrMockHandlers implements MockApiModule {
   ContractModel _buildContract(Map<String, dynamic> raw) {
     final body = _trim(raw);
     if (body['endDate'] == '') body['endDate'] = null;
+    if (body['documentName'] == '') body['documentName'] = null;
+    // O adaptador mock simula a referência devolvida pelo storage. A UI fala
+    // sempre com a API/repository, nunca com uma lista local de documentos.
+    body['documentUrl'] = body['documentName'] == null
+        ? null
+        : 'mock://contracts/${body['documentName']}';
     final start = parseIsoDate(body['startDate'] as String?);
     final end = parseIsoDate(body['endDate'] as String?);
     final salary = body['baseSalary'];

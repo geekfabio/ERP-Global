@@ -66,6 +66,8 @@ _ContractModel _$ContractModelFromJson(Map<String, dynamic> json) =>
       startDate: json['startDate'] as String,
       endDate: json['endDate'] as String?,
       baseSalary: (json['baseSalary'] as num).toInt(),
+      documentName: json['documentName'] as String?,
+      documentUrl: json['documentUrl'] as String?,
     );
 
 Map<String, dynamic> _$ContractModelToJson(_ContractModel instance) =>
@@ -76,6 +78,8 @@ Map<String, dynamic> _$ContractModelToJson(_ContractModel instance) =>
       'startDate': instance.startDate,
       'endDate': instance.endDate,
       'baseSalary': instance.baseSalary,
+      'documentName': instance.documentName,
+      'documentUrl': instance.documentUrl,
     };
 
 const _$ContractTypeEnumMap = {

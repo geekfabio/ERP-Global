@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:file_picker/file_picker.dart';
 
 import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/errors/result.dart';
 import '../../../../core/widgets/feedback/toasts.dart';
 import '../../../../core/widgets/inputs/app_inputs.dart';
 
-enum FieldKind { text, code, integer, choice, multi, toggle }
+enum FieldKind { text, code, integer, choice, multi, toggle, file }
 
 /// Campo de um formulário simples em diálogo.
 class AcademicField {
@@ -24,8 +25,8 @@ class AcademicField {
   final String label;
   final FieldKind kind;
 
-  /// `text`/`code`/`integer`/`choice`: texto; `multi`: ids (`List<String>`);
-  /// `toggle`: `bool`.
+  /// `text`/`code`/`integer`/`choice`/`file`: texto; `multi`: ids
+  /// (`List<String>`); `toggle`: `bool`.
   final Object? initial;
 
   /// Para `choice`/`multi`: valor → rótulo.
@@ -165,6 +166,26 @@ class _FormDialogState extends State<_FormDialog> {
       title: Text(f.label),
       value: _state[f.key]! as bool,
       onChanged: (v) => setState(() => _state[f.key] = v),
+    ),
+    FieldKind.file => TextFormField(
+      key: Key('field_${f.key}'),
+      controller: _controllers[f.key],
+      readOnly: true,
+      validator: _required(f),
+      decoration: InputDecoration(
+        labelText: f.label,
+        suffixIcon: IconButton(
+          tooltip: 'Escolher ficheiro',
+          icon: const Icon(Icons.attach_file),
+          onPressed: () async {
+            final files = await FilePicker.pickFiles();
+            final name = files.firstOrNull?.name;
+            if (name != null && mounted) {
+              setState(() => _controllers[f.key]!.text = name);
+            }
+          },
+        ),
+      ),
     ),
   };
 

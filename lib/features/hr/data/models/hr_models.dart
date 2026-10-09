@@ -90,6 +90,11 @@ abstract class ContractModel with _$ContractModel {
 
     /// Salário base mensal em cêntimos.
     required int baseSalary,
+
+    /// Documento do contrato, opcional. O ficheiro é enviado para o storage
+    /// pelo backend; a app guarda o nome e a referência devolvida pela API.
+    String? documentName,
+    String? documentUrl,
   }) = _ContractModel;
 
   factory ContractModel.fromJson(Map<String, dynamic> json) =>

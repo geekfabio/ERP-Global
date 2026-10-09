@@ -59,6 +59,11 @@ class ContractsTab extends ConsumerWidget {
           sortValue: (c) => c.baseSalary,
           numeric: true,
         ),
+        AppColumn(
+          label: 'Documento',
+          text: (c) => c.documentName ?? '—',
+          sortValue: (c) => c.documentName ?? '',
+        ),
       ],
       fieldsFor: (c) => [
         AcademicField(
@@ -92,6 +97,13 @@ class ContractsTab extends ConsumerWidget {
           kind: FieldKind.integer,
           initial: c == null ? null : '${c.baseSalary ~/ 100}',
         ),
+        AcademicField(
+          'documentName',
+          'Documento do contrato (opcional)',
+          kind: FieldKind.file,
+          initial: c?.documentName,
+          required: false,
+        ),
       ],
       fromValues: (c, v) => ContractModel(
         id: c?.id ?? '',
@@ -102,6 +114,10 @@ class ContractsTab extends ConsumerWidget {
             ? null
             : v['endDate']! as String,
         baseSalary: ((v['baseSalary'] as int?) ?? 0) * 100,
+        documentName: (v['documentName'] as String?)?.isEmpty ?? true
+            ? null
+            : v['documentName']! as String,
+        documentUrl: c?.documentUrl,
       ),
     );
   }

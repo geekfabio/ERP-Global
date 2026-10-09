@@ -97,7 +97,11 @@ void main() {
         await contracts.create(draft.copyWith(startDate: 'ontem')),
         'VALIDATION_ERROR',
       );
-      final ok = (await contracts.create(draft)).getOrThrow();
+      final ok = (await contracts.create(
+        draft.copyWith(documentName: 'contrato-assinado.pdf'),
+      )).getOrThrow();
+      expect(ok.documentName, 'contrato-assinado.pdf');
+      expect(ok.documentUrl, 'mock://contracts/contrato-assinado.pdf');
       expectCode(await contracts.create(draft), 'CONFLICT');
 
       final after = (await employees.list(
