@@ -223,12 +223,12 @@ class _BrandPanel extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                colors.surface.withValues(alpha: 0.96),
-                colors.surface.withValues(alpha: 0.86),
-                colors.surface.withValues(alpha: 0.12),
-                colors.primary.withValues(alpha: 0.18),
+                colors.inverseSurface.withValues(alpha: 0.94),
+                colors.inverseSurface.withValues(alpha: 0.88),
+                colors.inverseSurface.withValues(alpha: 0.80),
+                colors.primary.withValues(alpha: 0.82),
               ],
-              stops: const [0, 0.42, 0.72, 1],
+              stops: const [0, 0.36, 0.7, 1],
             ),
           ),
         ),
@@ -237,7 +237,7 @@ class _BrandPanel extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _BrandMark(),
+              const _BrandMark(inverse: true),
               const Spacer(),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 600),
@@ -246,14 +246,14 @@ class _BrandPanel extends StatelessWidget {
                     text: 'Simplificando\n',
                     style: text.displayMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: colors.onSurface,
+                      color: colors.onInverseSurface,
                       height: 1.05,
                     ),
                     children: [
                       TextSpan(
                         text: 'a gestão escolar.',
                         style: text.displayMedium?.copyWith(
-                          color: colors.primary,
+                          color: colors.primaryContainer,
                           fontWeight: FontWeight.w800,
                           height: 1.05,
                         ),
@@ -266,12 +266,12 @@ class _BrandPanel extends StatelessWidget {
               Text(
                 'Uma plataforma completa para alunos, turmas, avaliações, financeiro, refeitório, biblioteca e muito mais.',
                 style: text.titleMedium?.copyWith(
-                  color: colors.onSurfaceVariant,
+                  color: colors.onInverseSurface.withValues(alpha: 0.88),
                   height: 1.45,
                 ),
               ),
               const SizedBox(height: AppSpacing.xxl),
-              const _FeatureGrid(),
+              const _FeatureGrid(inverse: true),
             ],
           ),
         ),
@@ -281,12 +281,18 @@ class _BrandPanel extends StatelessWidget {
 }
 
 class _BrandMark extends StatelessWidget {
-  const _BrandMark();
+  const _BrandMark({this.inverse = false});
+
+  final bool inverse;
 
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     final colors = Theme.of(context).colorScheme;
+    final foreground = inverse ? colors.onInverseSurface : colors.onSurface;
+    final supporting = inverse
+        ? colors.onInverseSurface.withValues(alpha: 0.84)
+        : colors.onSurfaceVariant;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -297,11 +303,14 @@ class _BrandMark extends StatelessWidget {
           children: [
             Text(
               'ERP-Global',
-              style: text.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+              style: text.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: foreground,
+              ),
             ),
             Text(
               'Gestão Escolar Completa',
-              style: text.bodyLarge?.copyWith(color: colors.onSurfaceVariant),
+              style: text.bodyLarge?.copyWith(color: supporting),
             ),
           ],
         ),
@@ -311,7 +320,9 @@ class _BrandMark extends StatelessWidget {
 }
 
 class _FeatureGrid extends StatelessWidget {
-  const _FeatureGrid();
+  const _FeatureGrid({this.inverse = false});
+
+  final bool inverse;
 
   static const _items = [
     (Icons.groups_rounded, 'Alunos e Turmas', 'Matrículas e gestão'),
@@ -337,12 +348,17 @@ class _FeatureGrid extends StatelessWidget {
               children: [
                 DecoratedBox(
                   decoration: BoxDecoration(
-                    color: colors.primaryContainer.withValues(alpha: 0.8),
+                    color: inverse
+                        ? colors.onInverseSurface.withValues(alpha: 0.16)
+                        : colors.primaryContainer.withValues(alpha: 0.8),
                     borderRadius: BorderRadius.circular(AppRadius.card),
                   ),
                   child: SizedBox.square(
                     dimension: 54,
-                    child: Icon(item.$1, color: colors.primary),
+                    child: Icon(
+                      item.$1,
+                      color: inverse ? colors.onInverseSurface : colors.primary,
+                    ),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.md),
@@ -354,12 +370,15 @@ class _FeatureGrid extends StatelessWidget {
                         item.$2,
                         style: text.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
+                          color: inverse ? colors.onInverseSurface : null,
                         ),
                       ),
                       Text(
                         item.$3,
                         style: text.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
+                          color: inverse
+                              ? colors.onInverseSurface.withValues(alpha: 0.84)
+                              : colors.onSurfaceVariant,
                         ),
                       ),
                     ],
