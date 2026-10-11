@@ -64,4 +64,16 @@ class ApiCouncilRepository implements CouncilRepository {
       CouncilModel.fromJson,
     ),
   );
+
+  @override
+  Future<Result<CouncilModel>> unlock(String classroomId, String yearId) =>
+      Result.guard(
+        () async => ApiEnvelope.object(
+          await _client.dio.post<dynamic>(
+            '$_path/unlock',
+            data: {'classroomId': classroomId, 'yearId': yearId},
+          ),
+          CouncilModel.fromJson,
+        ),
+      );
 }

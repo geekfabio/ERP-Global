@@ -224,11 +224,76 @@ class _PautaBodyState extends ConsumerState<_PautaBody> {
     );
   }
 
+  Future<void> _confirmLock(PautaData pauta) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        key: const Key('pauta_lock_warning'),
+        icon: const Icon(Icons.lock_outline),
+        title: const Text('Bloquear pauta final?'),
+        content: const SizedBox(
+          width: 460,
+          child: Text(
+            'Esta acção congela os resultados finais da turma. Depois de '
+            'bloqueada, a pauta deixa de aceitar decisões do conselho e só '
+            'um administrador pode desbloqueá-la para uma correcção '
+            'excepcional.',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton.icon(
+            key: const Key('pauta_lock_confirm'),
+            onPressed: () => Navigator.of(context).pop(true),
+            icon: const Icon(Icons.lock),
+            label: const Text('Bloquear pauta'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    await _run(
+      () => ref.read(pautaActionsProvider).approve(_key, pauta.results),
+      'Pauta bloqueada.',
+    );
+  }
+
+  Future<void> _unlock() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Desbloquear pauta?'),
+        content: const Text(
+          'A pauta voltará a aceitar decisões e alterações autorizadas.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Desbloquear'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    await _run(
+      () => ref.read(pautaActionsProvider).unlock(_key),
+      'Pauta desbloqueada.',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(pautaDataProvider(widget.classroom.id));
     final permissions = ref.watch(permissionServiceProvider);
     final canApprove = permissions.canAny(gradeEntryApprovePermission);
+    final canUnlock = permissions.canAny(pautaUnlockPermission);
     return data.when(
       skipLoadingOnReload: true,
       loading: () => const SkeletonCard(),
@@ -283,23 +348,28 @@ class _PautaBodyState extends ConsumerState<_PautaBody> {
                 if (pauta.approved)
                   const Chip(
                     key: Key('pauta_approved'),
-                    avatar: Icon(Icons.verified_outlined, size: 18),
-                    label: Text('Aprovada pelo conselho de turma'),
+                    avatar: Icon(Icons.lock_outline, size: 18),
+                    label: Text('Pauta bloqueada pelo conselho de turma'),
                   )
                 else if (index == null && canApprove)
                   AppButton(
                     key: const Key('pauta_approve'),
-                    label: 'Aprovar pauta',
-                    icon: Icons.verified_outlined,
+                    label: 'Bloquear pauta',
+                    icon: Icons.lock_outline,
+                    variant: AppButtonVariant.danger,
                     loading: _busy,
                     onPressed: pauta.pendingCount > 0
                         ? null
-                        : () => _run(
-                            () => ref
-                                .read(pautaActionsProvider)
-                                .approve(_key, pauta.results),
-                            'Pauta aprovada.',
-                          ),
+                        : () => _confirmLock(pauta),
+                  ),
+                if (pauta.approved && canUnlock)
+                  AppButton(
+                    key: const Key('pauta_unlock'),
+                    label: 'Desbloquear pauta',
+                    icon: Icons.lock_open_outlined,
+                    variant: AppButtonVariant.secondary,
+                    loading: _busy,
+                    onPressed: _unlock,
                   ),
               ],
             ),

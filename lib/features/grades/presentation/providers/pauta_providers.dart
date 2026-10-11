@@ -182,6 +182,14 @@ class PautaActions {
     return out;
   }
 
+  Future<Result<CouncilModel>> unlock(CouncilKey key) async {
+    final out = await _ref
+        .read(councilRepositoryProvider)
+        .unlock(key.classroomId, key.yearId);
+    if (out is Ok) _refresh(key);
+    return out;
+  }
+
   void _refresh(CouncilKey key) {
     _ref
       ..invalidate(councilProvider(key))

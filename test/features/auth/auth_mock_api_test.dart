@@ -47,6 +47,18 @@ void main() {
     );
     expect(seed.first.user.email, _admin);
     expect(seed.first.password, 'Admin@12345');
+    expect(
+      seed.firstWhere((a) => a.profile == AuthProfile.student).user.name,
+      contains('Mateus Manuel'),
+    );
+    final coordinator = seed.firstWhere(
+      (a) => a.profile == AuthProfile.coordination,
+    );
+    expect(coordinator.user.name, contains('Coordenadora de Turmas'));
+    expect(
+      coordinator.permissions,
+      containsAll(['grades.entry.approve', 'attendance.record.write']),
+    );
   });
 
   test('login do super_admin devolve sessão com permissão total', () async {

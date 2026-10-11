@@ -24,7 +24,8 @@ class CouncilMockHandlers implements MockApiModule {
       ..onReset(reset)
       ..get('/v1/class-councils', _get)
       ..put('/v1/class-councils/decisions', _decide)
-      ..post('/v1/class-councils/approve', _approve);
+      ..post('/v1/class-councils/approve', _approve)
+      ..post('/v1/class-councils/unlock', _unlock);
   }
 
   bool _can(String permission) =>
@@ -42,6 +43,10 @@ class CouncilMockHandlers implements MockApiModule {
     if (!_can(gradeEntryApprovePermission)) {
       throw const MockApiException.forbidden();
     }
+  }
+
+  void _requireAdmin() {
+    if (!_can('*')) throw const MockApiException.forbidden();
   }
 
   static (String, String) _key(Map<String, dynamic> m) {
@@ -126,6 +131,22 @@ class CouncilMockHandlers implements MockApiModule {
       for (final e in raw.entries) e.key: _result(e.value, 'results'),
     };
     final next = current.copyWith(approvedAt: _now().toUtc(), results: results);
+    _rows['$classroom|$year'] = next;
+    return MockResponse.ok(next.toJson());
+  }
+
+  MockResponse _unlock(MockRequest q) {
+    _requireAdmin();
+    final body = q.jsonBody;
+    final (classroom, year) = _key(body);
+    final current = _current(classroom, year);
+    if (!current.approved) {
+      throw const MockApiException.conflict('A pauta jÃ¡ se encontra aberta');
+    }
+    final next = current.copyWith(
+      approvedAt: null,
+      results: const <String, FinalResult>{},
+    );
     _rows['$classroom|$year'] = next;
     return MockResponse.ok(next.toJson());
   }

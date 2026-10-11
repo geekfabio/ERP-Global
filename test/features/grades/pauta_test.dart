@@ -224,6 +224,47 @@ void main() {
       );
     });
 
+    test('só administrador desbloqueia uma pauta bloqueada', () async {
+      var permissions = const ['grades.entry.approve'];
+      final registry = MockApiRegistry()
+        ..addModule(
+          GradesMockHandlers(
+            permissions: () => PermissionService.fromCodes(permissions),
+            now: () => DateTime.utc(2026, 11, 1),
+          ),
+        );
+      ApiCouncilRepository repository() => ApiCouncilRepository(
+        ApiClient.create(
+          baseUrl: 'https://api.test',
+          useMockApi: true,
+          registry: registry,
+          mockConfig: const MockApiConfig.instant(),
+          logging: false,
+        ),
+      );
+
+      await repository().approve('c', 'y', {'a1': FinalResult.approved});
+      expect(
+        (await repository().unlock('c', 'y')).failureOrNull?.code,
+        'FORBIDDEN',
+      );
+
+      permissions = const ['*'];
+      final unlocked = (await repository().unlock('c', 'y')).getOrThrow();
+      expect(unlocked.approved, isFalse);
+      expect(unlocked.results, isEmpty);
+      expect(
+        (await repository().decide(
+          'c',
+          'y',
+          studentId: 'a1',
+          result: FinalResult.approved,
+          justification: 'Correcção autorizada',
+        )).isOk,
+        isTrue,
+      );
+    });
+
     test('resultado pendente ou pauta vazia dão 422', () async {
       final repo = _repo(['grades.entry.approve']);
       expect(

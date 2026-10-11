@@ -4,6 +4,9 @@ import '../data/models/council_models.dart';
 /// Exportação da pauta (PDF/Excel) pelo serviço de exportação.
 const pautaExportPermission = 'grades.pauta.export';
 
+/// Apenas o super administrador (`*`) pode reabrir uma pauta bloqueada.
+const pautaUnlockPermission = '*';
+
 /// Decidir e aprovar exigem `grades.entry.approve`; a leitura aceita
 /// `read`/`write`/`approve`. Erros: 422 (`justification`, `results`),
 /// 409 (pauta já aprovada), 403.
@@ -24,4 +27,7 @@ abstract interface class CouncilRepository {
     String yearId,
     Map<String, FinalResult> results,
   );
+
+  /// Desbloqueia uma pauta para correcções excepcionais de administração.
+  Future<Result<CouncilModel>> unlock(String classroomId, String yearId);
 }

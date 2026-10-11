@@ -156,6 +156,25 @@ String mockIdentifierFor(AuthProfile profile) =>
     ? 'admin@erp-global.local'
     : '${authProfileCodes[profile]}@erp-global.local';
 
+/// Pessoas de demonstração para tornar claros os perfis no login e na
+/// apresentação. Todas, excepto o administrador, usam [mockDevPassword].
+const _demoNames = <AuthProfile, String>{
+  AuthProfile.superAdmin: 'Super Administrador',
+  AuthProfile.management: 'Carlos Manuel — Direcção',
+  AuthProfile.coordination: 'Carla Domingos — Coordenadora de Turmas',
+  AuthProfile.academicOffice: 'Sofia Tavares — Secretaria',
+  AuthProfile.teacher: 'Helena Costa — Professora',
+  AuthProfile.homeroomTeacher: 'Paulo António — Director de Turma',
+  AuthProfile.finance: 'Lurdes Miguel — Financeiro',
+  AuthProfile.accountant: 'António Silva — Contabilista',
+  AuthProfile.humanResources: 'Marta Gomes — Recursos Humanos',
+  AuthProfile.cafeteria: 'Joaquim Pedro — Refeitório',
+  AuthProfile.security: 'David João — Segurança',
+  AuthProfile.librarian: 'Fátima Lemos — Biblioteca',
+  AuthProfile.guardian: 'Ana Manuel — Encarregada de Educação',
+  AuthProfile.student: 'Mateus Manuel — Aluno',
+};
+
 /// Seed determinístico: 1 super_admin + 13 perfis (docs/07-mock-api.md).
 List<MockAccount> buildAuthSeed() {
   final at = DateTime.utc(2026, 1, 1);
@@ -163,6 +182,9 @@ List<MockAccount> buildAuthSeed() {
     for (final (i, profile) in AuthProfile.values.indexed)
       MockAccount(
         profile: profile,
+        roles: profile == AuthProfile.coordination
+            ? const ['coordenacao', 'professor', 'diretor_turma']
+            : null,
         password: profile == AuthProfile.superAdmin
             ? mockSuperAdminPassword
             : mockDevPassword,
@@ -171,9 +193,7 @@ List<MockAccount> buildAuthSeed() {
           institutionId: mockInstitutionId,
           createdAt: at,
           updatedAt: at,
-          name: profile == AuthProfile.superAdmin
-              ? 'Super Administrador'
-              : 'Utilizador ${authProfileCodes[profile]}',
+          name: _demoNames[profile]!,
           email: mockIdentifierFor(profile),
         ),
       ),

@@ -78,6 +78,13 @@ Endpoints:
 | `super_admin` | `admin@erp-global.local` | `Admin@12345` |
 | restantes 13 perfis | `<perfil>@erp-global.local` | `Dev@12345` |
 
+Para a demonstração: `aluno@erp-global.local` é Mateus Manuel,
+`encarregado@erp-global.local` é Ana Manuel, `professor@erp-global.local` é
+Helena Costa e `coordenacao@erp-global.local` é Carla Domingos. Esta última
+acumula os perfis de coordenadora, professora e directora de turma, podendo
+registar notas/presenças e bloquear pautas. O desbloqueio de uma pauta é
+exclusivo de `admin@erp-global.local`.
+
 Estas credenciais existem **apenas** em `auth_mock_data.dart` e só carregam com `useMockApi = true`. Builds de produção não incluem o adaptador mock nem o seed (excluir por `kReleaseMode`/flavor).
 
 ### super_admin
