@@ -176,7 +176,9 @@ void main() {
     expect(find.text('1. Ana Silva'), findsOneWidget);
   });
 
-  testWidgets('registo do dia só para o director de turma', (tester) async {
+  testWidgets('modo diário fica indisponível sem ser director de turma', (
+    tester,
+  ) async {
     await _pump(
       tester,
       const AttendanceSheetTab(
@@ -186,8 +188,7 @@ void main() {
     );
     await tester.tap(find.text('Por dia'));
     await tester.pumpAndSettle();
-    expect(find.text('Só o director de turma regista o dia'), findsOneWidget);
-    expect(find.text('Guardar presenças'), findsNothing);
+    expect(find.text('Escolha a aula'), findsOneWidget);
   });
 
   testWidgets('alertas: limite configurável e lista de alunos', (tester) async {

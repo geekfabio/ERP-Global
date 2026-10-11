@@ -167,10 +167,11 @@ final _optionsProvider = FutureProvider.autoDispose
       final mine = await ref.watch(myClassroomsProvider.future);
       return [
         for (final m in mine)
-          (
-            classroom: m.classroom,
-            canDaily: m.isHomeroom,
-            canLesson: m.assignments.isNotEmpty,
-          ),
+          if (m.isHomeroom || m.assignments.isNotEmpty)
+            (
+              classroom: m.classroom,
+              canDaily: m.isHomeroom,
+              canLesson: m.assignments.isNotEmpty,
+            ),
       ];
     }, retry: (_, _) => null);

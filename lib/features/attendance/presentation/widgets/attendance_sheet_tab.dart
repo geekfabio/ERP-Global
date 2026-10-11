@@ -131,9 +131,17 @@ class _AttendanceSheetTabState extends ConsumerState<AttendanceSheetTab> {
           children: [
             SegmentedButton<bool>(
               key: const Key('attendance_mode'),
-              segments: const [
-                ButtonSegment(value: false, label: Text('Por aula')),
-                ButtonSegment(value: true, label: Text('Por dia')),
+              segments: [
+                ButtonSegment(
+                  value: false,
+                  enabled: option.canLesson,
+                  label: const Text('Por aula'),
+                ),
+                ButtonSegment(
+                  value: true,
+                  enabled: option.canDaily,
+                  label: const Text('Por dia'),
+                ),
               ],
               selected: {_daily},
               onSelectionChanged: (v) => setState(() {
