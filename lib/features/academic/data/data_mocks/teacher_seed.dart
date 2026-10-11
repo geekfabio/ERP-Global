@@ -14,6 +14,14 @@ const _specialties = [
   'Licenciatura em Línguas Estrangeiras',
 ];
 
+/// Os três primeiros docentes ligam os perfis de demonstração às atribuições
+/// académicas reais. Os restantes continuam a ser gerados deterministicamente.
+const _demoTeachers = <({String fullName, String email})>[
+  (fullName: 'Carla Domingos', email: 'coordenacao@erp-global.local'),
+  (fullName: 'Helena Costa', email: 'professor@erp-global.local'),
+  (fullName: 'Paulo António', email: 'diretor_turma@erp-global.local'),
+];
+
 /// ~60 professores determinísticos, com disciplinas e turmas distribuídas.
 List<TeacherModel> buildTeacherSeed({
   AcademicSeed? academic,
@@ -25,13 +33,15 @@ List<TeacherModel> buildTeacherSeed({
   final gen = SeedGenerator(4201);
   final teachers = <TeacherModel>[];
   for (var i = 0; i < count; i++) {
-    final name = gen.fullName();
+    final generatedName = gen.fullName();
+    final generatedEmail = gen.email(generatedName);
+    final demo = i < _demoTeachers.length ? _demoTeachers[i] : null;
     teachers.add(
       TeacherModel(
         id: '01JPROF${(i + 1).toString().padLeft(4, '0')}'.padRight(26, '0'),
         employeeNumber: 'F${(i + 1).toString().padLeft(4, '0')}',
-        fullName: name,
-        email: gen.email(name),
+        fullName: demo?.fullName ?? generatedName,
+        email: demo?.email ?? generatedEmail,
         phone: gen.phone(),
         specialty: _specialties[i % _specialties.length],
         subjectIds: [

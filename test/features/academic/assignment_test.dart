@@ -8,6 +8,10 @@ import 'package:erp_global/core/widgets/feedback/toasts.dart';
 import 'package:erp_global/features/academic/data/mock_api/academic_structure_mock_handlers.dart';
 import 'package:erp_global/features/academic/data/mock_api/assignment_mock_handlers.dart';
 import 'package:erp_global/features/academic/data/mock_api/teacher_mock_handlers.dart';
+import 'package:erp_global/features/academic/data/data_mocks/academic_seed.dart';
+import 'package:erp_global/features/academic/data/data_mocks/assignment_seed.dart';
+import 'package:erp_global/features/academic/data/data_mocks/classroom_seed.dart';
+import 'package:erp_global/features/academic/data/data_mocks/teacher_seed.dart';
 import 'package:erp_global/features/academic/data/models/assignment_models.dart';
 import 'package:erp_global/features/academic/data/models/classroom_models.dart';
 import 'package:erp_global/features/academic/data/repositories/api_academic_repositories.dart';
@@ -66,6 +70,47 @@ ApiClient _client() => ApiClient.create(
 
 void main() {
   setUpAll(PtAoFormatters.initialize);
+
+  test(
+    'docentes de demonstração têm e-mails e atribuições ligadas aos perfis',
+    () {
+      final academic = buildAcademicSeed();
+      final classrooms = buildClassroomSeed(academic);
+      final teachers = buildTeacherSeed(
+        academic: academic,
+        classrooms: classrooms,
+      );
+      final seed = buildAssignmentSeed(
+        academic: academic,
+        classrooms: classrooms,
+        teachers: teachers,
+      );
+      final coordinator = teachers.firstWhere(
+        (teacher) => teacher.email == 'coordenacao@erp-global.local',
+      );
+
+      for (final email in [
+        'coordenacao@erp-global.local',
+        'professor@erp-global.local',
+        'diretor_turma@erp-global.local',
+      ]) {
+        final teacher = teachers.firstWhere(
+          (teacher) => teacher.email == email,
+        );
+        expect(
+          seed.assignments.any(
+            (assignment) => assignment.teacherId == teacher.id,
+          ),
+          isTrue,
+          reason: email,
+        );
+      }
+      expect(
+        seed.homerooms.any((homeroom) => homeroom.teacherId == coordinator.id),
+        isTrue,
+      );
+    },
+  );
 
   group('validateAssignment', () {
     test('aceita titular válido', () {
