@@ -27,13 +27,51 @@ class AppAvatar extends StatelessWidget {
     final url = imageUrl;
     return Semantics(
       label: name,
-      child: ExcludeSemantics(
-        child: CircleAvatar(
+      child: ExcludeSemantics(child: _image(context, url)),
+    );
+  }
+
+  Widget _image(BuildContext context, String? url) {
+    final fallback = CircleAvatar(
+      radius: radius,
+      child: Text(initialsOf(name), style: TextStyle(fontSize: radius * 0.8)),
+    );
+    if (url == null || url.isEmpty) return fallback;
+    final cacheWidth = (radius * 2 * MediaQuery.devicePixelRatioOf(context))
+        .ceil();
+
+    if (url.startsWith('data:')) {
+      try {
+        final bytes = UriData.parse(url).contentAsBytes();
+        return CircleAvatar(
           radius: radius,
-          backgroundImage: url == null ? null : NetworkImage(url),
-          child: url == null
-              ? Text(initialsOf(name), style: TextStyle(fontSize: radius * 0.8))
-              : null,
+          child: ClipOval(
+            child: Image.memory(
+              bytes,
+              width: radius * 2,
+              height: radius * 2,
+              fit: BoxFit.cover,
+              cacheWidth: cacheWidth,
+              filterQuality: FilterQuality.low,
+              errorBuilder: (_, _, _) => fallback,
+            ),
+          ),
+        );
+      } on FormatException {
+        return fallback;
+      }
+    }
+    return CircleAvatar(
+      radius: radius,
+      child: ClipOval(
+        child: Image.network(
+          url,
+          width: radius * 2,
+          height: radius * 2,
+          fit: BoxFit.cover,
+          cacheWidth: cacheWidth,
+          filterQuality: FilterQuality.low,
+          errorBuilder: (_, _, _) => fallback,
         ),
       ),
     );

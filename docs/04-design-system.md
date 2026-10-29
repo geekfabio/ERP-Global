@@ -27,7 +27,7 @@ Base: **Material 3** com `ColorScheme.fromSeed` + extensões de tema (`ThemeExte
 
 ## Biblioteca de componentes (`core/widgets/`)
 
-Botões (primário, secundário, texto, perigo, ícone), inputs (texto, password, número/moeda, data, select pesquisável, telefone, upload), cards (KPI, lista, entidade), **DataTable** (ordenação, filtros, paginação, selecção, exportação, colunas configuráveis), formulários em passos (stepper/wizard), modais/bottom-sheets, toasts/snackbars, badges de estado, avatar, tabs, breadcrumbs, empty/loading/error states, skeletons, gráficos (linha, barra, donut, sparkline), timeline, calendário/agenda, sidebar + topbar responsiva (rail em tablet, drawer em mobile), pesquisa global, ecrã "módulo não licenciado".
+Botões (primário, secundário, texto, perigo, ícone), inputs (texto, password, número/moeda, data, select pesquisável, telefone, upload), cards (KPI, lista, entidade), **DataTable** (ordenação, filtros, paginação, selecção, exportação, colunas configuráveis), formulários em passos (stepper/wizard), modais/bottom-sheets, toasts/snackbars, badges de estado, avatar, tabs, breadcrumbs, empty/loading/error states, skeletons, gráficos (linha, barra, donut, sparkline), timeline, calendário/agenda, sidebar + topbar responsiva (acordeão em desktop/tablet, drawer em mobile), pesquisa global, ecrã "módulo não licenciado".
 
 ### Componentes de página (reutilizar antes de criar novos)
 
@@ -44,7 +44,7 @@ Botões (primário, secundário, texto, perigo, ícone), inputs (texto, password
 | `AppPaginator` | `table/app_paginator.dart` | "A mostrar 1–20 de N", itens por página, páginas numeradas |
 | `PersonLabel` | `person_label.dart` | Avatar (foto/iniciais) + nome em tabelas e listas |
 | `StatusBadge` | `status_badge.dart` | Selo tonal com ponto e texto |
-| `AppSidebar` | `layout/app_sidebar.dart` | Navegação em ecrãs largos (> 1024 px) |
+| `AppSidebar` | `layout/app_sidebar.dart` | Navegação em acordeão (desktop e tablet, > 600 px): módulos agrupados por área, um grupo aberto de cada vez |
 
 As páginas só compõem: estado e regras na página/providers, apresentação nos componentes da feature (`features/<modulo>/presentation/widgets/`), que por sua vez usam estes.
 

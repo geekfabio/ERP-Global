@@ -12,6 +12,7 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.onDanger,
     required this.info,
     required this.onInfo,
+    required this.sidebarBackground,
     required this.academic,
     required this.finance,
     required this.canteen,
@@ -26,6 +27,7 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color onDanger;
   final Color info;
   final Color onInfo;
+  final Color sidebarBackground;
 
   // Acento por módulo.
   final Color academic;
@@ -42,6 +44,7 @@ class AppColors extends ThemeExtension<AppColors> {
     onDanger: Color(0xFFFFFFFF),
     info: Color(0xFF0B5CAD),
     onInfo: Color(0xFFFFFFFF),
+    sidebarBackground: Color(0xFFFFFFFF),
     academic: Color(0xFF0B3D91),
     finance: Color(0xFF00695C),
     canteen: Color(0xFF9A4A00),
@@ -57,6 +60,7 @@ class AppColors extends ThemeExtension<AppColors> {
     onDanger: Color(0xFF690005),
     info: Color(0xFFA4C9FF),
     onInfo: Color(0xFF00315C),
+    sidebarBackground: Color(0xFF1C1B1F),
     academic: Color(0xFFADC6FF),
     finance: Color(0xFF6FD9C6),
     canteen: Color(0xFFFFB77C),
@@ -73,6 +77,7 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? onDanger,
     Color? info,
     Color? onInfo,
+    Color? sidebarBackground,
     Color? academic,
     Color? finance,
     Color? canteen,
@@ -87,6 +92,7 @@ class AppColors extends ThemeExtension<AppColors> {
       onDanger: onDanger ?? this.onDanger,
       info: info ?? this.info,
       onInfo: onInfo ?? this.onInfo,
+      sidebarBackground: sidebarBackground ?? this.sidebarBackground,
       academic: academic ?? this.academic,
       finance: finance ?? this.finance,
       canteen: canteen ?? this.canteen,
@@ -107,6 +113,7 @@ class AppColors extends ThemeExtension<AppColors> {
       onDanger: l(onDanger, other.onDanger),
       info: l(info, other.info),
       onInfo: l(onInfo, other.onInfo),
+      sidebarBackground: l(sidebarBackground, other.sidebarBackground),
       academic: l(academic, other.academic),
       finance: l(finance, other.finance),
       canteen: l(canteen, other.canteen),

@@ -21,6 +21,10 @@ Widget _app() {
             builder: (_, _) => const Text('ficha'),
           ),
           GoRoute(path: '/dashboard', builder: (_, _) => const Text('painel')),
+          GoRoute(
+            path: '/guardians',
+            builder: (_, _) => const Text('encarregados'),
+          ),
         ],
       ),
     ],
@@ -69,10 +73,65 @@ void main() {
     );
   });
 
-  testWidgets('medium mostra rail compacta', (tester) async {
+  testWidgets('medium mostra a sidebar acordeão mais estreita', (tester) async {
     await _pumpAt(tester, const Size(800, 800));
-    final rail = tester.widget<NavigationRail>(find.byType(NavigationRail));
-    expect(rail.extended, isFalse);
+    expect(find.byType(NavigationRail), findsNothing);
+    final sidebar = tester.widget<AppSidebar>(find.byType(AppSidebar));
+    expect(sidebar.width, appSidebarWidthMedium);
+  });
+
+  testWidgets('o grupo da rota actual abre-se e os outros ficam fechados', (
+    tester,
+  ) async {
+    await _pumpAt(tester, const Size(1280, 800));
+    final sidebar = find.byType(AppSidebar);
+    // Rota /students/123 → grupo "Pessoas" aberto com os seus módulos.
+    expect(
+      find.descendant(of: sidebar, matching: find.text('Pessoas')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: sidebar, matching: find.text('Encarregados')),
+      findsOneWidget,
+    );
+    // "Finanças" está fechado: o cabeçalho aparece, os filhos não.
+    expect(
+      find.descendant(of: sidebar, matching: find.text('Finanças')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: sidebar, matching: find.text('Contabilidade')),
+      findsNothing,
+    );
+  });
+
+  testWidgets('abrir um grupo fecha o anterior (acordeão)', (tester) async {
+    await _pumpAt(tester, const Size(1280, 800));
+    final sidebar = find.byType(AppSidebar);
+    await tester.tap(
+      find.descendant(of: sidebar, matching: find.text('Finanças')),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(of: sidebar, matching: find.text('Contabilidade')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: sidebar, matching: find.text('Encarregados')),
+      findsNothing,
+    );
+  });
+
+  testWidgets('navega a partir de um item dentro de um grupo', (tester) async {
+    await _pumpAt(tester, const Size(1280, 800));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(AppSidebar),
+        matching: find.text('Encarregados'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('encarregados'), findsOneWidget);
   });
 
   testWidgets('compact usa drawer e navega', (tester) async {
@@ -89,6 +148,24 @@ void main() {
     await _pumpAt(tester, const Size(1280, 800));
     expect(find.text('Alunos'), findsWidgets);
     expect(find.text('123'), findsOneWidget);
+  });
+
+  test('buildNavSections agrupa os módulos e deixa os soltos em secções', () {
+    const items = [
+      NavItem(label: 'Painel', icon: Icons.abc, path: '/dashboard'),
+      NavItem(label: 'Alunos', icon: Icons.abc, path: '/students'),
+      NavItem(label: 'Encarregados', icon: Icons.abc, path: '/guardians'),
+      NavItem(label: 'Definições', icon: Icons.abc, path: '/settings'),
+    ];
+    final sections = buildNavSections(items);
+    expect(sections, hasLength(3));
+    expect((sections[0] as NavLink).item.label, 'Painel');
+    final group = sections[1] as NavGroup;
+    expect(group.label, 'Pessoas');
+    expect(group.links.map((l) => l.index), [1, 2]);
+    expect((sections[2] as NavLink).index, 3);
+    expect(navGroupLabelFor(sections, 2), 'Pessoas');
+    expect(navGroupLabelFor(sections, 0), isNull);
   });
 
   test('navIndexFor faz correspondência por prefixo', () {

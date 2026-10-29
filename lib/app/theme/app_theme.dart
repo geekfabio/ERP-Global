@@ -52,6 +52,9 @@ abstract final class AppTheme {
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: pageBackground,
       ),
+      navigationDrawerTheme: NavigationDrawerThemeData(
+        backgroundColor: light ? Colors.white : scheme.surfaceContainer,
+      ),
       cardTheme: CardThemeData(
         elevation: AppElevation.none,
         color: cardColor,

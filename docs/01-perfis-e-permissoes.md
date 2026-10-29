@@ -54,11 +54,13 @@ Legenda: **T** total · **E** escrita no âmbito · **L** leitura · **P** apena
 | Financeiro/Facturação | T | L | — | L | — | T | L | — | — | — | — | P | — |
 | Contabilidade | T | L | — | — | — | L | T | — | — | — | — | — | — |
 | RH/Funcionários | T | L | — | — | — | — | — | T | — | — | — | — | — |
-| Refeitório | T | L | — | — | — | L | — | — | T | — | — | P | P |
+| Refeitório | T | L | — | E (carrega) | — | L | — | — | T | — | — | P | P |
 | Cartões/Acessos | T | L | — | E | — | — | — | — | — | T | — | P | P |
 | Biblioteca | T | L | — | — | L | — | — | — | — | — | T | P | P |
 | Comunicação | T | T | E | E | E | E | — | E | — | — | — | L | L |
 | Relatórios/Dashboards | T | T | E (área) | E (área) | — | E (área) | E (área) | E (área) | E (área) | E (área) | E (área) | — | — |
+
+- **Refeitório — quem carrega o cartão:** `secretaria` e `refeitorio` carregam a carteira pré-paga (balcão único, a mesma tela de Carteiras); `financeiro` só visualiza carregamentos, consumo e relatórios (nunca carrega).
 
 ## Requisitos de segurança
 

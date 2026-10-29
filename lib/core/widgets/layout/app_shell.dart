@@ -9,9 +9,10 @@ import 'app_topbar.dart';
 import 'breadcrumbs.dart';
 import 'nav_item.dart';
 
-/// Shell administrativo responsivo: sidebar a toda a altura (expanded), rail
-/// (medium) e drawer (compact). A topbar fica fixa; só o conteúdo faz scroll.
-/// Breakpoints em [AppBreakpoints].
+/// Shell administrativo responsivo: sidebar em acordeão a toda a altura
+/// (expanded), a mesma sidebar mais estreita sob a topbar (medium) e drawer
+/// (compact). A topbar fica fixa; só o conteúdo faz scroll. Breakpoints em
+/// [AppBreakpoints].
 class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.location, required this.child});
 
@@ -94,31 +95,16 @@ class AppShell extends ConsumerWidget {
       );
     }
 
+    // Tablet: a mesma sidebar em acordeão, mais estreita, sob a topbar.
     return Scaffold(
       appBar: const AppTopbar(),
       body: Row(
         children: [
-          // O rail não faz scroll: com muitos módulos evita overflow vertical.
-          LayoutBuilder(
-            builder: (context, constraints) => SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: NavigationRail(
-                    selectedIndex: selected < 0 ? null : selected,
-                    onDestinationSelected: go,
-                    labelType: NavigationRailLabelType.all,
-                    destinations: [
-                      for (final i in items)
-                        NavigationRailDestination(
-                          icon: Icon(i.icon),
-                          label: Text(i.label),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+          AppSidebar(
+            items: items,
+            selectedIndex: selected,
+            onSelected: go,
+            width: appSidebarWidthMedium,
           ),
           const VerticalDivider(width: 1),
           Expanded(child: content),

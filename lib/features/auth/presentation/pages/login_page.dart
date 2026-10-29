@@ -191,6 +191,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             'Entrar',
                             style: text.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700,
+                              color: Colors.white
                             ),
                           ),
                           const SizedBox(width: AppSpacing.sm),

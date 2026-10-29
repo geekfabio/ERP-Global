@@ -34,7 +34,7 @@ class ImportPage extends ConsumerWidget {
     return Align(
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1100),
+        constraints: const BoxConstraints(maxWidth: 1400),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(

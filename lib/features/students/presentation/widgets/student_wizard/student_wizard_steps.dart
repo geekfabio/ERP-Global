@@ -1,8 +1,12 @@
+import 'dart:convert';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../app/theme/app_tokens.dart';
 import '../../../../../core/utils/pt_ao_formatters.dart';
 import '../../../../../core/widgets/app_button.dart';
+import '../../../../../core/widgets/app_avatar.dart';
 import '../../../../../core/widgets/forms/stepper_form.dart';
 import '../../../../../core/widgets/inputs/app_inputs.dart';
 import '../../../data/models/student_enums.dart';
@@ -35,6 +39,11 @@ Widget _identification(BuildContext context, StepperFormController form) {
   String? s(String k) => form.get<String>(k);
   return FormGrid(
     children: [
+      _StudentPhotoField(
+        name: s(WizardKeys.fullName) ?? '',
+        imageUrl: s(WizardKeys.photoUrl),
+        onChanged: (value) => form.set(WizardKeys.photoUrl, value),
+      ),
       AppTextField(
         label: 'Nome completo',
         initialValue: s(WizardKeys.fullName),
@@ -104,6 +113,93 @@ Widget _identification(BuildContext context, StepperFormController form) {
       ),
     ],
   );
+}
+
+const _maxStudentPhotoBytes = 5 * 1024 * 1024;
+
+class _StudentPhotoField extends StatelessWidget {
+  const _StudentPhotoField({
+    required this.name,
+    required this.imageUrl,
+    required this.onChanged,
+  });
+
+  final String name;
+  final String? imageUrl;
+  final ValueChanged<String?> onChanged;
+
+  Future<void> _pick(BuildContext context) async {
+    final files = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['jpg', 'jpeg', 'png', 'webp'],
+    );
+    final file = files.firstOrNull;
+    if (file == null) return;
+    final bytes = await file.xFile.readAsBytes();
+    if (!context.mounted) return;
+    if (bytes.length > _maxStudentPhotoBytes) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('A fotografia deve ter no máximo 5 MB.')),
+      );
+      return;
+    }
+    if (bytes.isEmpty) return;
+    final extension = (file.extension ?? 'jpg').toLowerCase();
+    final mime = extension == 'png'
+        ? 'image/png'
+        : extension == 'webp'
+        ? 'image/webp'
+        : 'image/jpeg';
+    onChanged('data:$mime;base64,${base64Encode(bytes)}');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    return InputDecorator(
+      decoration: const InputDecoration(labelText: 'Fotografia do aluno'),
+      child: Row(
+        children: [
+          AppAvatar(name: name, imageUrl: imageUrl, radius: 34),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  imageUrl == null
+                      ? 'Sem fotografia'
+                      : 'Fotografia seleccionada',
+                  style: text.bodyMedium,
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text('JPG, PNG ou WebP até 5 MB', style: text.bodySmall),
+                const SizedBox(height: AppSpacing.sm),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  children: [
+                    AppButton(
+                      label: imageUrl == null ? 'Escolher foto' : 'Substituir',
+                      icon: Icons.upload_outlined,
+                      variant: AppButtonVariant.secondary,
+                      onPressed: () => _pick(context),
+                    ),
+                    if (imageUrl != null)
+                      AppButton(
+                        label: 'Remover',
+                        icon: Icons.delete_outline,
+                        variant: AppButtonVariant.text,
+                        onPressed: () => onChanged(null),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 Widget _guardians(BuildContext context, StepperFormController form) {

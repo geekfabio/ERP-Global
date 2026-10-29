@@ -8,6 +8,7 @@ import '../../../data/models/student_model.dart';
 /// mapas), para o rascunho poder ser guardado como JSON.
 abstract final class WizardKeys {
   static const fullName = 'fullName';
+  static const photoUrl = 'photoUrl';
 
   /// `yyyy-MM-dd`.
   static const birthDate = 'birthDate';
@@ -124,6 +125,7 @@ StudentModel wizardStudent(
     updatedAt: now,
     processNumber: '',
     fullName: _text(values, WizardKeys.fullName) ?? '',
+    photoUrl: _text(values, WizardKeys.photoUrl),
     birthDate: parseWizardDate(values[WizardKeys.birthDate] as String?)!,
     birthPlace: _text(values, WizardKeys.birthPlace),
     gender: Gender.values.byName(

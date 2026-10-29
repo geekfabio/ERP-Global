@@ -134,58 +134,55 @@ class _WalletsPageState extends ConsumerState<WalletsPage> {
   @override
   Widget build(BuildContext context) {
     final wallets = ref.watch(walletListProvider);
-    return Align(
-      alignment: Alignment.topCenter,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1200),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Carteiras',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                    ),
-                    Can(
-                      permission: 'cafeteria.wallet.create',
-                      child: AppButton(
-                        label: 'Abrir',
-                        icon: Icons.add,
-                        onPressed: _open,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: AsyncValueView<List<Wallet>>(
-                  value: wallets,
-                  onRetry: () => ref.invalidate(walletListProvider),
-                  isEmpty: (d) => d.isEmpty,
-                  empty: const EmptyState(
-                    icon: Icons.account_balance_wallet_outlined,
-                    title: 'Sem carteiras',
-                    message: 'Ainda não foram abertas carteiras.',
-                  ),
-                  data: (items) => _WalletsTable(
-                    items: items,
-                    onTopUp: _topUp,
-                    onLimit: _limit,
-                    onToggleBlock: _toggleBlock,
-                    onStatement: (w) => showStatementDialog(context, w),
+    // Sem Align/ConstrainedBox próprios: o `CafeteriaPage` (TabBarView) já
+    // centra e limita a largura de todas as abas — duplicá-lo aqui estreitava
+    // só esta aba, dando um salto de largura ao trocar de separador.
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Carteiras',
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                 ),
-              ),
-            ],
+                Can(
+                  permission: 'cafeteria.wallet.create',
+                  child: AppButton(
+                    label: 'Abrir',
+                    icon: Icons.add,
+                    onPressed: _open,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+          Expanded(
+            child: AsyncValueView<List<Wallet>>(
+              value: wallets,
+              onRetry: () => ref.invalidate(walletListProvider),
+              isEmpty: (d) => d.isEmpty,
+              empty: const EmptyState(
+                icon: Icons.account_balance_wallet_outlined,
+                title: 'Sem carteiras',
+                message: 'Ainda não foram abertas carteiras.',
+              ),
+              data: (items) => _WalletsTable(
+                items: items,
+                onTopUp: _topUp,
+                onLimit: _limit,
+                onToggleBlock: _toggleBlock,
+                onStatement: (w) => showStatementDialog(context, w),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

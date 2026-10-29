@@ -21,7 +21,7 @@ const _allowed = <AuthProfile, Set<String>>{
   },
   AuthProfile.management: {'reports', 'students'},
   AuthProfile.coordination: {'academic', 'grades', 'attendance'},
-  AuthProfile.academicOffice: {'students', 'attendance'},
+  AuthProfile.academicOffice: {'students', 'attendance', 'cafeteria'},
   AuthProfile.teacher: {'academic', 'grades', 'attendance', 'guardian_portal'},
   AuthProfile.homeroomTeacher: {
     'academic',
@@ -29,7 +29,7 @@ const _allowed = <AuthProfile, Set<String>>{
     'attendance',
     'guardian_portal',
   },
-  AuthProfile.finance: {'billing'},
+  AuthProfile.finance: {'billing', 'cafeteria'},
   AuthProfile.accountant: {'accounting'},
   AuthProfile.humanResources: {'hr'},
   AuthProfile.cafeteria: {'cafeteria'},

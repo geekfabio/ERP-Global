@@ -98,6 +98,11 @@ const authProfilePermissions = <AuthProfile, List<String>>{
     'students.health.read',
     'students.health.update',
     'attendance.record.all',
+
+    /// Carregamento do cartão/carteira do refeitório (balcão único com a
+    /// cafetaria): docs/01-perfis-e-permissoes.md.
+    'cafeteria.wallet.read',
+    'cafeteria.wallet.topup',
   ],
   AuthProfile.teacher: [
     'academic.class.read',
@@ -126,6 +131,12 @@ const authProfilePermissions = <AuthProfile, List<String>>{
     'billing.discount.approve',
     'billing.report.read',
     'billing.report.export',
+
+    /// Só visualiza: acompanha carregamentos e consumo do refeitório, mas
+    /// não carrega cartões (isso é secretaria/cafetaria).
+    'cafeteria.wallet.read',
+    'cafeteria.report.read',
+    'cafeteria.report.export',
   ],
   AuthProfile.accountant: ['accounting.ledger.read', 'accounting.entry.create'],
   AuthProfile.humanResources: ['hr.employee.read', 'hr.employee.update'],
