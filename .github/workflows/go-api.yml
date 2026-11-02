@@ -1,4 +1,4 @@
-name: Go API
+name: Go API contracts
 on:
   push:
     paths: ["backend/**", ".github/workflows/go-api.yml"]
@@ -15,6 +15,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: backend/go.mod
-          cache-dependency-path: backend/go.sum
+          cache: false
       - run: go mod tidy
+      - run: go vet ./...
       - run: go test ./...
