@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-erp_global}
+      POSTGRES_USER: ${POSTGRES_USER:-erp_global}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-erp_global} -d ${POSTGRES_DB:-erp_global}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+  api:
+    build:
+      context: ../backend
+    environment:
+      API_ADDRESS: ":8080"
+      DATABASE_URL: "postgres://${POSTGRES_USER:-erp_global}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-erp_global}?sslmode=disable"
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  db_data:
