@@ -1,24 +1,20 @@
-# ERP-Global API (Go)
+# ERP-Global API — contratos e schemas, sem base de dados
 
-Backend no mesmo repositório do Flutter, com serviços organizados por instituição.
-
-## Stack
-- Go 1.24, Gin, PostgreSQL, pgx
-- Migrações SQL pelo goose (CLI)
-- Contrato HTTP existente em `docs/api/openapi.yaml`
+Esta fase não utiliza PostgreSQL, Neon, migrations ou ligação a qualquer base de dados. O alvo futuro é PostgreSQL, mas a persistência será implementada apenas após aprovação dos contratos.
 
 ## Desenvolvimento
-1. Copiar `deploy/.env.example` para `deploy/.env` e substituir a palavra-passe.
-2. Executar `docker compose --env-file deploy/.env -f deploy/docker-compose.yml up --build -d`.
-3. Testar `curl http://127.0.0.1:8080/health/live` e `/health/ready`.
-4. Instalar goose e aplicar `backend/db/migrations/` ao PostgreSQL antes de implementar os endpoints de identidade.
-5. Executar `cd backend && go mod tidy && go test ./...`.
 
-A API ainda não implementa login nem operações académicas. Os endpoints de health e as migrações são a fundação. Não expor a porta da API publicamente sem TLS, autenticação e regras de rede adequadas.
+```bash
+cd backend
+go mod tidy
+go test ./...
+go run ./cmd/api
+```
 
-## Convenções
-- Apenas a entidade `institution` / `institution_id` para segregação administrativa.
-- Não aceitar um `institution_id` livre fornecido pelo cliente para autorizar operações.
-- ULIDs, UTC, valores monetários em inteiros na menor unidade.
-- Erros compatíveis com o contrato de `docs/07-mock-api.md`.
-- Manter o Flutter actual e trocar os mocks progressivamente após testes de contrato.
+Rotas nesta fase: `GET /health/live`, `GET /health/ready` e `GET /v1/meta/schema`. Readiness anuncia explicitamente `databaseConnected: false` e `storage: memory`. Não existem endpoints de escrita produtiva nesta etapa.
+
+Os modelos de domínio em `internal/schema/` representam o contrato inicial. As especificações de API existentes estão em `docs/api/openapi.yaml`. Os modelos e contratos precisam de validação conjunta antes da fase de implementação por módulo.
+
+**Regra:** a única entidade administrativa é a instituição, sem divisões institucionais adicionais. Credenciais e segredos nunca entram em fixtures ou no Git.
+
+Ver `docs/11-api-10-phases-agents.md` para plano de execução e responsabilidades dos agentes.

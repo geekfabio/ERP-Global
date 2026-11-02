@@ -2,13 +2,10 @@ package config
 
 import "os"
 
-type Config struct {
- Address string
- DatabaseURL string
-}
+type Config struct { Address string }
 
 func FromEnv() Config {
- addr := os.Getenv("API_ADDRESS")
- if addr == "" { addr = ":8080" }
- return Config{Address:addr, DatabaseURL:os.Getenv("DATABASE_URL")}
+ address := os.Getenv("API_ADDRESS")
+ if address == "" { address = ":8080" }
+ return Config{Address: address}
 }
