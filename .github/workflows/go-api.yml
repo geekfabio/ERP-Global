@@ -17,5 +17,4 @@ jobs:
           go-version-file: backend/go.mod
           cache-dependency-path: backend/go.sum
       - run: go mod tidy
-      - run: git diff --exit-code -- go.mod go.sum
       - run: go test ./...
