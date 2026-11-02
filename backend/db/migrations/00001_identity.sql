@@ -17,7 +17,8 @@ CREATE TABLE users (
  must_change_password BOOLEAN NOT NULL DEFAULT TRUE,
  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
- deleted_at TIMESTAMPTZ
+ deleted_at TIMESTAMPTZ,
+ UNIQUE(id, institution_id)
 );
 CREATE UNIQUE INDEX users_institution_email_unique ON users (institution_id, lower(email)) WHERE deleted_at IS NULL;
 
@@ -39,9 +40,12 @@ CREATE TABLE role_permissions (
  PRIMARY KEY(role_id, permission_code)
 );
 CREATE TABLE user_roles (
- user_id VARCHAR(26) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
- role_id VARCHAR(26) NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
- PRIMARY KEY(user_id, role_id)
+ institution_id VARCHAR(26) NOT NULL REFERENCES institutions(id),
+ user_id VARCHAR(26) NOT NULL,
+ role_id VARCHAR(26) NOT NULL,
+ PRIMARY KEY(user_id, role_id),
+ FOREIGN KEY (user_id, institution_id) REFERENCES users(id, institution_id) ON DELETE CASCADE,
+ FOREIGN KEY (role_id, institution_id) REFERENCES roles(id, institution_id) ON DELETE CASCADE
 );
 
 -- +goose Down
