@@ -1,0 +1,21 @@
+name: Go API contracts
+on:
+  push:
+    paths: ["backend/**", ".github/workflows/go-api.yml"]
+  pull_request:
+    paths: ["backend/**", ".github/workflows/go-api.yml"]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache: false
+      - run: go mod tidy
+      - run: go vet ./...
+      - run: go test ./...
